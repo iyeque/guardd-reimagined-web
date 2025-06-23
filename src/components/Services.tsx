@@ -1,63 +1,63 @@
 
-import { Shield, Server, Users, Zap, FileCheck, AlertTriangle } from "lucide-react";
+import { Users, Monitor, BookOpen, GamepadIcon, MessageCircle, Heart } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Services = () => {
   const services = [
     {
-      icon: Shield,
-      title: "Endpoint Protection",
-      description: "Comprehensive security for all your devices and endpoints with real-time threat detection."
-    },
-    {
-      icon: Server,
-      title: "Network Security",
-      description: "Advanced firewall and network monitoring to prevent unauthorized access and data breaches."
+      icon: Monitor,
+      title: "Screen Time Management",
+      description: "Learn healthy boundaries and create balanced screen time routines that work for your family."
     },
     {
       icon: Users,
-      title: "Identity Management",
-      description: "Secure user authentication and access control with multi-factor authentication."
+      title: "Family Digital Agreements",
+      description: "Build collaborative agreements that help everyone understand expectations and responsibilities."
     },
     {
-      icon: Zap,
-      title: "Incident Response",
-      description: "Rapid response team to contain and mitigate security incidents before they escalate."
+      icon: BookOpen,
+      title: "Educational Blog",
+      description: "Expert insights, tips, and research-backed strategies for digital wellness and family safety."
     },
     {
-      icon: FileCheck,
-      title: "Compliance Auditing",
-      description: "Ensure your organization meets industry standards and regulatory requirements."
+      icon: GamepadIcon,
+      title: "Interactive Games",
+      description: "Fun, educational games that teach digital citizenship and online safety skills."
     },
     {
-      icon: AlertTriangle,
-      title: "Vulnerability Assessment",
-      description: "Regular security assessments to identify and address potential weaknesses."
+      icon: MessageCircle,
+      title: "Video Resources",
+      description: "Engaging video content covering digital wellness topics for parents and children."
+    },
+    {
+      icon: Heart,
+      title: "Ongoing Support",
+      description: "Access to community support, expert guidance, and resources when you need them most."
     }
   ];
 
   return (
-    <section id="services" className="py-20 px-6">
+    <section id="resources" className="py-20 px-6 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Our Security Solutions
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+            Resources for Every Family
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Comprehensive cybersecurity services designed to protect your business 
-            from the most sophisticated threats in today's digital landscape.
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            Comprehensive tools and resources designed to support your family's digital wellness journey, 
+            from screen time management to online safety education.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="bg-slate-800/50 border-cyan-500/20 hover:border-cyan-500/40 transition-all hover:shadow-lg hover:shadow-cyan-500/10">
+            <Card key={index} className="bg-white/80 border-green-200/50 hover:border-green-300/70 transition-all hover:shadow-lg">
               <CardHeader>
-                <service.icon className="h-12 w-12 text-cyan-400 mb-4" />
-                <CardTitle className="text-white text-xl">{service.title}</CardTitle>
+                <service.icon className="h-12 w-12 text-green-600 mb-4" />
+                <CardTitle className="text-slate-800 text-xl">{service.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-gray-300 text-base">
+                <CardDescription className="text-slate-600 text-base">
                   {service.description}
                 </CardDescription>
               </CardContent>
