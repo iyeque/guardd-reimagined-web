@@ -1,73 +1,90 @@
-# Welcome to your Lovable project
+# Digital Guardian v2.0
 
-## Project info
+This project is the consolidated full-stack application for Digital Guardian v2.0, combining the `guardd-reimagined-web` frontend with the `DigitalGuardian` backend.
 
-**URL**: https://lovable.dev/projects/cd3383f8-c80f-453c-842e-5d53d4705243
+## Key Features
 
-## How can I edit this code?
+*   Age-appropriate content filtering (5-15 years)
+*   Real-time parental monitoring
+*   Educational games and activities
+*   Screen time management
+*   Achievement system
+*   Safe family communication
+*   Progress tracking
+*   Personalized recommendations
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+### Frontend
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/cd3383f8-c80f-453c-842e-5d53d4705243) and start prompting.
+*   **Framework**: React (react, react-dom)
+*   **Language**: TypeScript (typescript)
+*   **Build Tool**: Vite (vite)
+*   **Styling**: Tailwind CSS (tailwindcss, tailwind-merge, tailwindcss-animate)
+*   **UI Components**: Radix UI (@radix-ui/react-* for components like accordion, dialog, etc.), shadcn-ui
+*   **Form Handling**: React Hook Form (react-hook-form)
+*   **Data Fetching & State Management**: React Query (@tanstack/react-query)
+*   **Animations**: Framer Motion (framer-motion)
+*   **Routing**: Wouter (wouter), react-router-dom
+*   **Data Visualization**: Recharts (recharts)
+*   **Icons**: Lucide React (lucide-react), React Icons (react-icons)
 
-Changes made via Lovable will be committed automatically to this repo.
+### Backend
 
-**Use your preferred IDE**
+*   **Runtime**: Node.js
+*   **Framework**: Express.js (express)
+*   **Language**: TypeScript (typescript)
+*   **Authentication**: Passport.js (passport, passport-local)
+*   **Session Management**: Express Session (express-session), with session storage using connect-pg-simple (PostgreSQL)
+*   **Database ORM**: Drizzle ORM (drizzle-orm, drizzle-zod)
+*   **Validation**: Zod (zod, zod-validation-error)
+*   **Real-Time Communication**: WebSockets (ws)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Database
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+*   **Database**: PostgreSQL (@neondatabase/serverless for serverless PostgreSQL)
+*   **Schema Management**: Drizzle Kit (drizzle-kit)
 
-Follow these steps:
+### Development Tools
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+*   **Type Checking**: TypeScript (typescript)
+*   **Build Tools**:
+    *   Frontend: Vite (vite)
+    *   Backend: esbuild (esbuild) for bundling server code
+*   **Execution**: TSX (tsx) for running TypeScript files directly
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Getting Started
 
-# Step 3: Install the necessary dependencies.
-npm i
+To get started with the project, follow these steps:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+1.  **Navigate to the project directory:**
 
-**Edit a file directly in GitHub**
+    ```bash
+    cd C:\Users\Huawei\Downloads\DigitalGuardian\guardd-reimagined-web
+    ```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+2.  **Install dependencies:**
 
-**Use GitHub Codespaces**
+    ```bash
+    npm install
+    ```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+3.  **Run the development server:**
 
-## What technologies are used for this project?
+    ```bash
+    npm run dev
+    ```
 
-This project is built with:
+    This will start both the frontend and backend servers.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+4.  **Build for production:**
 
-## How can I deploy this project?
+    ```bash
+    npm run build
+    ```
 
-Simply open [Lovable](https://lovable.dev/projects/cd3383f8-c80f-453c-842e-5d53d4705243) and click on Share -> Publish.
+5.  **Start the production server:**
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+    ```bash
+    npm start
+    ```

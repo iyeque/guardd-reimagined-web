@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import themePlugin from "@replit/vite-plugin-shadcn-theme-json";
+import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -11,12 +12,13 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === 'development' &&
-    componentTagger(),
+    themePlugin(),
+    runtimeErrorOverlay(),
   ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@shared": path.resolve(__dirname, "./shared"),
     },
   },
 }));
