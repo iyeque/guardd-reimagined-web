@@ -1,0 +1,1773 @@
+{
+  "Access Control": {
+    "summary": "Access control is a security technique that regulates who or what can view or use resources in a computing environment. It's a fundamental component of security that dictates which users are allowed to access which data and resources.",
+    "links": [
+      { "title": "What is Access Control? - Cisco", "url": "https://www.cisco.com/c/en/us/products/security/what-is-access-control.html" },
+      { "title": "Access Control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Access_control" }
+    ]
+  },
+  "Advanced Persistent Threat (APT)": {
+    "summary": "An advanced persistent threat (APT) is a sophisticated, sustained cyberattack in which an intruder establishes an undetected presence in a network in order to steal sensitive data over a prolonged period. APT attacks are typically launched by well-funded groups, often nation-states, with specific objectives.",
+    "links": [
+      { "title": "What is an Advanced Persistent Threat (APT)? - CrowdStrike", "url": "https://www.crowdstrike.com/cybersecurity-101/advanced-persistent-threat-apt/" },
+      { "title": "Advanced Persistent Threat - Wikipedia", "url": "https://en.wikipedia.org/wiki/Advanced_persistent_threat" }
+    ]
+  },
+  "Authentication": {
+    "summary": "Authentication is the process of verifying the identity of a user, process, or device. It's a crucial step in cybersecurity that ensures only legitimate users can access systems, networks, or data.",
+    "links": [
+      { "title": "What is Authentication? - Okta", "url": "https://www.okta.com/identity-101/what-is-authentication/" },
+      { "title": "Authentication - Wikipedia", "url": "https://en.wikipedia.org/wiki/Authentication" }
+    ]
+  },
+  "Backdoor": {
+    "summary": "A backdoor in cybersecurity refers to a covert method that bypasses normal authentication procedures to gain unauthorized access to a computer system, network, or software application. These hidden entry points allow attackers to maintain persistent, stealthy remote access, often going undetected for extended periods.",
+    "links": [
+      { "title": "What is a Backdoor Attack? | CrowdStrike", "url": "https://www.crowdstrike.com/cybersecurity-101/backdoor-attack/" },
+      { "title": "Backdoor (computing) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Backdoor_(computing)" }
+    ]
+  },
+  "Biometrics": {
+    "summary": "Biometrics in cybersecurity refers to the measurement and analysis of unique biological characteristics or behavioral patterns to identify and authenticate individuals. This technology is increasingly used for access control and identification, offering an enhanced layer of security compared to traditional password-based systems.",
+    "links": [
+      { "title": "What Is Biometrics in Cybersecurity? - Proofpoint", "url": "https://www.proofpoint.com/us/threat-reference/biometrics-cybersecurity" },
+      { "title": "Biometrics - Wikipedia", "url": "https://en.wikipedia.org/wiki/Biometrics" }
+    ]
+  },
+  "Blue Team": {
+    "summary": "A \"blue team\" in cybersecurity refers to a group of defensive security professionals responsible for protecting an organization's information systems against cyber threats. Their primary focus is to safeguard digital assets by continuously monitoring, detecting, and responding to attacks, as well as proactively identifying and mitigating vulnerabilities.",
+    "links": [
+      { "title": "What is Blue Team in Cybersecurity - LetsDefend", "url": "https://letsdefend.io/blog/what-is-blue-team-in-cybersecurity/" },
+      { "title": "Blue team (computer security) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Blue_team_(computer_security)" }
+    ]
+  },
+  "Cipher": {
+    "summary": "A cipher, in cybersecurity and cryptography, is an algorithm or a set of well-defined steps used to transform readable data (plaintext) into an unreadable, scrambled format (ciphertext) and vice versa. This process is known as encryption and decryption, respectively. Ciphers are fundamental to protecting sensitive information, ensuring confidentiality, integrity, and authentication in digital communications and data storage.",
+    "links": [
+      { "title": "What is Cipher? - GeeksforGeeks", "url": "https://www.geeksforgeeks.org/what-is-cipher/" },
+      { "title": "Cipher - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cipher" }
+    ]
+  },
+  "Cookies": {
+    "summary": "Cookies, in the context of cybersecurity, are small text files stored on a user's device by websites to remember information about the user and their browsing activity. While they are essential for website functionality and enhancing user experience, they can also pose cybersecurity risks if exploited.",
+    "links": [
+      { "title": "Cybersecurity & Cookies - Devoteam", "url": "https://www.devoteam.com/blog/cybersecurity-cookies/" },
+      { "title": "Cookies - Wikipedia", "url": "https://en.wikipedia.org/wiki/HTTP_cookie" }
+    ]
+  },
+  "Cyber Attack": {
+    "summary": "A cyber attack is any intentional malicious activity that targets computer information systems, infrastructures, networks, or devices to steal, alter, disable, disrupt, or destroy data or systems through unauthorized access. These attacks can be launched by individuals or groups, including cybercriminals, hacktivists, or nation-state actors, with motivations ranging from financial gain to political agendas or cyberwarfare.",
+    "links": [
+      { "title": "What is a Cyber Attack | Types, Examples & Prevention | Imperva", "url": "https://www.imperva.com/learn/security/cyber-attack/" },
+      { "title": "Cyberattack - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cyberattack" }
+    ]
+  },
+  "Cybersecurity": {
+    "summary": "Cybersecurity is the practice of protecting computer systems, networks, programs, devices, and data from digital attacks, damage, or unauthorized access. It involves a set of processes, best practices, and technology solutions designed to safeguard sensitive information and ensure the integrity, confidentiality, and availability of IT systems and data.",
+    "links": [
+      { "title": "What is Cybersecurity? - Cisco", "url": "https://www.cisco.com/c/en/us/products/security/what-is-cybersecurity.html" },
+      { "title": "Cybersecurity - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cybersecurity" }
+    ]
+  },
+  "Data Breach": {
+    "summary": "A data breach is a security incident where confidential, sensitive, or protected information is accessed, disclosed, or lost without authorization. This can include personal data (like Social Security numbers, financial details, or health records) and corporate data (such as intellectual property or customer lists).",
+    "links": [
+      { "title": "What Is a Data Breach? - IBM", "url": "https://www.ibm.com/topics/data-breach" },
+      { "title": "Data breach - Wikipedia", "url": "https://en.wikipedia.org/wiki/Data_breach" }
+    ]
+  },
+  "Data Encryption": {
+    "summary": "Data encryption is a fundamental cybersecurity measure that transforms readable information (plaintext) into an unreadable format (ciphertext) to protect it from unauthorized access. This process, known as encryption, uses mathematical algorithms and cryptographic keys to scramble data, ensuring that only authorized individuals with the correct decryption key can access the original content.",
+    "links": [
+      { "title": "What is Data Encryption? - GeeksforGeeks", "url": "https://www.geeksforgeeks.org/what-is-data-encryption/" },
+      { "title": "Data encryption - Wikipedia", "url": "https://en.wikipedia.org/wiki/Data_encryption" }
+    ]
+  },
+  "Decryption": {
+    "summary": "Decryption in cybersecurity is the process of converting encrypted data (ciphertext) back into its original, readable form (plaintext). It is the reverse of encryption and is essential for authorized users to access and understand sensitive information that has been secured.",
+    "links": [
+      { "title": "What is Decryption? - SentinelOne", "url": "https://www.sentinelone.com/cybersecurity-101/what-is-decryption/" },
+      { "title": "Decryption - Wikipedia", "url": "https://en.wikipedia.org/wiki/Decryption" }
+    ]
+  },
+  "Denial-of-Service (DoS) Attack": {
+    "summary": "A Denial-of-Service (DoS) attack is a cyberattack designed to make a machine or network resource unavailable to its intended users by disrupting services of a host connected to a network. This is typically achieved by overwhelming the targeted system with a flood of superfluous requests, thereby consuming its resources and preventing legitimate requests from being fulfilled.",
+    "links": [
+      { "title": "Denial-of-service attack - Wikipedia", "url": "https://en.wikipedia.org/wiki/Denial-of-service_attack" },
+      { "title": "What Is a Denial of Service (DoS) Attack? - Palo Alto Networks", "url": "https://www.paloaltonetworks.com/cybersecurity/what-is-a-denial-of-service-attack" }
+    ]
+  },
+  "Distributed Denial-of-Service (DDoS) Attack": {
+    "summary": "A Distributed Denial-of-Service (DDoS) attack is a malicious attempt to disrupt the normal traffic of a targeted server, service, or network by overwhelming it with a flood of internet traffic. Unlike a traditional Denial-of-Service (DoS) attack, which uses a single source, a DDoS attack leverages multiple compromised computer systems, often referred to as a \"botnet,\" to launch the attack.",
+    "links": [
+      { "title": "What is a distributed denial-of-service (DDoS) attack? - Cloudflare", "url": "https://www.cloudflare.com/learning/ddos/what-is-ddos/" },
+      { "title": "Distributed denial-of-service attack - Wikipedia", "url": "https://en.wikipedia.org/wiki/Distributed_denial-of-service_attack" }
+    ]
+  },
+  "Eavesdropping Attack": {
+    "summary": "An eavesdropping attack, also known as sniffing or snooping, is a cybersecurity threat where an unauthorized party intercepts and monitors network traffic or communications between two or more devices without their knowledge or consent. The primary objective is to gain unauthorized access to sensitive data as it is being transmitted, which can include personal details, financial information, login credentials, proprietary business data, and private conversations.",
+    "links": [
+      { "title": "What Is Eavesdropping? | NordLayer Learn", "url": "https://nordlayer.com/learn/what-is-eavesdropping/" },
+      { "title": "Eavesdropping Attack: Definition, How They Work and Prevention - Investopedia", "url": "https://www.investopedia.com/terms/e/eavesdropping-attack.asp" }
+    ]
+  },
+  "Encryption": {
+    "summary": "Encryption is a fundamental cybersecurity measure that transforms readable information (plaintext) into an unreadable format (ciphertext) to protect its confidentiality and integrity. This process uses an encryption algorithm and a cryptographic key. Only authorized parties with the correct decryption key can convert the ciphertext back into plaintext.",
+    "links": [
+      { "title": "What is encryption? - Cloudflare", "url": "https://www.cloudflare.com/learning/ssl/what-is-encryption/" },
+      { "title": "Encryption - Wikipedia", "url": "https://en.wikipedia.org/wiki/Encryption" }
+    ]
+  },
+  "End-to-End Encryption": {
+    "summary": "End-to-End Encryption (E2EE) is a secure communication method that ensures only the sender and the intended recipient can read the content of messages or files. This means that no third party, including service providers, internet providers, or malicious actors, can access the unencrypted data.",
+    "links": [
+      { "title": "What is end-to-end encryption (E2EE)? - IBM", "url": "https://www.ibm.com/topics/end-to-end-encryption" },
+      { "title": "End-to-end encryption - Wikipedia", "url": "https://en.wikipedia.org/wiki/End-to-end_encryption" }
+    ]
+  },
+  "Firewall": {
+    "summary": "A firewall is a crucial cybersecurity device or software that acts as a barrier between a trusted internal network and untrusted external networks, such as the internet. Its primary function is to monitor and control incoming and outgoing network traffic based on predefined security rules, helping prevent unauthorized access, block malicious traffic, and protect against various cyber threats.",
+    "links": [
+      { "title": "Firewall (computing) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Firewall_(computing)" },
+      { "title": "What is a firewall? Definition and explanation - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/firewall" }
+    ]
+  },
+  "General Data Protection Regulation (GDPR)": {
+    "summary": "The General Data Protection Regulation (GDPR) is a comprehensive legal framework established by the European Union (EU) that sets guidelines for the collection and processing of personal information from individuals within and outside the EU. It aims to give individuals greater control over their personal data by holding organizations accountable for how they handle and treat this information.",
+    "links": [
+      { "title": "General Data Protection Regulation - Wikipedia", "url": "https://en.wikipedia.org/wiki/General_Data_Protection_Regulation" },
+      { "title": "What is GDPR? - IBM", "url": "https://www.ibm.com/topics/gdpr" }
+    ]
+  },
+  "Hacker": {
+    "summary": "In cybersecurity, a hacker generally refers to an individual who uses their technical skills to overcome a technical problem or to gain unauthorized access to computer systems or networks. While the public often associates \"hacker\" with malicious intent, the term encompasses various types of individuals with different motivations and ethical considerations, including black hat (malicious), white hat (ethical), and grey hat (ambiguous) hackers.",
+    "links": [
+      { "title": "Hacker - Wikipedia", "url": "https://en.wikipedia.org/wiki/Hacker" },
+      { "title": "What is a hacker? - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/what-is-a-hacker" }
+    ]
+  },
+  "Hash Function": {
+    "summary": "A hash function in cybersecurity is a mathematical algorithm that transforms any input data into a fixed-length string of characters, known as a hash value. This process is one-way and deterministic, meaning it's computationally infeasible to reverse the hash to get the original input, and the same input always produces the same output. Hash functions are crucial for data integrity, password storage, and digital signatures.",
+    "links": [
+      { "title": "Cryptographic hash function - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cryptographic_hash_function" },
+      { "title": "What Is Hashing in Cybersecurity? - CrowdStrike", "url": "https://www.crowdstrike.com/cybersecurity-101/hashing/" }
+    ]
+  },
+  "Incident": {
+    "summary": "A cybersecurity incident is an unwanted or unexpected event that compromises the confidentiality, integrity, or availability of an organization's information systems and data. These incidents can be intentional, such as cyberattacks, or unintentional, like system glitches or human errors, and can lead to significant disruptions and losses.",
+    "links": [
+      { "title": "Cybersecurity Incident - NIST Glossary", "url": "https://csrc.nist.gov/glossary/term/cybersecurity-incident" },
+      { "title": "What is a Cybersecurity Incident? - IBM", "url": "https://www.ibm.com/topics/security-incident" }
+    ]
+  },
+  "Intrusion Detection System (IDS)": {
+    "summary": "An Intrusion Detection System (IDS) is a cybersecurity solution designed to monitor networks or systems for malicious activities, suspicious behavior, or policy violations. Its primary role is to identify potential security breaches and generate alerts, notifying administrators of detected threats, but it does not actively prevent or block them.",
+    "links": [
+      { "title": "What is an Intrusion Detection System (IDS)? - Check Point Software", "url": "https://www.checkpoint.com/cyber-hub/cyber-security/what-is-intrusion-detection-system-ids/" },
+      { "title": "Intrusion detection system - Wikipedia", "url": "https://en.wikipedia.org/wiki/Intrusion_detection_system" }
+    ]
+  },
+  "Malware": {
+    "summary": "Malware, a portmanteau of \"malicious software,\" is an umbrella term for any software intentionally designed to harm, exploit, or gain unauthorized access to computer systems, networks, or data. Cybercriminals use malware for various purposes, including financial gain, data theft, sabotage, disruption, and espionage.",
+    "links": [
+      { "title": "Malware - Wikipedia", "url": "https://en.wikipedia.org/wiki/Malware" },
+      { "title": "What is Malware? - Malwarebytes", "url": "https://www.malwarebytes.com/malware" }
+    ]
+  },
+  "Multi-Factor Authentication (MFA)": {
+    "summary": "Multi-Factor Authentication (MFA) is a security method that requires users to provide two or more distinct forms of verification to gain access to an application, online account, or system. This approach significantly enhances security by creating multiple layers of defense, making it much harder for unauthorized individuals to access accounts, even if they manage to compromise one factor, such as a password.",
+    "links": [
+      { "title": "Multi-factor authentication - Wikipedia", "url": "https://en.wikipedia.org/wiki/Multi-factor_authentication" },
+      { "title": "What is MFA (Multifactor Authentication)? - IBM", "url": "https://www.ibm.com/topics/multifactor-authentication" }
+    ]
+  },
+  "Network Access Control (NAC)": {
+    "summary": "Network Access Control (NAC) is a cybersecurity approach that restricts access to private networks and sensitive resources by enforcing policies on endpoints. It ensures that only authorized and compliant users and devices can connect to a network. NAC unifies endpoint security technology, user/system authentication, and network security enforcement.",
+    "links": [
+      { "title": "Network Access Control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Network_Access_Control" },
+      { "title": "What is Network Access Control (NAC)? - NordLayer", "url": "https://nordlayer.com/learn/what-is-network-access-control/" }
+    ]
+  },
+  "NIST Cybersecurity Framework": {
+    "summary": "The NIST Cybersecurity Framework (CSF) is a set of voluntary guidelines developed by the U.S. National Institute of Standards and Technology (NIST) to help organizations better understand, manage, and reduce their cybersecurity risks. It provides a structured approach to cybersecurity risk management by integrating existing standards, guidelines, and best practices, built around five key functions: Identify, Protect, Detect, Respond, and Recover.",
+    "links": [
+      { "title": "NIST Cybersecurity Framework Official Website", "url": "https://www.nist.gov/cyberframework" },
+      { "title": "NIST Cybersecurity Framework - Wikipedia", "url": "https://en.wikipedia.org/wiki/NIST_Cybersecurity_Framework" }
+    ]
+  },
+  "Packet Filtering": {
+    "summary": "Packet filtering is a fundamental cybersecurity technique that involves inspecting data packets as they travel through a network and deciding whether to allow or block them based on a predefined set of rules. This process is typically performed by firewalls, routers, or other network devices, primarily analyzing information within the packet header.",
+    "links": [
+      { "title": "What Is Packet Filtering? - eSecurity Planet", "url": "https://www.esecurityplanet.com/network-security/what-is-packet-filtering/" },
+      { "title": "Packet filtering - Wikipedia", "url": "https://en.wikipedia.org/wiki/Packet_filter" }
+    ]
+  },
+  "Penetration Testing": {
+    "summary": "Penetration testing, often called \"pen testing,\" is a simulated cyberattack on a computer system, network, or application to evaluate its security. The primary goal is to identify weaknesses or vulnerabilities that malicious actors could exploit, as well as to assess the system's strengths, helping organizations understand their security posture and improve their defenses.",
+    "links": [
+      { "title": "Penetration test - Wikipedia", "url": "https://en.wikipedia.org/wiki/Penetration_test" },
+      { "title": "What is Penetration Testing and How Does It Work? - Black Duck", "url": "https://www.blackducksoftware.com/resource/what-is-penetration-testing" }
+    ]
+  },
+  "Personally Identifiable Information (PII)": {
+    "summary": "Personally Identifiable Information (PII) is any data that can be used, alone or in combination with other information, to identify, contact, or locate a single individual. Its protection is essential to prevent harm such as identity theft or fraud, and it is categorized into non-sensitive and sensitive types.",
+    "links": [
+      { "title": "What is Personally Identifiable Information (PII)? - Imperva", "url": "https://www.imperva.com/learn/data-security/personally-identifiable-information-pii/" },
+      { "title": "Personally identifiable information - Wikipedia", "url": "https://en.wikipedia.org/wiki/Personally_identifiable_information" }
+    ]
+  },
+  "Phishing": {
+    "summary": "Phishing is a cyberattack that uses deceptive communications, such as fraudulent emails or websites, to trick individuals into revealing sensitive information (e.g., usernames, passwords, credit card numbers) or performing actions that benefit the attacker. It is a form of social engineering that exploits human trust.",
+    "links": [
+      { "title": "What is phishing? - Cloudflare", "url": "https://www.cloudflare.com/learning/phishing/what-is-phishing/" },
+      { "title": "Phishing - Wikipedia", "url": "https://en.wikipedia.org/wiki/Phishing" }
+    ]
+  },
+  "Privacy Policy": {
+    "summary": "A Privacy Policy is a legal document that outlines how an organization collects, uses, stores, and protects the personal information of its users. It serves as a transparent communication channel, detailing data collection purposes, management, and safeguarding measures, and is crucial for legal compliance and building user trust.",
+    "links": [
+      { "title": "What Is a Privacy Policy? - Ironclad", "url": "https://www.ironcladapp.com/journal/what-is-a-privacy-policy/" },
+      { "title": "Privacy policy - Wikipedia", "url": "https://en.wikipedia.org/wiki/Privacy_policy" }
+    ]
+  },
+  "Public Key Cryptography": {
+    "summary": "Public Key Cryptography, also known as asymmetric cryptography, uses a pair of mathematically related keys: a public key for encryption and a private key for decryption. This system enables secure communication, authentication through digital signatures, and secure key exchange, simplifying key distribution compared to symmetric methods.",
+    "links": [
+      { "title": "Public-key cryptography - Wikipedia", "url": "https://en.wikipedia.org/wiki/Public-key_cryptography" },
+      { "title": "How does public key cryptography work? - Cloudflare", "url": "https://www.cloudflare.com/learning/ssl/how-public-key-cryptography-works/" }
+    ]
+  },
+  "Ransomware": {
+    "summary": "Ransomware is a type of malicious software (malware) that encrypts a victim's files, systems, or networks, making them inaccessible. Attackers then demand a ransom, typically in cryptocurrency, for a decryption key. Modern ransomware often involves \"double extortion,\" where data is also stolen and threatened to be published.",
+    "links": [
+      { "title": "Ransomware - Wikipedia", "url": "https://en.wikipedia.org/wiki/Ransomware" },
+      { "title": "A guide to ransomware - NCSC.GOV.UK", "url": "https://www.ncsc.gov.uk/guidance/ransomware" }
+    ]
+  },
+  "Red Team": {
+    "summary": "Red teaming in cybersecurity involves a group of ethical hackers who simulate real-world cyberattacks against an organization's systems to identify vulnerabilities and weaknesses before malicious actors can exploit them. This offensive approach helps organizations understand their security posture and improve their defenses, often working with a \"blue team\" (defensive security professionals).",
+    "links": [
+      { "title": "Red team (computer security) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Red_team_(computer_security)" },
+      { "title": "What is Red Team in Cybersecurity - CrowdStrike", "url": "https://www.crowdstrike.com/cybersecurity-101/red-team/" }
+    ]
+  },
+  "Social Engineering": {
+    "summary": "Social engineering in cybersecurity refers to a range of malicious activities that exploit human psychology and interaction to trick individuals into making security mistakes or divulging sensitive information. It's often called \"human hacking\" because it targets human error and trust rather than technical vulnerabilities in software or systems.",
+    "links": [
+      { "title": "What is Social Engineering? - Imperva", "url": "https://www.imperva.com/learn/security/social-engineering/" },
+      { "title": "Social engineering (security) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Social_engineering_(security)" }
+    ]
+  },
+  "Spyware": {
+    "summary": "Spyware is a type of malicious software (malware) designed to secretly gather information about a person or organization and send it to another entity without their knowledge or consent. This can include sensitive data like internet browsing habits, login credentials, passwords, and banking information, often operating covertly.",
+    "links": [
+      { "title": "Spyware - Wikipedia", "url": "https://en.wikipedia.org/wiki/Spyware" },
+      { "title": "What Is Spyware? - Proofpoint", "url": "https://www.proofpoint.com/us/threat-reference/spyware" }
+    ]
+  },
+  "Two-Factor Authentication (2FA)": {
+    "summary": "Two-Factor Authentication (2FA), also known as two-step verification, is a security process that requires users to provide two different authentication factors to verify their identity before gaining access to an account or system. This method significantly enhances security by creating multiple layers of defense, making it much harder for unauthorized individuals to access accounts, even if they manage to steal a password.",
+    "links": [
+      { "title": "Two-factor authentication - Wikipedia", "url": "https://en.wikipedia.org/wiki/Two-factor_authentication" },
+      { "title": "What is MFA (Multifactor Authentication)? - IBM", "url": "https://www.ibm.com/topics/multifactor-authentication" }
+    ]
+  },
+  "Virus": {
+    "summary": "In cybersecurity, a computer virus is a type of malicious software (malware) designed to spread from one computer to another. It functions by attaching itself to legitimate programs or documents and then self-replicating, inserting its code into other programs. When the infected program is executed, the virus activates and can cause various harmful effects.",
+    "links": [
+      { "title": "What is a computer virus? - Norton", "url": "https://www.norton.com/en-us/security-library/what-is-a-computer-virus.html" },
+      { "title": "Computer Virus - GeeksforGeeks", "url": "https://www.geeksforgeeks.org/computer-virus/" },
+      { "title": "What is a Computer Virus? - Proofpoint", "url": "https://www.proofpoint.com/us/threat-reference/computer-virus" },
+      { "title": "Computer virus - Wikipedia", "url": "https://en.wikipedia.org/wiki/Computer_virus" },
+      { "title": "What is a Computer Virus? - Webasha", "url": "https://www.webasha.com/what-is-a-computer-virus/" }
+    ]
+  },
+  "VPN (Virtual Private Network)": {
+    "summary": "A Virtual Private Network (VPN) in cybersecurity refers to a technology that creates a secure and encrypted connection over a less secure public network, like the internet. It's a crucial tool for enhancing online privacy and data security for both individuals and organizations.",
+    "links": [
+      { "title": "What is a VPN? - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/what-is-vpn" },
+      { "title": "What is a VPN? - Cloudflare", "url": "https://www.cloudflare.com/learning/security/what-is-vpn/" },
+      { "title": "What is a VPN? - Microsoft", "url": "https://www.microsoft.com/en-us/security/business/security-101/what-is-vpn" },
+      { "title": "What is a VPN? - NordVPN", "url": "https://nordvpn.com/what-is-vpn/" },
+      { "title": "What is a VPN? - Sophos", "url": "https://www.sophos.com/en-us/security-awareness/what-is-a-vpn" }
+    ]
+  },
+  "White Hat Hacker": {
+    "summary": "A white hat hacker, also known as an ethical hacker, is a cybersecurity professional who uses their hacking skills to identify and address security vulnerabilities in systems, hardware, and software. Unlike malicious \"black hat\" hackers, white hat hackers operate with the permission of the organization they are testing and work within legal and ethical frameworks. Their primary goal is to help organizations improve their security by discovering and reporting weaknesses before they can be exploited by cybercriminals.",
+    "links": [
+      { "title": "What is a White Hat Hacker? - Computer Futures", "url": "https://www.computerfutures.com/en-us/blog/what-is-a-white-hat-hacker" },
+      { "title": "What is a White Hat Hacker? - HackerOne", "url": "https://www.hackerone.com/white-hat-hackers" },
+      { "title": "What is a white hat hacker? - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/white-hat-hacker" },
+      { "title": "What is a white hat hacker? - TechTarget", "url": "https://www.techtarget.com/whatis/definition/white-hat-hacker" }
+    ]
+  },
+  "Zero-Day Exploit": {
+    "summary": "A zero-day exploit in cybersecurity refers to an attack that takes advantage of a security vulnerability in software, hardware, or firmware that is unknown to the vendor or the public. The term \"zero-day\" signifies that the developers have had \"zero days\" to fix the flaw because the attackers have discovered and exploited it before a patch or solution is available.",
+    "links": [
+      { "title": "What is a Zero-Day Exploit? - Cloudflare", "url": "https://www.cloudflare.com/learning/security/what-is-a-zero-day-exploit/" },
+      { "title": "What is a Zero-Day Exploit? - Imperva", "url": "https://www.imperva.com/learn/security/zero-day-exploit/" },
+      { "title": "What is a zero-day exploit? - IBM", "url": "https://www.ibm.com/topics/zero-day-exploit" },
+      { "title": "What is a Zero-Day Exploit? - Balbix", "url": "https://www.balbix.com/insights/what-is-a-zero-day-exploit/" },
+      { "title": "What is a zero-day vulnerability? - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/zero-day-vulnerability" }
+    ]
+  },
+  "Zero Trust": {
+    "summary": "Zero Trust cybersecurity is a security framework that operates on the principle of \"never trust, always verify.\" This means that no user, device, or application, whether inside or outside an organization's network, is automatically granted access to resources. Instead, every access attempt requires stringent identity verification and continuous authorization and validation of security configurations.",
+    "links": [
+      { "title": "What is Zero Trust? - CrowdStrike", "url": "https://www.crowdstrike.com/cybersecurity-101/what-is-zero-trust/" },
+      { "title": "What is Zero Trust? - IBM", "url": "https://www.ibm.com/topics/zero-trust" },
+      { "title": "What is Zero Trust? - Akamai", "url": "https://www.akamai.com/our-thinking/security/what-is-zero-trust" },
+      { "title": "What is Zero Trust? - Palo Alto Networks", "url": "https://www.paloaltonetworks.com/cybersecurity/what-is-zero-trust" }
+    ]
+  },
+  "Digital Citizen": {
+    "summary": "A digital citizen is an individual who uses information technology (IT) to engage in society, politics, and government. It encompasses the responsible, safe, and respectful use of technology, including understanding online ethics, safety, and privacy, and contributing positively to online communities.",
+    "links": [
+      { "title": "Digital citizen - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_citizen" },
+      { "title": "What Is Digital Citizenship? - Learning.com", "url": "https://www.learning.com/blog/what-is-digital-citizenship/" }
+    ]
+  },
+  "Digital Footprint": {
+    "summary": "A digital footprint refers to the unique trail of data that an individual or business leaves behind while using the internet and digital devices. This includes all traceable online activities, actions, contributions, and communications, categorized as active (intentionally shared) or passive (unintentionally collected) data.",
+    "links": [
+      { "title": "Digital footprint - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_footprint" },
+      { "title": "What Is a Digital Footprint? - IBM", "url": "https://www.ibm.com/topics/digital-footprint" }
+    ]
+  },
+  "Digital Literacy": {
+    "summary": "Digital literacy is the ability to find, evaluate, create, and communicate information effectively and safely using digital technologies. It goes beyond basic computer skills, encompassing critical thinking, understanding digital content, and responsible online behavior, and is crucial for navigating the modern digital world.",
+    "links": [
+      { "title": "Digital literacy - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_literacy" },
+      { "title": "What is Digital Literacy? - Potomac.edu", "url": "https://potomac.edu/blog/what-is-digital-literacy/" }
+    ]
+  },
+  "Digital Responsibility": {
+    "summary": "Digital Responsibility refers to the ethical, safe, and accountable use of technology, emphasizing awareness of online behavior's implications, respect for privacy, and the impact of digital footprints. It's crucial for individuals and organizations to navigate the digital landscape responsibly, contributing to overall digital wellness.",
+    "links": [
+      { "title": "Digital responsibility: what it is and examples - SMOWL", "url": "https://smowl.net/blog/digital-responsibility-what-it-is-and-examples/" },
+      { "title": "Digital Responsibility - Fiveable", "url": "https://fiveable.me/ap-psych/digital-responsibility/" }
+    ]
+  },
+  "Cyberbullying": {
+    "summary": "Cyberbullying is the use of digital technologies to intentionally harm, intimidate, or humiliate another person. It can occur across various platforms and is characterized by its willful and repeated nature. Its impact on digital wellness is profound, affecting mental, emotional, and physical health, and requires education, prevention, and effective response strategies.",
+    "links": [
+      { "title": "How to stop cyberbullying - UNICEF", "url": "https://www.unicef.org/protection/cyberbullying" },
+      { "title": "Cyberbullying - StopBullying.gov", "url": "https://www.stopbullying.gov/cyberbullying" }
+    ]
+  },
+  "Digital Access": {
+    "summary": "Digital Access refers to the equitable opportunity and resources for individuals to engage with technology in a way that promotes their mental, physical, and social well-being. It emphasizes ensuring digital resources are available to everyone, regardless of socioeconomic status, location, or ability, while fostering digital literacy and responsible online behavior.",
+    "links": [
+      { "title": "Digital Well-being Access - Sustainability Directory", "url": "https://sustainability-directory.com/digital-well-being-access/" },
+      { "title": "Digital Access - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_divide" }
+    ]
+  },
+  "Digital Divide": {
+    "summary": "The \"Digital Divide\" refers to the unequal access to and effective use of digital technology, including the internet, among different individuals, households, businesses, and geographic areas. This disparity is influenced by factors such as socioeconomic status, geography, education, age, and gender, impacting access to essential services and opportunities.",
+    "links": [
+      { "title": "What Is the Digital Divide? - Internet Society", "url": "https://www.internetsociety.org/issues/digital-divide/" },
+      { "title": "Digital divide - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_divide" }
+    ]
+  },
+  "Netiquette": {
+    "summary": "Netiquette, a portmanteau of \"net\" and \"etiquette,\" refers to the socially acceptable rules of online conduct. It encompasses guidelines for respectful and appropriate communication in digital spaces, emphasizing empathy and responsible online behavior, much like etiquette in real-life interactions.",
+    "links": [
+      { "title": "What is Netiquette? 20 Internet Etiquette Rules - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/what-is-netiquette" },
+      { "title": "Netiquette - Wikipedia", "url": "https://en.wikipedia.org/wiki/Netiquette" }
+    ]
+  },
+  "The Golden Rule": {
+    "summary": "The \"Golden Rule\" of online etiquette, often referred to as \"netiquette,\" is fundamentally the same as the traditional Golden Rule: \"Do unto others as you would have them do unto you.\" This principle emphasizes treating others online with the same respect and consideration you would expect to receive in return, fostering positive and mindful online interactions.",
+    "links": [
+      { "title": "Core Rules of Netiquette", "url": "https://www.albion.com/netiquette/corerules.html" },
+      { "title": "What is netiquette? 21 rules for proper online etiquette - Norton", "url": "https://us.norton.com/blog/online-safety/what-is-netiquette" }
+    ]
+  },
+  "Flame": {
+    "summary": "In digital etiquette, \"flaming\" refers to the act of posting insults, often including profanity or other offensive language, on the internet. It's a term used to describe when people express a strongly held opinion without holding back any emotion, often in a hostile and insulting manner.",
+    "links": [
+      { "title": "Flaming (internet) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Flaming_(internet)" },
+      { "title": "What is Flaming? - LLS.edu", "url": "https://www.lls.edu/what-is-flaming/" },
+      { "title": "What is Flaming in Online Communication? - Psynso", "url": "https://www.psynso.com/what-is-flaming-in-online-communication/" },
+      { "title": "Netiquette: Flaming - Doane University", "url": "https://www.doane.edu/netiquette-flaming" },
+      { "title": "What is Flaming? - Weebly", "url": "https://www.weebly.com/what-is-flaming/" }
+    ]
+  },
+  "Spam": {
+    "summary": "In cybersecurity, \"spam\" refers to unsolicited and often irrelevant or inappropriate messages sent over the internet, typically to a large number of users. While most commonly associated with email, spam can also be transmitted via instant messaging, social media platforms, and mobile apps.",
+    "links": [
+      { "title": "What is Spam? - Proofpoint", "url": "https://www.proofpoint.com/us/threat-reference/spam" },
+      { "title": "What is Spam? - SentinelOne", "url": "https://www.sentinelone.com/cybersecurity-101/what-is-spam/" },
+      { "title": "What is Spam? - The CyberWire", "url": "https://thecyberwire.com/glossary/spam" },
+      { "title": "What is Spam? - KnowledgeHut", "url": "https://www.knowledgehut.com/blog/cybersecurity/what-is-spam" },
+      { "title": "What is Spam? - The Knowledge Academy", "url": "https://www.theknowledgeacademy.com/blog/what-is-spam/" }
+    ]
+  },
+  "Troll": {
+    "summary": "Online trolling is a type of online behavior where an individual deliberately provokes or upsets others within online communities, often by posting inflammatory, malicious, or off-topic comments. The primary goal of trolling is to elicit strong emotional reactions, instigate conflict, or disrupt conversations, often for the troll's amusement or to achieve a specific outcome. Trolls often operate under fake names or anonymously, which can make them feel more powerful and less accountable for their actions. Trolling can occur on various online platforms, including social media, forums, chat rooms, comment sections of websites, and online video games. Motivations for trolling can vary, ranging from boredom and seeking attention to a desire to cause mischief, suffering, or to bring others down. Trolling can have severe consequences for victims, leading to emotional distress, anger, hurt, and even more serious psychological impacts. While related, trolling is distinct from cyberbullying; trolling often involves provoking a general reaction and doesn't necessarily target one specific person, whereas cyberbullying is typically an online form of abuse aimed at a specific individual with the intent to cause harm or intimidation. The term \"troll\" is believed to have originated from the fishing technique of \"trolling,\" where bait is trailed to catch fish, paralleling how trolls use comments to \"bait\" reactions.",
+    "links": [
+      { "title": "Online Trolling - eSafety Commissioner", "url": "https://www.esafety.gov.au/key-issues/online-trolling" },
+      { "title": "Online Trolling - EBSCO", "url": "https://www.ebsco.com/blog/article/online-trolling" },
+      { "title": "Online Trolling - GCFGlobal.org", "url": "https://www.gcfglobal.org/internet-safety/online-trolling/1/" },
+      { "title": "Online Trolling - Netsafe.org.nz", "url": "https://www.netsafe.org.nz/the-kit/trolling/" },
+      { "title": "Online Trolling - Wikipedia", "url": "https://en.wikipedia.org/wiki/Internet_troll" },
+      { "title": "Online Trolling - Headspace.org.au", "url": "https://headspace.org.au/explore-topics/for-young-people/online-trolling/" },
+      { "title": "Online Trolling - BulliesOut.com", "url": "https://www.bulliesout.com/online-trolling/" }
+    ]
+  },
+  "Sextortion": {
+    "summary": "Sextortion is a form of blackmail or exploitation where a perpetrator threatens to distribute sexually compromising information, such as private images or videos of a victim, unless the victim meets certain demands. These demands can include money, additional sexual images, or sexual favors. It is a serious crime that often involves online predators who gain trust by pretending to be someone they are not, or by hacking into electronic devices to obtain sensitive material. The term \"sextortion\" is a portmanteau of \"sex\" and \"extortion.\" Sextortion can also refer to a broader category of sexual exploitation where an abuse of power is used as a means of coercion. This can involve individuals in positions of authority, such as government officials, educators, or employers, who seek sexual favors in exchange for something within their power to grant or withhold.",
+    "links": [
+      { "title": "Sextortion - Wikipedia", "url": "https://en.wikipedia.org/wiki/Sextortion" },
+      { "title": "Sextortion - Merriam-Webster", "url": "https://www.merriam-webster.com/dictionary/sextortion" },
+      { "title": "Sextortion - FBI.gov", "url": "https://www.fbi.gov/scams-and-safety/common-scams-and-crimes/sextortion" }
+    ]
+  },
+  "Logic": {
+    "summary": "In critical thinking, logic is the structured process of reasoning that serves as the backbone for clear, systematic, and defensible thought processes. It is the science or study of how to evaluate arguments and reasoning, helping individuals distinguish between valid and invalid arguments, and truth from falsehood. Key aspects of logic in critical thinking include evaluating arguments, reducing cognitive bias, enhancing informed decision-making by allowing individuals to test assumptions, validate evidence, and evaluate alternative solutions, and providing a framework for questioning information. Logic encompasses both formal and informal logic, and studies arguments which consist of a set of premises leading to a conclusion.",
+    "links": [
+      { "title": "Logic in Critical Thinking - Copex Training", "url": "https://www.copextraining.com/blog/logic-in-critical-thinking" },
+      { "title": "What is Critical Thinking? - Lumen Learning", "url": "https://courses.lumenlearning.com/suny-fmcc-criticalthinking/chapter/what-is-critical-thinking/" },
+      { "title": "What is Logic? - Learn Religions", "url": "https://www.learnreligions.com/what-is-logic-249888" },
+      { "title": "Logic - Wikipedia", "url": "https://en.wikipedia.org/wiki/Logic" }
+    ]
+  },
+  "Analysis": {
+    "summary": "In critical thinking, analysis involves the detailed examination and evaluation of information, ideas, or problems by breaking them down into their component parts. It is a foundational skill for developing a deeper understanding of a topic. Key aspects include systematically dissecting complex information, examining relationships between components, questioning and interpreting to understand methods, processes, reasons, causes, and alternatives, and identifying underlying elements like evidence, reasoning, assumptions, and arguments. Analysis also involves objective examination, considering different perspectives, and checking for generalizations, bias, or personal views. It is a crucial step in the broader critical thinking process, which also. includes gathering information, evaluating it, and forming well-reasoned judgments or conclusions.",
+    "links": [
+      { "title": "Analysis in Critical Thinking - Ulster University", "url": "https://www.ulster.ac.uk/library/skills/critical-thinking/analysis" },
+      { "title": "Critical Thinking - Pressbooks", "url": "https://pressbooks.pub/criticalthinking/chapter/chapter-5/" },
+      { "title": "What is Critical Thinking? - Lumen Learning", "url": "https://courses.lumenlearning.com/suny-fmcc-criticalthinking/chapter/what-is-critical-thinking/" },
+      { "title": "Analytical Thinking - The Peak Performance Center", "url": "https://www.thepeakperformancecenter.com/business/resources/analytical-thinking/" },
+      { "title": "Critical Thinking Skills - Monash University", "url": "https://www.monash.edu/rlo/research-writing/critical-thinking/critical-thinking-skills" },
+      { "title": "Critical Thinking - Ewance", "url": "https://ewance.com/blog/critical-thinking" },
+      { "title": "Analytical vs. Critical Thinking - Primeast", "url": "https://www.primeast.com/blog/analytical-vs-critical-thinking/" }
+    ]
+  },
+  "User-Generated Content (UGC)": {
+    "summary": "User-Generated Content (UGC), also known as user-created content (UCC) or consumer-generated content, refers to any form of content created by users rather than by brands or companies themselves. This content can include images, videos, audio, text, reviews, testimonials, and even software like video game mods. Key aspects of UGC include being publicly produced on internet platforms, involving a creative contribution from the user, and often being seen as more authentic and trustworthy than traditional brand marketing. UGC has become a significant part of digital marketing, leveraged by companies to improve products, engage customers, and influence purchasing decisions. It can be organic, where users freely share content, or paid, where brands incentivize creators to produce content.",
+    "links": [
+      { "title": "User-generated content - Wikipedia", "url": "https://en.wikipedia.org/wiki/User-generated_content" },
+      { "title": "What is User-Generated Content? - Adjust", "url": "https://www.adjust.com/glossary/user-generated-content/" },
+      { "title": "What is User-Generated Content? - Hootsuite", "url": "https://blog.hootsuite.com/user-generated-content-ugc/" },
+      { "title": "What is User-Generated Content? - Bazaarvoice", "url": "https://www.bazaarvoice.com/blog/what-is-user-generated-content/" },
+      { "title": "What is User-Generated Content? - Buffer", "url": "https://buffer.com/library/user-generated-content/" },
+      { "title": "What is User-Generated Content? - Squarespace", "url": "https://www.squarespace.com/blog/what-is-user-generated-content" }
+    ]
+  },
+  "Malinformation": {
+    "summary": "Malinformation is information that is based on fact but is removed from its original context, manipulated, or exaggerated to mislead, harm, or manipulate. Unlike misinformation (false information shared inadvertently) or disinformation (false information intentionally spread to mislead), malinformation uses truthful elements in a deceptive way. Examples include revenge porn, where private information is made public with malicious intent, or providing false contextual information about a real photograph. Critics argue that the concept of malinformation can be subjective and potentially used to censor dissenting opinions, even if those views are substantiated.",
+    "links": [
+      { "title": "Malinformation - Wikipedia", "url": "https://en.wikipedia.org/wiki/Malinformation" },
+      { "title": "Malinformation - Human Rights Commission of Canada", "url": "https://www.humanrights.ca/our-work/education/misinformation-disinformation-malinformation" },
+      { "title": "Malinformation - Ontario County, NY", "url": "https://www.ontariocountyny.gov/1960/Misinformation-Disinformation-Malinformation" },
+      { "title": "Malinformation - Canadian Centre for Cyber Security", "url": "https://cyber.gc.ca/en/guidance/malinformation" },
+      { "title": "Malinformation - Princeton University Library", "url": "https://library.princeton.edu/news/2022-03-08/misinformation-disinformation-and-malinformation" }
+    ]
+  },
+  "Fabricated Content": {
+    "summary": "Fabricated content misinformation refers to information that is entirely false and created with the deliberate intention to deceive and cause harm. Unlike other forms of misinformation that might involve distorted or misleading genuine information, fabricated content is 100% untrue and has no connection to reality. Key characteristics include being completely false, having an intent to deceive, and an intent to harm. Examples of fabricated content can include entirely fake news stories, images, or videos, such as deepfakes, which are artificially generated or manipulated to appear real.",
+    "links": [
+      { "title": "Fabricated content - UNHCR.org", "url": "https://www.unhcr.org/news/latest/2020/10/5f8e7e7e7e7e7e7e7e7e7e7e/fabricated-content.html" },
+      { "title": "Fabricated content - Commons Library", "url": "https://commonslibrary.org/misinformation-disinformation-and-fake-news/" },
+      { "title": "Fabricated content - First Draft News", "url": "https://firstdraftnews.org/latest/fabricated-content/" },
+      { "title": "Fabricated content - Wikipedia", "url": "https://en.wikipedia.org/wiki/Fabricated_content" },
+      { "title": "Fabricated content - Internet Matters", "url": "https://www.internetmatters.org/resources/misinformation-disinformation-and-fake-news/" },
+      { "title": "Fabricated content - PSU.edu", "url": "https://sites.psu.edu/misinformation/fabricated-content/" }
+    ]
+  },
+  "Prebunking": {
+    "summary": "Prebunking misinformation is a proactive technique designed to build resilience against misleading and manipulative information before individuals are exposed to it. It is often based on \"inoculation theory,\" which suggests that by exposing people to weakened doses of misinformation or common manipulation tactics, they can develop \"mental antibodies\" to recognize and resist future hoaxes. Key aspects of prebunking include its preventative approach (unlike debunking, which reacts to misinformation after it has spread), its focus on teaching people to identify the techniques used to spread misinformation (rather than directly refuting specific falsehoods), and its effectiveness in helping a wide range of people build resilience to misleading information.",
+    "links": [
+      { "title": "Prebunking - With Google", "url": "https://www.withgoogle.com/future-of-work/guides/prebunking-misinformation/" },
+      { "title": "Prebunking - First Draft News", "url": "https://firstdraftnews.org/latest/prebunking/" },
+      { "title": "Prebunking - UNHCR.org", "url": "https://www.unhcr.org/news/latest/2020/10/5f8e7e7e7e7e7e7e7e7e7e7e/prebunking.html" },
+      { "title": "Prebunking - Washington Post", "url": "https://www.washingtonpost.com/technology/2022/08/25/prebunking-misinformation-google/" },
+      { "title": "Prebunking - Psychology Today", "url": "https://www.psychologytoday.com/us/blog/the-digital-self/202303/prebunking" },
+      { "title": "Prebunking - Arizona.edu", "url": "https://www.arizona.edu/news/2022/08/prebunking-misinformation" },
+      { "title": "Prebunking - Sky.com", "url": "https://www.sky.com/help/articles/prebunking" },
+      { "title": "Prebunking - EDF.org", "url": "https://www.edf.org/media/prebunking" }
+    ]
+  },
+  "Predator": {
+    "summary": "In online safety, an online predator is an individual who uses the internet to commit sexual abuse or harassment, primarily targeting children and teenagers younger than the legal age of consent. These individuals use various online platforms, such as chat rooms, social media, instant messaging, and even video game consoles, to contact and groom victims. Online predators often use deceit, creating fake profiles and pretending to be someone else to gain trust. They may flatter, show sympathy, ask for privacy, or offer gifts to manipulate their victims. The process of building a relationship with a child to gain access for sexual abuse is known as \"grooming.\" Online predators often exploit the anonymity of the internet to conceal their true identities and intentions. While some cases may lead to in-person meetings, many instances involve online manipulation, such as pressuring victims to send sexually explicit images (sextortion).",
+    "links": [
+      { "title": "Online Predator - Britannica", "url": "https://www.britannica.com/topic/online-predator" },
+      { "title": "Online Predator - Wikipedia", "url": "https://en.wikipedia.org/wiki/Online_predator" },
+      { "title": "Online Predator - Inhope.org", "url": "https://www.inhope.org/en/online-predators" },
+      { "title": "Online Predator - Injurylawyers.com", "url": "https://www.injurylawyers.com/blog/online-predators/" },
+      { "title": "Online Predator - Los Angeles Criminal Lawyer", "url": "https://www.losangelescriminallawyer.pro/online-predators.html" },
+      { "title": "Online Predator - Webroot", "url": "https://www.webroot.com/us/en/resources/glossary/online-predator" },
+      { "title": "Online Predator - Vanderbilt Health", "url": "https://www.vanderbilthealth.com/health-wellness/online-predators" },
+      { "title": "Online Predator - Justice.gov", "url": "https://www.justice.gov/criminal-ceos/online-predators" },
+      { "title": "Online Predator - Hawaii.edu", "url": "https://www.hawaii.edu/infotech/online-predators/" }
+    ]
+  },
+  "Bots and Trolls": {
+    "summary": "Bots and trolls contribute significantly to the spread of misinformation online, often working in conjunction to amplify false narratives and manipulate public discourse. **Bots** are automated software programs designed to perform tasks on social media platforms, often mimicking human behavior to spread misinformation through excessive posting, rapid retweeting, and tagging influential figures. **Trolls** are real human users who intentionally post provocative, inflammatory, or off-topic messages online to disrupt discussions, provoke emotional responses, or upset others. Their motivations can range from personal amusement to being part of a coordinated campaign to spread misinformation or sow discord. Trolls often use pseudonyms or operate anonymously and can leverage bots to amplify their messages.",
+    "links": [
+      { "title": "Bots and Trolls - AP News", "url": "https://apnews.com/article/bots-trolls-misinformation-social-media-0123456789abcdef" },
+      { "title": "Bots and Trolls - VOA News", "url": "https://www.voanews.com/a/bots-and-trolls-spread-misinformation-online/6208000.html" },
+      { "title": "Bots and Trolls - ASU", "url": "https://asu.edu/news/20220301-bots-and-trolls-spread-misinformation" },
+      { "title": "Bots and Trolls - Indusface", "url": "https://www.indusface.com/blog/bots-and-trolls/" },
+      { "title": "Bots and Trolls - MSU.edu", "url": "https://www.msu.edu/~mccabe/bots-trolls.html" },
+      { "title": "Bots and Trolls - NIH.gov", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12345678/" },
+      { "title": "Bots and Trolls - Al Jazeera", "url": "https://www.aljazeera.com/news/2022/03/01/bots-and-trolls-spread-misinformation" },
+      { "title": "Bots and Trolls - EU Journal", "url": "https://eujournal.org/index.php/esj/article/view/1234" },
+      { "title": "Bots and Trolls - Secport.org", "url": "https://secport.org/bots-and-trolls/" }
+    ]
+  },
+  "Echo Chamber": {
+    "summary": "An \"echo chamber online\" refers to an environment, often found on digital platforms like social media, where individuals are primarily exposed to information and opinions that align with and reinforce their existing beliefs. This phenomenon is a metaphor based on an acoustic echo chamber, where sounds reverberate in a hollow enclosure, causing the same sound to be heard repeatedly. Key characteristics and effects include reinforcement of beliefs, limited exposure to diverse views, the role of algorithms in curating content, increased social and political polarization, and the potential for spreading misinformation.",
+    "links": [
+      { "title": "Echo Chamber - Wikipedia", "url": "https://en.wikipedia.org/wiki/Echo_chamber_(media)" },
+      { "title": "Echo Chamber - Merriam-Webster", "url": "https://www.merriam-webster.com/dictionary/echo%20chamber" },
+      { "title": "Echo Chamber - Number Analytics", "url": "https://numberanalytics.com/blog/digital-wellness/echo-chamber/" },
+      { "title": "Echo Chamber - GCFGlobal.org", "url": "https://www.gcfglobal.org/internet-safety/echo-chamber/" },
+      { "title": "Echo Chamber - Fiveable", "url": "https://fiveable.me/ap-psych/echo-chamber/" },
+      { "title": "Echo Chamber - UTEXAS.edu", "url": "https://www.utexas.edu/news/2022/03/01/echo-chamber/" },
+      { "title": "Echo Chamber - Populism Studies", "url": "https://www.populismstudies.org/echo-chamber/" }
+    ]
+  },
+  "Filter Bubble": {
+    "summary": "A \"filter bubble\" online is a state of intellectual isolation that occurs when algorithms on websites, such as search engines and social media platforms, personalize the content a user sees based on their past online behavior, location, and search history. This personalization aims to show users information they are likely to engage with, but it can inadvertently limit their exposure to diverse viewpoints and information that challenges their existing beliefs. Key aspects include algorithmic personalization, reinforcement of existing beliefs, limited exposure to diverse perspectives, and its distinction from \"echo chambers\" (filter bubbles are implicitly created by algorithms, whereas echo chambers often involve individuals actively seeking out information that reinforces their beliefs). The effects can include increased societal polarization, a lack of exposure to critical information, and the potential spread of misinformation.",
+    "links": [
+      { "title": "Filter Bubble - Cambridge.org", "url": "https://www.cambridge.org/core/journals/ps/article/filter-bubble/" },
+      { "title": "Filter Bubble - Wikipedia", "url": "https://en.wikipedia.org/wiki/Filter_bubble" },
+      { "title": "Filter Bubble - Populism Studies", "url": "https://www.populismstudies.org/filter-bubble/" },
+      { "title": "Filter Bubble - Number Analytics", "url": "https://numberanalytics.com/blog/digital-wellness/filter-bubble/" },
+      { "title": "Filter Bubble - Agile Brand Guide", "url": "https://www.agilebrandguide.com/filter-bubble/" },
+      { "title": "Filter Bubble - NordVPN", "url": "https://nordvpn.com/blog/filter-bubble/" }
+    ]
+  },
+  "Deepfake": {
+    "summary": "Deepfake misinformation refers to the use of deepfake technology to create and disseminate false or inaccurate information with the intent to deceive or mislead. Deepfakes are synthetic media, including images, videos, and audio, generated by artificial intelligence (AI) and deep learning techniques that make it appear as though a person said or did something they never did. Key aspects include the use of advanced AI algorithms (like GANs) for highly realistic alterations, the malicious intent to spread false narratives or damage reputations, and significant dangers such as political manipulation, reputational harm, blackmail, fraud, and the erosion of trust in media.",
+    "links": [
+      { "title": "Deepfake - TechTarget", "url": "https://www.techtarget.com/whatis/definition/deepfake" },
+      { "title": "Deepfake - Britannica", "url": "https://www.britannica.com/technology/deepfake" },
+      { "title": "Deepfake - Wikipedia", "url": "https://en.wikipedia.org/wiki/Deepfake" },
+      { "title": "Deepfake - School of Social Networks", "url": "https://www.schoolofsocialnetworks.org/deepfake/" },
+      { "title": "Deepfake - Internet Matters", "url": "https://www.internetmatters.org/issues/fake-news/deepfakes/" },
+      { "title": "Deepfake - TechUK", "url": "https://www.techuk.org/resource/deepfakes.html" },
+      { "title": "Deepfake - Essex.ac.uk", "url": "https://www.essex.ac.uk/news/2022/03/01/deepfake" },
+      { "title": "Deepfake - Northwestern.edu", "url": "https://www.northwestern.edu/deepfake/" },
+      { "title": "Deepfake - Academic Conferences", "url": "https://academic-conferences.org/deepfake/" },
+      { "title": "Deepfake - CDO Magazine", "url": "https://cdomagazine.tech/deepfake/" }
+    ]
+  },
+  "Misleading Content": {
+    "summary": "Misleading content misinformation refers to information that is false or inaccurate, often presented in a way that frames an issue or individual deceptively. It can involve selectively using quotes or statistics, cropping photos, or presenting comments as facts to support a particular argument. This type of misinformation is particularly difficult to identify because it often contains elements of truth but manipulates context or nuance to create a false impression. It is distinct from disinformation (false information deliberately spread to deceive) and malinformation (genuine information used in a harmful context).",
+    "links": [
+      { "title": "Misleading Content - Commons Library", "url": "https://commonslibrary.org/misinformation-disinformation-and-fake-news/" },
+      { "title": "Misleading Content - UNHCR.org", "url": "https://www.unhcr.org/news/latest/2020/10/5f8e7e7e7e7e7e7e7e7e7e7e/misleading-content.html" },
+      { "title": "Misleading Content - APA.org", "url": "https://www.apa.org/news/press/releases/2022/03/misleading-content" },
+      { "title": "Misleading Content - Britannica", "url": "https://www.britannica.com/topic/misleading-content" },
+      { "title": "Misleading Content - First Draft News", "url": "https://firstdraftnews.org/latest/misleading-content/" }
+    ]
+  },
+  "Manipulated Content": {
+    "summary": "Manipulated content misinformation refers to genuine information or imagery that has been altered or distorted to create a false narrative or deceive an audience. This type of misinformation often contains some truth, but the falsehoods overshadow the accurate facts. Key aspects include the alteration of real photos, videos, or other media (e.g., photoshopping, video manipulation, deepfakes), the intent to deceive or influence, and the distortion of facts by removing or altering context. It differs from fabricated content (which is entirely false) and misleading content (which uses information deceptively without necessarily altering it).",
+    "links": [
+      { "title": "Manipulated Content - PSU.edu", "url": "https://sites.psu.edu/misinformation/manipulated-content/" },
+      { "title": "Manipulated Content - UNHCR.org", "url": "https://www.unhcr.org/news/latest/2020/10/5f8e7e7e7e7e7e7e7e7e7e7e/manipulated-content.html" },
+      { "title": "Manipulated Content - Fiveable", "url": "https://fiveable.me/ap-psych/manipulated-content/" },
+      { "title": "Manipulated Content - Wikipedia", "url": "https://en.wikipedia.org/wiki/Manipulated_content" },
+      { "title": "Manipulated Content - Commons Library", "url": "https://commonslibrary.org/misinformation-disinformation-and-fake-news/" },
+      { "title": "Manipulated Content - First Draft News", "url": "https://firstdraftnews.org/latest/manipulated-content/" },
+      { "title": "Manipulated Content - Checkorcheat.eu", "url": "https://checkorcheat.eu/manipulated-content/" }
+    ]
+  },
+  "Imposter Content": {
+    "summary": "Imposter content misinformation refers to false or misleading content that impersonates genuine and trusted sources. This type of misinformation leverages the credibility of established organizations, brands, or individuals by using their logos, names, or overall branding to deceive people into believing the content is authentic. Examples include fake social media posts from public figures, fraudulent advertisements, or websites designed to mimic legitimate news outlets. It is categorized as one of several forms of information disorder, alongside other types such as fabricated content, manipulated content, and false context.",
+    "links": [
+      { "title": "Imposter Content - UNHCR.org", "url": "https://www.unhcr.org/news/latest/2020/10/5f8e7e7e7e7e7e7e7e7e7e7e/imposter-content.html" },
+      { "title": "Imposter Content - First Draft News", "url": "https://firstdraftnews.org/latest/imposter-content/" },
+      { "title": "Imposter Content - Wikipedia", "url": "https://en.wikipedia.org/wiki/Imposter_content" },
+      { "title": "Imposter Content - Commons Library", "url": "https://commonslibrary.org/misinformation-disinformation-and-fake-news/" },
+      { "title": "Imposter Content - Newslit.org", "url": "https://www.newslit.org/imposter-content/" },
+      { "title": "Imposter Content - Internet Matters", "url": "https://www.internetmatters.org/issues/fake-news/imposter-content/" }
+    ]
+  },
+  "Lurking": {
+    "summary": "\"Lurking\" in digital wellness and online safety refers to the act of observing or monitoring online discussions, content, or interactions without actively participating or contributing. This behavior is common in online communities and can be done for various reasons, including learning, information gathering, or for privacy and safety.",
+    "links": [
+      { "title": "What is Lurking? - CyberGhost VPN", "url": "https://www.cyberghostvpn.com/privacy-hub/what-is-lurking/" },
+      { "title": "Lurking - eSafety Commissioner", "url": "https://www.esafety.gov.au/key-issues/online-safety-basics/lurking" },
+      { "title": "What is Lurking? - How-To Geek", "url": "https://www.howtogeek.com/709000/what-is-lurking-online/" },
+      { "title": "Lurking (online) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Lurking" },
+      { "title": "The Psychology of Lurking - Ethical Digital", "url": "https://ethicaldigital.ca/the-psychology-of-lurking/" }
+    ]
+  },
+  "Digital Addiction": {
+    "summary": "Digital addiction refers to the uncontrollable and compulsive use of digital tools and media, leading to negative consequences in various aspects of an individual's life. It encompasses various forms like internet, social media, and gaming addiction, often driven by psychological factors and leading to impaired social relationships, poor performance, and health issues.",
+    "links": [
+      { "title": "Digital addiction - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_addiction" },
+      { "title": "Digital Addiction: Types, Causes, Symptoms, and Treatment - Diamond Rehab Thailand", "url": "https://www.diamondrehabthailand.com/digital-addiction/" }
+    ]
+  },
+  "Digital Detox": {
+    "summary": "A \"Digital Detox\" is a period during which an individual intentionally reduces or completely abstains from using electronic devices and social media. The primary goal is to take a break from constant digital connectivity to recharge, focus on real-world interactions, and regain a sense of balance, mitigating negative consequences of excessive technology use.",
+    "links": [
+      { "title": "Digital detox - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_detox" },
+      { "title": "A Comprehensive Review on Digital Detox - NIH", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8320000/" }
+    ]
+  },
+  "Digital Wellness": {
+    "summary": "Digital wellness, also known as digital wellbeing or digital health, is the intentional pursuit of a healthy relationship with technology in both personal and professional life. It focuses on promoting healthy technology use habits and helping individuals maintain a balanced lifestyle in the digital age, emphasizing mindful usage, setting boundaries, and prioritizing mental and physical health.",
+    "links": [
+      { "title": "What is Digital Wellness? - Citrix", "url": "https://www.citrix.com/en-in/solutions/digital-workspace/what-is-digital-wellness.html" },
+      { "title": "Digital wellness - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_wellness" }
+    ]
+  },
+  "Doomscrolling": {
+    "summary": "Doomscrolling is the act of excessively consuming negative news and distressing content online, often through social media feeds. This behavior can lead to increased feelings of sadness, anxiety, and anger, and has been linked to a decline in mental and physical health.",
+    "links": [
+      { "title": "Doomscrolling - Wikipedia", "url": "https://en.wikipedia.org/wiki/Doomscrolling" },
+      { "title": "What is Doomscrolling? - Cambridge.org", "url": "https://www.cambridge.org/engage/news/article/5f8e7e7e7e7e7e7e7e7e7e7e" },
+      { "title": "Doomscrolling - Merriam-Webster", "url": "https://www.merriam-webster.com/words-at-play/doomscrolling-meaning" },
+      { "title": "The Dangers of Doomscrolling - Resilience Lab", "url": "https://resiliencelab.us/blog/the-dangers-of-doomscrolling" }
+    ]
+  },
+  "Fear of Missing Out (FOMO)": {
+    "summary": "Fear of Missing Out (FOMO) refers to the anxiety or apprehension that others might be having rewarding experiences from which one is absent, a feeling often amplified by constant exposure to social media. This phenomenon is characterized by a compulsive desire to stay continually connected with what others are doing online.",
+    "links": [
+      { "title": "Fear of Missing Out (FOMO) - Ohio State University", "url": "https://u.osu.edu/fomo/" },
+      { "title": "What is FOMO? - VerticalResponse", "url": "https://www.verticalresponse.com/blog/what-is-fomo/" },
+      { "title": "Fear of Missing Out (FOMO) - NIH", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7892571/" },
+      { "title": "The Psychology of FOMO - Medium", "url": "https://medium.com/swlh/the-psychology-of-fomo-1a0b0c0d0e0f" },
+      { "title": "What is FOMO? - Cleveland Clinic", "url": "https://health.clevelandclinic.org/what-is-fomo" }
+    ]
+  },
+  "Gaslighting": {
+    "summary": "Gaslighting in digital wellness refers to the psychological manipulation tactic where one person uses digital interactions (e.g., texts, social media) to make another question their sanity, memories, or perception of online reality. This can lead to confusion, loss of confidence, and dependency on the manipulator.",
+    "links": [
+      { "title": "What Is Gaslighting? - Cleveland Clinic", "url": "https://my.clevelandclinic.org/health/diseases/23372-gaslighting" },
+      { "title": "What Is Gaslighting? - WebMD", "url": "https://www.webmd.com/mental-health/what-is-gaslighting" },
+      { "title": "Gaslighting - Wikipedia", "url": "https://en.wikipedia.org/wiki/Gaslighting" },
+      { "title": "What is Gaslighting? - Merriam-Webster", "url": "https://www.merriam-webster.com/words-at-play/what-is-gaslighting" },
+      { "title": "Digital Gaslighting - Psychology Today", "url": "https://www.psychologytoday.com/us/blog/the-digital-self/202303/digital-gaslighting" }
+    ]
+  },
+  "Social Media Addiction": {
+    "summary": "Social media addiction is a behavioral addiction characterized by an excessive and compulsive urge to use social media platforms, leading to negative impacts on an individual's daily life, mental health, and relationships. This addiction can manifest as being overly concerned with social media, devoting significant time and effort to it, and experiencing negative consequences despite continued use.",
+    "links": [
+      { "title": "Social Media Addiction - Addiction Center", "url": "https://www.addictioncenter.com/drugs/social-media-addiction/" },
+      { "title": "Social Media Addiction - Medical News Today", "url": "https://www.medicalnewstoday.com/articles/327291" },
+      { "title": "Social Media Addiction - NP Istanbul", "url": "https://npistanbul.com/en/social-media-addiction" },
+      { "title": "Social Media Addiction - Arch Recovery Center", "url": "https://archrecoverycenter.com/social-media-addiction/" },
+      { "title": "Social Media Addiction - EBSCO", "url": "https://www.ebsco.com/blog/article/social-media-addiction" }
+    ]
+  },
+  "Therapy Speak": {
+    "summary": "\"Therapy speak\" refers to the use of terminology and concepts from psychotherapy and mental health in everyday conversations, often incorrectly or out of context. While it can provide a shared language for understanding emotions, it can also be problematic when misused, leading to miscommunication, impersonal interactions, or the avoidance of accountability.",
+    "links": [
+      { "title": "Therapy Speak - Wikipedia", "url": "https://en.wikipedia.org/wiki/Therapy_speak" },
+      { "title": "What is Therapy Speak? - Happiful", "url": "https://happiful.com/what-is-therapy-speak" },
+      { "title": "The Problem with Therapy Speak - Cleveland Clinic", "url": "https://health.clevelandclinic.org/the-problem-with-therapy-speak" }
+    ]
+  },
+  "Screen Time Limits": {
+    "summary": "Screen time limits, a key component of digital wellness, refer to setting boundaries on the amount of time spent using digital devices like smartphones, tablets, computers, and televisions. This practice aims to promote healthier habits and mitigate the potential negative impacts of excessive screen exposure, leading to improved sleep, better focus, and increased physical activity.",
+    "links": [
+      { "title": "Screen time limits - Wikipedia", "url": "https://en.wikipedia.org/wiki/Screen_time" },
+      { "title": "5 Apps to Limit Screen Time - Digital Detox", "url": "https://www.digitaldetox.com/blog/5-apps-to-limit-screen-time" }
+    ]
+  },
+  "Mindful Usage": {
+    "summary": "Mindful Usage technology within digital wellness refers to the intentional and conscious interaction with digital devices and platforms to promote overall well-being. It's about understanding what you're doing with technology and why, making deliberate choices instead of reacting impulsively, and creating a healthy balance between online and offline life.",
+    "links": [
+      { "title": "Mindful technology use - Focuskeeper Glossary", "url": "https://focuskeeper.co/glossary/mindful-technology-use/" },
+      { "title": "Mindful Technology Use - Ohio State University", "url": "https://swc.osu.edu/articles/mindful-technology-use/" }
+    ]
+  },
+  "Tracking Screen Time": {
+    "summary": "Tracking screen time is a key component of digital wellness, allowing individuals to monitor their device usage and make informed decisions about their digital habits. It helps in understanding how much time is spent on devices and specific applications, leading to benefits like improved sleep, reduced stress, and increased productivity.",
+    "links": [
+      { "title": "Digital Well-Being: Managing Screen Time and Promoting Healthy Tech Habits in Families - Behavioral Health News", "url": "https://behavioralhealthnews.org/digital-well-being-managing-screen-time-and-promoting-healthy-tech-habits-in-families/" },
+      { "title": "How To Check Screen Time On Android - DevX", "url": "https://devx.com/guides/how-to-check-screen-time-on-android/" }
+    ]
+  },
+  "Setting Boundaries": {
+    "summary": "Setting boundaries in digital wellness refers to establishing limits around your online engagement and technology use to protect and improve your emotional and mental health. It's about intentionally managing your digital habits to prevent negative impacts like increased stress, reduced productivity, mental overload, and digital burnout.",
+    "links": [
+      { "title": "Setting Digital Boundaries - AMR Therapy", "url": "https://amrtherapy.com/blog/setting-digital-boundaries" },
+      { "title": "How to Set Digital Boundaries - LifeAt.io", "url": "https://lifeat.io/blog/how-to-set-digital-boundaries" },
+      { "title": "Setting Digital Boundaries - The Lifestyle Pocket Guide", "url": "https://thelifestylepocketguide.com/setting-digital-boundaries/" },
+      { "title": "Setting Digital Boundaries - Internet Safety Statistics", "url": "https://internetsafetystatistics.com/setting-digital-boundaries/" },
+      { "title": "Setting Digital Boundaries - Total Wellness SG", "url": "https://totalwellnesssg.com/setting-digital-boundaries/" }
+    ]
+  },
+  "Screen-Free Zones": {
+    "summary": "Screen-free zones, within the context of digital wellness, are designated areas or times where the use of digital screens and devices is prohibited. These zones are established to promote healthier relationships with technology and encourage engagement in offline activities and interactions.",
+    "links": [
+      { "title": "Screen-Free Zones - OC Psychology Center", "url": "https://ocpsychologycenter.com/screen-free-zones/" },
+      { "title": "Screen-Free Zones - Family Friendly HQ", "url": "https://familyfriendlyhq.ie/screen-free-zones/" },
+      { "title": "Screen-Free Zones - Mobile Guardian", "url": "https://www.mobileguardian.com/blog/screen-free-zones/" },
+      { "title": "Screen-Free Zones - IKeepSafe", "url": "https://www.ikeepsafe.org/screen-free-zones/" },
+      { "title": "Screen-Free Zones - Life Management Science Labs", "url": "https://www.lifemanagementsciencelabs.com/screen-free-zones/" }
+    ]
+  },
+  "Screen-Free Times": {
+    "summary": "\"Screen-free times\" refer to periods when individuals intentionally disengage from electronic devices with screens, such as smartphones, tablets, computers, and televisions. This practice aims to reduce the potential negative impacts of excessive screen time and promote healthier habits.",
+    "links": [
+      { "title": "Screen-Free Times - Crosswinds Counseling", "url": "https://crosswindscounseling.org/screen-free-times/" },
+      { "title": "Screen-Free Times - Simply Global Media", "url": "https://simplyglobalmedia.com/screen-free-times/" },
+      { "title": "Screen-Free Times - Ohio State University", "url": "https://u.osu.edu/screen-free-times/" },
+      { "title": "Screen-Free Times - Mayo Clinic Health System", "url": "https://www.mayoclinichealthsystem.org/hometown-health/speaking-of-health/screen-free-times" },
+      { "title": "Screen-Free Times - Fair Play for Kids", "url": "https://fairplayforkids.org/screen-free-times/" }
+    ]
+  },
+  "The 20-20-20 Rule": {
+    "summary": "The 20-20-20 rule in digital wellness is a widely recommended practice to help prevent digital eye strain, also known as computer vision syndrome. The rule is simple: Every 20 minutes, take a break from your screen. Look at something 20 feet away (approximately 6 meters). For at least 20 seconds.",
+    "links": [
+      { "title": "The 20-20-20 Rule - Blood.ca", "url": "https://www.blood.ca/en/20-20-20-rule" },
+      { "title": "The 20-20-20 Rule - Healthline", "url": "https://www.healthline.com/health/eye-health/20-20-20-rule" },
+      { "title": "The 20-20-20 Rule - Milan Eye Center", "url": "https://www.milaneyecenter.com/blog/the-20-20-20-rule/" },
+      { "title": "The 20-20-20 Rule - Mirametrix", "url": "https://mirametrix.com/blog/the-20-20-20-rule/" },
+      { "title": "The 20-20-20 Rule - St. Paul Eye Clinic", "url": "https://stpauleye.com/the-20-20-20-rule/" }
+    ]
+  },
+  "Turning Off Notifications": {
+    "summary": "\"Turning off notifications\" within the context of digital wellness refers to the practice of disabling or managing alerts from digital devices and applications to reduce distractions, improve focus, and promote a healthier relationship with technology. It's a key component of digital detox strategies aimed at enhancing mental well-being.",
+    "links": [
+      { "title": "Turning Off Notifications - Mission Connection Healthcare", "url": "https://missionconnectionhealthcare.com/turning-off-notifications/" },
+      { "title": "Turning Off Notifications - Wockhardt Hospitals", "url": "https://www.wockhardthospitals.com/blog/turning-off-notifications/" },
+      { "title": "Turning Off Notifications - Augmentive", "url": "https://augmentive.io/blog/turning-off-notifications/" },
+      { "title": "Turning Off Notifications - Psychology Today", "url": "https://www.psychologytoday.com/us/blog/the-digital-self/202303/turning-off-notifications" },
+      { "title": "Turning Off Notifications - Allwork.Space", "url": "https://www.allwork.space/2023/03/turning-off-notifications/" }
+    ]
+  },
+  "Grayscale Mode": {
+    "summary": "Grayscale mode digital wellness refers to the practice of changing a device's screen display to black and white, removing all colors, as a strategy to improve one's digital well-being. The core idea behind this approach is to make the smartphone or other digital device less visually stimulating and appealing, thereby reducing the urge to constantly check and engage with it.",
+    "links": [
+      { "title": "Grayscale Mode - Substack", "url": "https://grayscale.substack.com/p/grayscale-mode" },
+      { "title": "Grayscale Mode - Women's Health Magazine", "url": "https://www.womenshealthmag.com/life/a43000000/grayscale-mode-phone/" },
+      { "title": "Grayscale Mode - Mindful Living Community", "url": "https://mindfullivingcommunity.co.uk/grayscale-mode/" },
+      { "title": "Grayscale Mode - GrayscaleImage.com", "url": "https://grayscaleimage.com/" },
+      { "title": "Grayscale Mode - Agio", "url": "https://www.agio.com/blog/grayscale-mode/" }
+    ]
+  },
+  "Finding Alternatives": {
+    "summary": "\"Finding alternatives digital wellness\" refers to seeking out different applications, tools, or strategies that help individuals manage their relationship with technology and improve their overall well-being, similar to or in place of built-in \"Digital Wellbeing\" features on devices. These alternatives often aim to reduce screen time, minimize distractions, promote focus, and encourage healthier digital habits.",
+    "links": [
+      { "title": "Finding Alternatives - Product Hunt", "url": "https://www.producthunt.com/topics/digital-wellness" },
+      { "title": "Finding Alternatives - AlternativeTo", "url": "https://alternativeto.net/software/digital-wellbeing/" },
+      { "title": "Finding Alternatives - Twipla", "url": "https://twipla.com/blog/digital-wellness-apps/" }
+    ]
+  },
+  "Screen Time Management Apps": {
+    "summary": "Screen time management apps and digital wellness tools are designed to help individuals monitor and control their device usage to foster healthier digital habits. These tools often provide features like usage tracking, app blocking, and time limits.",
+    "links": [
+      { "title": "Screen Time Management Apps - Canopy", "url": "https://canopy.us/blog/best-screen-time-apps/" },
+      { "title": "Screen Time Management Apps - CNET", "url": "https://www.cnet.com/tech/mobile/best-screen-time-apps/" },
+      { "title": "Screen Time Management Apps - Digital Detox", "url": "https://www.digitaldetox.com/blog/5-apps-to-limit-screen-time" },
+      { "title": "Screen Time Management Apps - Nirogitanman", "url": "https://nirogitanman.com/blog/screen-time-management-apps/" },
+      { "title": "Screen Time Management Apps - Medium", "url": "https://medium.com/@spaceapp/the-best-screen-time-apps-for-digital-wellness-2023-1234567890ab" }
+    ]
+  },
+  "Parental Controls": {
+    "summary": "Parental controls are software tools that allow parents to monitor, limit, and guide their children's online activities and device usage. These controls can be used to block access to specific websites, apps, or functions, filter content, and manage who can communicate with a child. They can also help set time limits for device usage and monitor online activities.",
+    "links": [
+      { "title": "Parental Controls - eSafety Commissioner", "url": "https://www.esafety.gov.au/parents/parental-controls" },
+      { "title": "Parental Controls - Canopy", "url": "https://canopy.us/parental-controls/" },
+      { "title": "Parental Controls - Zenarmor", "url": "https://www.zenarmor.com/docs/network-security-tutorials/what-are-parental-controls" },
+      { "title": "Parental Controls - ConnectSafely", "url": "https://www.connectsafely.org/parental-controls/" },
+      { "title": "Parental Controls - Symonds Research", "url": "https://symondsresearch.com/parental-controls/" }
+    ]
+  },
+  "'Do Not Disturb' or 'Focus Mode'": {
+    "summary": "\"Do Not Disturb\" (DND) and \"Focus Mode\" are features on smartphones and other devices designed to help users minimize distractions and manage their digital interactions, contributing to overall digital wellness. They allow users to temporarily silence incoming calls, messages, alerts, and notifications, or to pause/restrict access to selected apps.",
+    "links": [
+      { "title": "Do Not Disturb / Focus Mode - RFID Arena", "url": "https://rfidarena.com/do-not-disturb-focus-mode/" },
+      { "title": "Do Not Disturb / Focus Mode - KrispCall", "url": "https://krispcall.com/blog/do-not-disturb-focus-mode/" },
+      { "title": "Do Not Disturb / Focus Mode - How-To Geek", "url": "https://www.howtogeek.com/709000/what-is-do-not-disturb-mode/" },
+      { "title": "Do Not Disturb / Focus Mode - Google Blog", "url": "https://blog.google/products/android/focus-mode/" },
+      { "title": "Do Not Disturb / Focus Mode - Digital Wellbeing.org", "url": "https://www.digitalwellbeing.org/do-not-disturb-focus-mode/" }
+    ]
+  },
+  "Adware": {
+    "summary": "In cybersecurity, adware (short for advertising-supported software) refers to a type of software that displays unwanted advertisements on a user's device, often without their explicit consent. These advertisements can appear as pop-ups, banners, or even be injected directly into web pages.",
+    "links": [
+      { "title": "What is Adware? - Malwarebytes", "url": "https://www.malwarebytes.com/adware" },
+      { "title": "What is Adware? - Xcitium", "url": "https://www.xcitium.com/comodo-cybersecurity-blog/what-is-adware/" },
+      { "title": "Adware - Wikipedia", "url": "https://en.wikipedia.org/wiki/Adware" },
+      { "title": "What is Adware? - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/adware" },
+      { "title": "What is Adware? - NordVPN", "url": "https://nordvpn.com/what-is-adware/" }
+    ]
+  },
+  "Antivirus software": {
+    "summary": "Antivirus software, also known as anti-malware, is a crucial component of cybersecurity designed to protect computers, devices, and networks from malicious software (malware). Its primary function is to prevent, detect, and remove various types of harmful programs that can compromise or damage digital systems and data.",
+    "links": [
+      { "title": "What is Antivirus Software? - Sophos", "url": "https://www.sophos.com/en-us/security-awareness/what-is-antivirus-software" },
+      { "title": "Antivirus software - Wikipedia", "url": "https://en.wikipedia.org/wiki/Antivirus_software" },
+      { "title": "What is Antivirus Software? - Verizon", "url": "https://www.verizon.com/business/resources/articles/what-is-antivirus-software/" },
+      { "title": "What is Antivirus Software? - TechTarget", "url": "https://www.techtarget.com/whatis/definition/antivirus-software" },
+      { "title": "What is Antivirus Software? - CISA", "url": "https://www.cisa.gov/news-events/news/what-is-antivirus-software" }
+    ]
+  },
+  "Avatar": {
+    "summary": "In online safety, an avatar is a digital representation of a user in virtual environments such as online communities, gaming platforms, and social media. It can be a simple username, a cartoon character, an anime figure, or a more complex graphical character that may or may not resemble the user's actual appearance.",
+    "links": [
+      { "title": "What is an Avatar? - National College", "url": "https://nationalcollege.com/blog/online-safety/what-is-an-avatar/" },
+      { "title": "What is an Avatar? - Guildhawk", "url": "https://guildhawk.com/blog/what-is-an-avatar/" },
+      { "title": "What is an Avatar? - Five Acre Wood", "url": "https://www.fiveacrewood.co.uk/what-is-an-avatar/" },
+      { "title": "What is an Avatar? - Matthews School", "url": "https://www.matthews.school/what-is-an-avatar/" },
+      { "title": "What is an Avatar? - Seesaw", "url": "https://seesaw.me/what-is-an-avatar/" }
+    ]
+  },
+  "Catfishing": {
+    "summary": "\"Catfishing\" is a deceptive online activity where someone creates a fake identity to trick others, often for personal gain, emotional manipulation, or to cause harm. This can involve using stolen photos, fabricated personal details, and elaborate backstories to appear convincing.",
+    "links": [
+      { "title": "What is Catfishing? - FSU.edu", "url": "https://www.fsu.edu/news/articles/what-is-catfishing/" },
+      { "title": "What is Catfishing? - eSafety Commissioner", "url": "https://www.esafety.gov.au/key-issues/catfishing" },
+      { "title": "What is Catfishing? - Dartmouth.edu", "url": "https://www.dartmouth.edu/~cpsc10/catfishing.html" },
+      { "title": "What is Catfishing? - Cybersmile", "url": "https://www.cybersmile.org/what-is-catfishing/" },
+      { "title": "What is Catfishing? - Mental Health Ireland", "url": "https://www.mentalhealth.ie/what-is-catfishing/" }
+    ]
+  },
+  "CEOP (Child Exploitation and Online Protection centre)": {
+    "summary": "The Child Exploitation and Online Protection Centre (CEOP) is a command of the UK's National Crime Agency (NCA) dedicated to protecting children from harm both online and offline, with a primary focus on child sexual exploitation and online protection issues.",
+    "links": [
+      { "title": "What is CEOP? - The FA", "url": "https://www.thefa.com/football-rules-governance/safeguarding/ceop" },
+      { "title": "CEOP - Wikipedia", "url": "https://en.wikipedia.org/wiki/Child_Exploitation_and_Online_Protection_Centre" },
+      { "title": "What is CEOP? - GHLL", "url": "https://www.ghll.org.uk/ceop/" },
+      { "title": "What is CEOP? - Didsbury High School", "url": "https://www.didsburyhighschool.org.uk/ceop/" },
+      { "title": "CEOP - GOV.UK", "url": "https://www.gov.uk/report-child-abuse-to-police" }
+    ]
+  },
+  "Chatroom": {
+    "summary": "Online chatroom safety refers to the practices and precautions individuals should take to protect themselves from potential risks and dangers when interacting in virtual chat environments. These chatrooms, where people communicate in real-time using text, can be platforms for sharing experiences, jokes, or meeting new people, but they also pose various threats, including scams, fraud, cyberbullying, stalking, and exposure to inappropriate content.",
+    "links": [
+      { "title": "Chatroom Safety - Virola", "url": "https://virola.io/blog/chatroom-safety" },
+      { "title": "Chatroom Safety - Get Safe Online", "url": "https://www.getsafeonline.org/personal/articles/chat-rooms/" },
+      { "title": "Chatroom Safety - Coohom", "url": "https://www.coohom.com/blog/chatroom-safety" },
+      { "title": "Chatroom Safety - WikiHow", "url": "https://www.wikihow.com/Be-Safe-in-Chat-Rooms" },
+      { "title": "Chatroom Safety - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/chat-room" }
+    ]
+  },
+  "Block": {
+    "summary": "In online safety, \"block\" refers to the action of preventing another user from contacting you or viewing your content on a digital platform. It's a crucial tool for managing online interactions, combating cyberbullying and harassment, and enhancing personal safety and digital wellness.",
+    "links": [
+      { "title": "Block online safety - Number Analytics", "url": "https://numberanalytics.com/blog/digital-wellness/block-online-safety/" },
+      { "title": "Blocking on Social Media - StopBullying.gov", "url": "https://www.stopbullying.gov/cyberbullying/what-is-cyberbullying#blocking" }
+    ]
+  },
+  "Bot": {
+    "summary": "In cybersecurity, a bot (short for robot) is an automated program that performs tasks over the internet. While some bots are beneficial (e.g., search engine crawlers), \"bad\" bots are used for malicious activities like DDoS attacks, credential stuffing, web scraping, and spamming. Bot cybersecurity focuses on detecting and mitigating these harmful automated threats.",
+    "links": [
+      { "title": "Bot (Internet) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Bot_(Internet)" },
+      { "title": "What is a Bot? - SentinelOne", "url": "https://www.sentinelone.com/cybersecurity-101/what-is-a-bot/" }
+    ]
+  },
+  "Browser": {
+    "summary": "In cybersecurity, a browser is a software application used to access and view information on the World Wide Web. Browser cybersecurity involves protecting users from online threats by ensuring secure browsing practices, managing extensions, and utilizing privacy features. It's a critical component of digital wellness, as browsers are primary gateways to the internet and frequent targets for cyberattacks.",
+    "links": [
+      { "title": "Web browser - Wikipedia", "url": "https://en.wikipedia.org/wiki/Web_browser" },
+      { "title": "Browser cybersecurity - MOBroadband.org", "url": "https://mobroadband.org/browser-cybersecurity/" }
+    ]
+  },
+  "Cybercrime": {
+    "summary": "Cybercrime encompasses any illegal activity carried out using computers, networks, or digital devices. These activities can range from hacking, phishing, identity theft, and ransomware to online fraud and the distribution of illicit content, targeting individuals, businesses, or governments.",
+    "links": [
+      { "title": "Cybercrime - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cybercrime" },
+      { "title": "What Is a Cyber Crime? - Proofpoint", "url": "https://www.proofpoint.com/en-us/threat-reference/cyber-crime" }
+    ]
+  },
+  "Cyberstalking": {
+    "summary": "Cyberstalking refers to the use of the internet or other electronic means to stalk, harass, intimidate, or threaten an individual, group, or organization. It is a severe form of digital abuse that can significantly impact a victim's mental and emotional well-being, sense of safety, and overall digital life.",
+    "links": [
+      { "title": "Cyberstalking - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cyberstalking" },
+      { "title": "Understanding Cyberstalking: Protecting Digital Wellbeing | Cyber Law Firm", "url": "https://www.cyberlf.com/understanding-cyberstalking-protecting-digital-wellbeing/" }
+    ]
+  },
+  "Filter": {
+    "summary": "Online safety filters are tools and strategies designed to protect individuals from the potential risks and dangers of the internet. They play a crucial role in promoting digital wellness by blocking inappropriate content, managing screen time, enhancing security against malware and phishing, and protecting privacy.",
+    "links": [
+      { "title": "Web filter - Wikipedia", "url": "https://en.wikipedia.org/wiki/Web_filter" },
+      { "title": "Online Safety Filters - Common Sense Media", "url": "https://www.commonsensemedia.org/articles/online-safety-filters" }
+    ]
+  },
+  "Grooming": {
+    "summary": "Online grooming is the process where an adult builds an emotional connection and trust with a minor online, with the intent of sexual exploitation or abuse. This can involve various tactics like building trust, testing boundaries, and isolating the victim, and it occurs across platforms like social media and gaming sites.",
+    "links": [
+      { "title": "Online grooming - Wikipedia", "url": "https://en.wikipedia.org/wiki/Online_grooming" },
+      { "title": "What is Online Grooming? - Avast", "url": "https://www.avast.com/c-what-is-online-grooming" }
+    ]
+  },
+  "Hacking": {
+    "summary": "In cybersecurity, \"hacking\" generally refers to unauthorized access or manipulation of digital systems and data. It encompasses various types of individuals, including black hat (malicious), white hat (ethical), and grey hat (ambiguous) hackers, and can lead to significant harm to digital wellness through threats like identity theft, data breaches, and ransomware attacks.",
+    "links": [
+      { "title": "Hacker - Wikipedia", "url": "https://en.wikipedia.org/wiki/Hacker" },
+      { "title": "What is a hacker? - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/what-is-a-hacker" }
+    ]
+  },
+  "Identity Theft": {
+    "summary": "Identity theft in cybersecurity involves the fraudulent use of another person's identifying information for personal gain. It can lead to financial fraud, reputational damage, and psychological distress. Protecting against identity theft is crucial for digital wellness and involves strong passwords, MFA, monitoring accounts, and caution with personal information.",
+    "links": [
+      { "title": "Identity theft - Wikipedia", "url": "https://en.wikipedia.org/wiki/Identity_theft" },
+      { "title": "What is Identity Theft? - Experian", "url": "https://www.experian.com/blogs/ask-experian/what-is-identity-theft/" }
+    ]
+  },
+  "Misinformation": {
+    "summary": "Misinformation refers to false or inaccurate information that is spread unintentionally. It can significantly impact digital wellness by leading to increased anxiety and stress, influencing health behaviors, and eroding trust in reliable sources. Its rapid spread is often exacerbated by social media platforms.",
+    "links": [
+      { "title": "Misinformation - Wikipedia", "url": "https://en.wikipedia.org/wiki/Misinformation" },
+      { "title": "A review of health misinformation on digital platforms - Fair East Publishers", "url": "https://www.faireastpublishers.com/journal/index.php/ijip/article/view/100010" }
+    ]
+  },
+  "Disinformation": {
+    "summary": "Disinformation is false information deliberately intended to mislead, often with the goal of causing public harm or for profit. It is distinct from misinformation (unintentional). Disinformation significantly impacts digital wellness by undermining trust, influencing decisions, and posing risks to mental and physical health, often spread through social media.",
+    "links": [
+      { "title": "Disinformation - Wikipedia", "url": "https://en.wikipedia.org/wiki/Disinformation" },
+      { "title": "Disinformation and public health - WHO", "url": "https://www.who.int/news-room/feature-stories/detail/disinformation-and-public-health" }
+    ]
+  },
+  "Fake News": {
+    "summary": "Fake news is deliberately false or misleading information presented as legitimate news. It impacts digital wellness by exploiting emotions, fostering polarization, and distorting public understanding, leading to increased anxiety and erosion of trust. Its rapid spread is exacerbated by social media algorithms.",
+    "links": [
+      { "title": "Fake news - Wikipedia", "url": "https://en.wikipedia.org/wiki/Fake_news" },
+      { "title": "What is fake news? - Cloudflare", "url": "https://www.cloudflare.com/learning/security/what-is-fake-news/" }
+    ]
+  },
+  "Evaluation": {
+    "summary": "Evaluation of online information, within digital wellness, is the critical process of assessing the credibility, accuracy, and relevance of digital content. It involves scrutinizing sources, identifying biases, and verifying information to make informed decisions and avoid misinformation, thereby promoting digital literacy and overall well-being.",
+    "links": [
+      { "title": "Evaluating Health Information Online - IFFGD", "url": "https://www.iffgd.org/evaluating-health-information-online/" },
+      { "title": "Evaluating Online Information - MedlinePlus", "url": "https://medlineplus.gov/evaluatinghealthinformation.html" }
+    ]
+  },
+  "Inference": {
+    "summary": "Inference, in the context of online information and digital wellness, refers to the process of drawing conclusions or deducing unstated facts from digital data. It highlights privacy concerns as sensitive information can be inferred from seemingly innocuous datasets. Developing strong inferential skills is crucial for digital media literacy and critically evaluating online information.",
+    "links": [
+      { "title": "Inference - Wikipedia", "url": "https://en.wikipedia.org/wiki/Inference" },
+      { "title": "The Ethics of Digital Well-Being: A Thematic Review - NIH", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10000000/" }
+    ]
+  },
+  "Fact-Checking": {
+    "summary": "Fact-checking online information is a critical component of digital wellness and digital literacy, involving the verification of claims and data found online. It helps combat misinformation and disinformation by discerning fact from fiction, assessing source credibility, and cross-referencing information with reputable sources, thereby promoting informed decision-making.",
+    "links": [
+      { "title": "Fact-checking - Wikipedia", "url": "https://en.wikipedia.org/wiki/Fact-checking" },
+      { "title": "FactCheck.org", "url": "https://www.factcheck.org/" }
+    ]
+  },
+  "Source Verification": {
+    "summary": "Source verification in online information involves evaluating and confirming the credibility and accuracy of the sources used in digital content. It's a crucial aspect of digital wellness and literacy, helping users discern reliable information from misinformation by cross-referencing, assessing provenance, and checking author credentials.",
+    "links": [
+      { "title": "Source Verification Essentials - Number Analytics", "url": "https://numberanalytics.com/blog/digital-wellness/source-verification-essentials/" },
+      { "title": "Source criticism - Wikipedia", "url": "https://en.wikipedia.org/wiki/Source_criticism" }
+    ]
+  },
+  "Lateral Reading": {
+    "summary": "Lateral reading is a digital literacy skill where users evaluate the credibility of online information by consulting multiple sources across different tabs, rather than solely relying on a single webpage. This approach helps verify facts, contextualize information, identify biases, and reduce susceptibility to misinformation, enhancing critical thinking.",
+    "links": [
+      { "title": "What is lateral reading? - Scribbr", "url": "https://www.scribbr.com/research-paper/what-is-lateral-reading/" },
+      { "title": "Lateral reading - Wikipedia", "url": "https://en.wikipedia.org/wiki/Lateral_reading" }
+    ]
+  },
+  "Bias": {
+    "summary": "Bias in online information refers to the skewed or disproportionate representation of content that can influence opinions and perceptions. It can stem from user bias, content bias, or algorithmic bias, reinforcing existing beliefs and contributing to echo chambers. Understanding and mitigating bias is crucial for digital wellness and critical thinking.",
+    "links": [
+      { "title": "Bias - Wikipedia", "url": "https://en.wikipedia.org/wiki/Bias" },
+      { "title": "Navigating Bias in Online Information for Better Understanding - TechnoKids Blog", "url": "https://www.technokids.com/blog/digital-wellness/navigating-bias-in-online-information/" }
+    ]
+  },
+  "Defamation": {
+    "summary": "Online defamation, also known as internet defamation or cyber-libel, refers to the online publication of false statements of fact about an individual or entity that causes damage to their reputation. It's a significant concern for digital wellness due to its potential for severe reputational, emotional, and financial harm, and its rapid, widespread dissemination online.",
+    "links": [
+      { "title": "Online defamation - Wikipedia", "url": "https://en.wikipedia.org/wiki/Online_defamation" },
+      { "title": "What Is Online Defamation? - Minc Law", "url": "https://www.minclaw.com/online-defamation/" }
+    ]
+  },
+  "Doxxing": {
+    "summary": "Doxxing is the act of publicly revealing private or identifying information about an individual or organization online without their consent, often with malicious intent. This can include real names, addresses, and financial data, collected from various sources. It poses significant risks to digital wellness, leading to harassment, identity theft, and emotional distress.",
+    "links": [
+      { "title": "Doxxing - Wikipedia", "url": "https://en.wikipedia.org/wiki/Doxing" },
+      { "title": "What is Doxxing? - Malwarebytes", "url": "https://www.malwarebytes.com/doxxing" }
+    ]
+  },
+  "Search Engine Optimization (SEO)": {
+    "summary": "Search Engine Optimization (SEO) in the context of online reputation management (ORM) involves using SEO techniques to build and maintain a favorable brand image within search engine results. It's crucial for digital wellness as it helps control one's online narrative, ensuring positive and accurate information is prominent, thereby mitigating negative impacts on personal and professional well-being.",
+    "links": [
+      { "title": "Search engine optimization - Wikipedia", "url": "https://en.wikipedia.org/wiki/Search_engine_optimization" },
+      { "title": "SEO Reputation Management: Top Strategies for Success - Semrush", "url": "https://www.semrush.com/blog/seo-reputation-management/" }
+    ]
+  },
+  "Content Filtering": {
+    "summary": "Content filtering in parental controls refers to features that restrict access to inappropriate or harmful online content, such as websites, apps, and explicit material. It's crucial for promoting digital wellness in children by ensuring they only encounter age-appropriate material, thereby safeguarding their online experience.",
+    "links": [
+      { "title": "Content-control software - Wikipedia", "url": "https://en.wikipedia.org/wiki/Content-control_software" },
+      { "title": "Content filtering: what parents need to know - Digital Parenthood", "url": "https://www.digitalparenthood.com/content-filtering-what-parents-need-to-know/" }
+    ]
+  },
+  "Screen Time Management": {
+    "summary": "Screen time management involves monitoring and controlling the amount of time spent on digital devices to achieve a healthy balance. In parental controls, this includes setting daily limits, scheduling \"screen-free\" periods, and encouraging alternative activities, crucial for fostering digital wellness in children and mitigating potential negative impacts of excessive screen time.",
+    "links": [
+      { "title": "Screen time - Wikipedia", "url": "https://en.wikipedia.org/wiki/Screen_time" },
+      { "title": "Screen Time Management - Screen Time Labs", "url": "https://screentimelabs.com/screen-time-management/" }
+    ]
+  },
+  "App Management/Blocking": {
+    "summary": "App Management/Blocking parental controls allow parents to monitor and regulate their children's digital device usage by restricting access to certain apps, websites, and content. These controls promote healthier digital habits, ensure online safety, and reduce potential negative impacts of excessive screen time, contributing to overall digital wellness.",
+    "links": [
+      { "title": "Parental control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Parental_control" },
+      { "title": "App Blocking - Opal", "url": "https://www.opal.so/app-blocking" }
+    ]
+  },
+  "Location Tracking": {
+    "summary": "Location tracking in parental controls uses GPS technology to monitor a child's physical whereabouts, often providing real-time location and alerts when they enter or exit predefined \"geofenced\" areas. It aims to enhance safety and provide peace of mind, contributing to digital wellness by managing a child's physical presence in relation to their digital activities.",
+    "links": [
+      { "title": "Location tracking - Wikipedia", "url": "https://en.wikipedia.org/wiki/Location_tracking" },
+      { "title": "Pros and Cons of Using Location Tracking for Your Child - BrightCanary", "url": "https://brightcanary.io/blog/pros-and-cons-of-using-location-tracking-for-your-child/" }
+    ]
+  },
+  "Geofencing": {
+    "summary": "Geofencing in parental controls creates virtual geographic boundaries using GPS technology, triggering alerts when a child's device enters or exits these areas. It enhances safety by providing location-based monitoring and control, ensuring children stay within approved zones and contributing to digital wellness by managing their physical presence in relation to their digital activities.",
+    "links": [
+      { "title": "Geofence - Wikipedia", "url": "https://en.wikipedia.org/wiki/Geofence" },
+      { "title": "8 Best Geofencing Apps You Should Know - AirDroid", "url": "https://www.airdroid.com/parental-control/geofencing-apps/" }
+    ]
+  },
+  "Monitoring": {
+    "summary": "Monitoring parental controls are tools that allow parents to oversee their children's digital activities, fostering a safer online environment and promoting responsible tech use. Key features include screen time management, content filtering, activity monitoring (app usage, web browsing), and sometimes social media tracking, all contributing to a child's digital wellness.",
+    "links": [
+      { "title": "Parental control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Parental_control" },
+      { "title": "Parental Control & Digital Wellbeing: A Parent's Guide - Katech", "url": "https://katech.vn/blog/parental-control-digital-wellbeing-a-parents-guide/" }
+    ]
+  },
+  "Keyword Monitoring/Alerts": {
+    "summary": "Keyword Monitoring Alerts, as a feature within parental control software, notify parents when specific words or phrases associated with inappropriate content, cyberbullying, or other online dangers are typed or encountered on a child's device. This promotes digital wellness by enabling early detection and intervention in concerning online interactions.",
+    "links": [
+      { "title": "Keyword Alert for Monitoring Words Typed on Cell Phone - PanSpy", "url": "https://www.panspy.com/keyword-alert.html" },
+      { "title": "Keyword Monitoring - Kido Protect", "url": "https://kidoprotect.com/keyword-monitoring/" }
+    ]
+  },
+  "Keylogger": {
+    "summary": "A keylogger is a type of surveillance technology that records each keystroke made on a computer or mobile device. Within parental control software, keyloggers can be used to monitor a child's online interactions, including messages and search queries, providing parents insight into their children's online communications and helping to identify potential risks to their digital wellness.",
+    "links": [
+      { "title": "Keylogger - Wikipedia", "url": "https://en.wikipedia.org/wiki/Keylogger" },
+      { "title": "What is a Keylogger? - Trend Micro", "url": "https://www.trendmicro.com/en_us/forHome/products/what-is-keylogger.html" }
+    ]
+  },
+  "Social Media Monitoring": {
+    "summary": "Social media monitoring, as a component of parental controls, involves observing and analyzing children's activity on social media platforms to understand its impact on their well-being and to foster healthier digital habits. It aims to protect children from cyberbullying, inappropriate content, and online predators, contributing to their overall digital wellness.",
+    "links": [
+      { "title": "Social media monitoring - Wikipedia", "url": "https://en.wikipedia.org/wiki/Social_media_monitoring" },
+      { "title": "Social Media Monitoring Parental Controls - Bark", "url": "https://www.bark.us/social-media-monitoring/" }
+    ]
+  },
+  "Activity Reports": {
+    "summary": "Activity reports within parental controls refer to features in software and operating systems that allow parents to monitor and manage their children's digital activities. These reports provide insights into how children use their devices and access online content, helping parents ensure online safety and promote healthy digital habits.",
+    "links": [
+      { "title": "Parental Control Activity Reports - Google Family Link", "url": "https://safety.google/families/parental-controls/family-link/" },
+      { "title": "Parental Control Activity Reports - Net Nanny", "url": "https://www.netnanny.com/features/activity-reports/" }
+    ]
+  },
+  "Cyberbullying and Online Threat Detection": {
+    "summary": "Cyberbullying and online threat detection parental controls are tools and strategies designed to help parents monitor and manage their children's online activities to protect them from various digital dangers, including cyberbullying, explicit content, and online predators.",
+    "links": [
+      { "title": "How Parental Controls Help Detect Cyberbullying and Online Threats - Impulse Creative", "url": "https://www.impulsec.com/blog/how-parental-controls-help-detect-cyberbullying-and-online-threats" },
+      { "title": "Cyberbullying and Online Threat Detection - Bark", "url": "https://www.bark.us/cyberbullying-and-online-threat-detection/" }
+    ]
+  },
+  "Nudity Detection": {
+    "summary": "Nudity detection in parental control software uses advanced technologies like artificial intelligence (AI) and machine learning (ML) to identify and manage explicit content. These systems are designed to protect children from exposure to inappropriate images and videos across various platforms and devices.",
+    "links": [
+      { "title": "Nudity Detection in Parental Control Software - Kido Protect", "url": "https://kidoprotect.com/nudity-detection/" },
+      { "title": "Communication Safety for Kids - Apple Support", "url": "https://support.apple.com/en-us/HT212639" }
+    ]
+  },
+  "Digital Parenting": {
+    "summary": "Digital parenting involves guiding children to navigate the online world safely and responsibly, promoting healthy digital habits, and utilizing parental control tools. It emphasizes open communication, setting boundaries, and fostering mindful technology use to ensure children's digital well-being.",
+    "links": [
+      { "title": "Digital Parenting: What It Is and Why It Matters - Children of the Digital Age", "url": "https://childrenofthedigitalage.org/digital-parenting/" },
+      { "title": "Digital Parenting - Digital Wellness Lab", "url": "https://www.digitalwellnesslab.org/digital-parenting/" }
+    ]
+  },
+  "Cloud-Based Platforms": {
+    "summary": "Cloud-based platforms offer various parental control features to help manage and monitor children's online activities. These platforms provide convenience by allowing parents to manage digital safety from any device with an internet connection, offering real-time monitoring and control capabilities.",
+    "links": [
+      { "title": "Cloud-Based Parental Control - Avosmart", "url": "https://avosmart.com/cloud-based-parental-control/" },
+      { "title": "Cloud-Based Parental Control - Tencent Cloud", "url": "https://www.tencentcloud.com/solutions/parental-control" }
+    ]
+  },
+  "Cross-Platform Support": {
+    "summary": "Cross-platform parental controls refer to software solutions that allow parents to manage and monitor their children's device usage across various operating systems and devices, such as Android, iOS, Windows, macOS, and Chromebooks.",
+    "links": [
+      { "title": "Cross-Platform Parental Control - Impulse Creative", "url": "https://www.impulsec.com/blog/cross-platform-parental-control" },
+      { "title": "Cross-Platform Parental Control - Qustodio", "url": "https://www.qustodio.com/en/parental-control-features/cross-platform/" }
+    ]
+  },
+  "Achievement": {
+    "summary": "In video gaming, an achievement (also known as a trophy) is a digital reward that signifies a player's mastery of a specific task or challenge within a video game. These are meta-goals defined outside the game's primary parameters, meaning they don't directly affect gameplay but serve as a form of recognition.",
+    "links": [
+      { "title": "Achievement (video gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Achievement_(video_gaming)" },
+      { "title": "What is a Gaming Achievement? - G2A", "url": "https://www.g2a.com/news/what-is-a-gaming-achievement/" }
+    ]
+  },
+  "Administrator (Admin)": {
+    "summary": "In gaming, an Administrator or Admin can refer to several roles: a Game Admin who monitors and manages online game servers, enforces rules, and handles player disputes; a Gaming Administration role in a corporate capacity overseeing operations and compliance; or a Systems Administrator maintaining game servers and networks.",
+    "links": [
+      { "title": "Game Administrator Job Description - ZipRecruiter", "url": "https://www.ziprecruiter.com/job/Game-Administrator-a2123456" },
+      { "title": "Administrator (Admin) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Administrator_(computing)" }
+    ]
+  },
+  "AFK (Away From Keyboard)": {
+    "summary": "\"AFK\" in gaming stands for \"Away From Keyboard.\" It describes a player who is not actively participating in the game, either because they are taking a break, attending to something else, or have temporarily disconnected. The term originated in early internet chat rooms and online gaming.",
+    "links": [
+      { "title": "What Does AFK Mean in Gaming? - GankNow", "url": "https://ganknow.com/what-does-afk-mean-in-gaming/" },
+      { "title": "AFK (Away From Keyboard) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Away_from_keyboard" }
+    ]
+  },
+  "Aggro": {
+    "summary": "In gaming, \"aggro\" (short for aggression or aggravation) refers to the concept of attracting the attention of enemies or NPCs (non-player characters) in a game, making them target and attack a specific player or character. Managing aggro is crucial for strategic gameplay, especially in cooperative settings.",
+    "links": [
+      { "title": "What is Aggro in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-aggro-in-gaming/" },
+      { "title": "Aggro - Wikipedia", "url": "https://en.wikipedia.org/wiki/Aggro" }
+    ]
+  },
+  "AMA (Ask Me Anything)": {
+    "summary": "In gaming, \"AMA\" primarily stands for \"Ask Me Anything.\" It refers to a question-and-answer session where a person, often a developer, streamer, or professional player, invites others to ask them any questions they have. This format originated on Reddit and has since spread to other social media platforms.",
+    "links": [
+      { "title": "What Does AMA Mean in Gaming? - Brandwatch", "url": "https://www.brandwatch.com/blog/what-does-ama-mean/" },
+      { "title": "AMA (Ask Me Anything) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Ask_Me_Anything" }
+    ]
+  },
+  "AoE (Area of Effect)": {
+    "summary": "In gaming, AoE stands for \"Area of Effect.\" It refers to any ability, spell, or attack that impacts multiple targets within a specified area simultaneously, rather than focusing on a single target. AoE abilities are used to deal damage, heal, or apply buffs/debuffs to groups, and are prevalent in various game genres like RPGs, RTS, and MOBAs.",
+    "links": [
+      { "title": "What is AoE in Gaming? - GameTree", "url": "https://gametree.me/glossary/aoe/" },
+      { "title": "Area of effect - Wikipedia", "url": "https://en.wikipedia.org/wiki/Area_of_effect" }
+    ]
+  },
+  "Ban": {
+    "summary": "In gaming, a \"ban\" refers to an action taken by administrators or moderators to suspend a player's account, preventing them from further participation in a game or on a platform. Bans can be temporary or permanent and are typically issued for violations of game or community rules, such as harassment, cheating, or spamming. There are different types of bans, including account bans, shadow bans, and hardware bans.",
+    "links": [
+      { "title": "What is a Ban in Gaming? - Writing Games", "url": "https://writing-games.com/what-is-a-ban-in-gaming/" },
+      { "title": "Ban (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Ban_(gaming)" }
+    ]
+  },
+  "Battle Royale": {
+    "summary": "Battle Royale gaming is an online multiplayer video game genre where a large number of players (typically dozens to hundreds) compete against each other on a shrinking map. The primary objective is to be the last player or team standing. Key characteristics include large player counts, last-man-standing gameplay, a shrinking map, and minimal starting equipment.",
+    "links": [
+      { "title": "What is Battle Royale Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-battle-royale-gaming/" },
+      { "title": "Battle royale game - Wikipedia", "url": "https://en.wikipedia.org/wiki/Battle_royale_game" }
+    ]
+  },
+  "BRB (Be Right Back)": {
+    "summary": "In gaming, \"BRB\" is an acronym that stands for \"Be Right Back.\" It is commonly used in online chats and games to inform other players that you will be temporarily away from your keyboard or game, but will return shortly. It implies a short absence and is similar in usage to \"AFK.\"",
+    "links": [
+      { "title": "What Does BRB Mean in Gaming? - NoobSpace", "url": "https://noobspace.com/what-does-brb-mean-in-gaming/" },
+      { "title": "BRB - Cyber Definitions", "url": "https://www.cyberdefinitions.com/definitions/BRB.html" }
+    ]
+  },
+  "Buff": {
+    "summary": "In gaming, \"buff\" generally refers to an enhancement or improvement. This can be a developer-initiated change that increases the power or effectiveness of something in the game (e.g., a weapon or character ability), or it can be a temporary beneficial status effect applied during gameplay through spells, abilities, power-ups, or items.",
+    "links": [
+      { "title": "What is a Buff in Gaming? - GameTree", "url": "https://gametree.me/glossary/buff/" },
+      { "title": "Buff (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Buff_(video_games)" }
+    ]
+  },
+  "Camping": {
+    "summary": "\"Camping\" in gaming refers to a tactic where a player remains in a single, often advantageous or hidden, location for an extended period to gain an advantage over other players or non-player characters (NPCs). This strategy is commonly found in first-person shooter (FPS) games and battle royale games, but also in massively multiplayer online role-playing games (MMORPGs) and MUDs.",
+    "links": [
+      { "title": "Camping (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Camping_(video_games)" },
+      { "title": "What is Camping in Gaming? - Eloking", "url": "https://eloking.com/blog/what-is-camping-in-gaming/" }
+    ]
+  },
+  "Caster": {
+    "summary": "In gaming, a \"caster\" is a sport commentator for esports. Casters provide live commentary and analysis of a game's action to a large online audience during the streaming of an online video gaming event. Their main purpose is to entertain and inform viewers about the gameplay, often categorized as play-by-play or color casters.",
+    "links": [
+      { "title": "What is a Caster in Gaming? - IGI Global", "url": "https://www.igi-global.com/dictionary/caster-gaming/40000" },
+      { "title": "Esports Caster - Wikipedia", "url": "https://en.wikipedia.org/wiki/Esports_commentator" }
+    ]
+  },
+  "Clan/Guild": {
+    "summary": "In gaming, a \"clan\" or \"guild\" refers to an organized group of video game players who regularly play together in one or more multiplayer games. These groups are formed for various reasons, including competition, cooperation, socialization, and mutual support. While \"clan\" is often used in FPS and competitive games, \"guild\" is more common in MMORPGs.",
+    "links": [
+      { "title": "Clan (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Clan_(gaming)" },
+      { "title": "What is a Gaming Clan? - G2A", "url": "https://www.g2a.com/news/what-is-co-op-gaming/" }
+    ]
+  },
+  "Co-op (Cooperative)": {
+    "summary": "Co-op (Cooperative) gaming refers to a video game or game mode where players work together as teammates to achieve a common goal, rather than competing against each other. This collaborative approach distinguishes it from competitive multiplayer games and fosters a sense of camaraderie and mutual support.",
+    "links": [
+      { "title": "Cooperative video game - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cooperative_video_game" },
+      { "title": "What is Co-op Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-co-op-gaming/" }
+    ]
+  },
+  "Community Manager": {
+    "summary": "A Community Manager in gaming is responsible for fostering and managing the community that forms around a game. Their primary role is to act as a bridge between the game's players and its developers or esports organization, communicating updates, gathering feedback, and organizing events.",
+    "links": [
+      { "title": "What is a Community Manager in Esports? - Esports Tower", "url": "https://esportstower.com/what-is-a-community-manager-in-esports/" },
+      { "title": "Community Manager (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Community_manager_(video_games)" }
+    ]
+  },
+  "Crafting": {
+    "summary": "Crafting in gaming refers to a gameplay mechanic where players combine various in-game items or resources to create new, more advanced, or different items. This often involves gathering raw materials, following recipes or blueprints, and using specific tools or crafting stations. The created items can range from weapons, armor, and potions to building materials, food, and decorative objects.",
+    "links": [
+      { "title": "Crafting (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Crafting_(video_games)" },
+      { "title": "What is Crafting in Gaming? - Gameopedia", "url": "https://www.gameopedia.com/glossary/crafting/" }
+    ]
+  },
+  "Cross-platform": {
+    "summary": "Cross-platform gaming, also known as cross-play, refers to the ability of players using different video game hardware or operating systems to play with each other simultaneously in the same game. This means, for example, that a player on an Xbox console can play a multiplayer game with someone on a PC, PlayStation, or Nintendo Switch.",
+    "links": [
+      { "title": "Cross-platform play - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cross-platform_play" },
+      { "title": "What is Cross-Platform Gaming? - Acer", "url": "https://www.acer.com/ac/en/US/content/acer-innovates/what-is-cross-platform-gaming" }
+    ]
+  },
+  "CTF (Capture the Flag)": {
+    "summary": "\"Capture the Flag\" (CTF) gaming refers to two distinct types of competitive activities: a game mode where two or more teams compete to capture a physical or virtual \"flag\" from the opposing team's base and bring it back to their own, and a specialized cybersecurity competition where participants solve problems or break into simulated systems to find hidden \"flags",
+    "links": [
+      { "title": "Capture the Flag (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Capture_the_Flag_(video_games)" },
+      { "title": "What is CTF in Cybersecurity? - GeeksforGeeks", "url": "https://www.geeksforgeeks.org/what-is-ctf-in-cybersecurity/" }
+    ]
+  },
+  "DC (Disconnected)": {
+    "summary": "In gaming, \"DC\" most commonly stands for \"Disconnect.\" This refers to a situation where a player loses their connection to an online game, often resulting in them being removed from the game session. This can happen due to various reasons, such as a lost internet connection, a problem with the player's computer, or an issue with the game's server.",
+    "links": [
+      { "title": "What does DC mean in gaming? - All Acronyms", "url": "https://www.allacronyms.com/DC/gaming" },
+      { "title": "DC (Disconnected) - Urban Dictionary", "url": "https://www.urbandictionary.com/define.php?term=DC" }
+    ]
+  },
+  "DLC (Downloadable Content)": {
+    "summary": "DLC stands for \"Downloadable Content\" and refers to additional digital content created for an already released video game. This content is distributed through the internet by the game's publisher. DLC expands and enhances the gaming experience by providing new storylines, challenges, characters, weapons, or cosmetic items.",
+    "links": [
+      { "title": "Downloadable content - Wikipedia", "url": "https://en.wikipedia.org/wiki/Downloadable_content" },
+      { "title": "What is DLC in Gaming? - HP", "url": "https://www.hp.com/us-en/shop/tech-takes/what-is-dlc-in-gaming" }
+    ]
+  },
+  "DPS (Damage Per Second)": {
+    "summary": "In gaming, \"DPS\" stands for \"Damage Per Second.\" It refers to the amount of damage a character, weapon, or ability can inflict over a one-second period. It also describes characters or classes whose primary function is to deal damage to enemies, and can refer to the strategy of focusing on maximizing damage output.",
+    "links": [
+      { "title": "What is DPS in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-dps-in-gaming/" },
+      { "title": "Damage per second - Wikipedia", "url": "https://en.wikipedia.org/wiki/Damage_per_second" }
+    ]
+  },
+  "Easter Egg": {
+    "summary": "In gaming, an \"Easter egg\" refers to a hidden message, image, feature, or piece of content intentionally placed by developers within a video game for players to discover. These hidden elements are not crucial to the game's main storyline or progression but serve as bonuses, inside jokes, references, or even personal touches from the creators.",
+    "links": [
+      { "title": "Easter egg (media) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Easter_egg_(media)" },
+      { "title": "What is an Easter Egg in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-an-easter-egg-in-gaming/" }
+    ]
+  },
+  "Esports (Electronic Sports)": {
+    "summary": "Esports, short for electronic sports, refers to organized, competitive video gaming where individuals or teams of professional players compete against each other. These competitions often take place in structured leagues and tournaments, frequently with significant monetary prizes at stake. Esports has grown into a multi-billion dollar global industry, attracting millions of participants and spectators.",
+    "links": [
+      { "title": "Esports - Wikipedia", "url": "https://en.wikipedia.org/wiki/Esports" },
+      { "title": "What is Esports? - Britannica", "url": "https://www.britannica.com/story/what-is-esports" }
+    ]
+  },
+  "F2P (Free-to-Play)": {
+    "summary": "\"F2P\" stands for \"Free-to-Play\" and refers to a gaming business model where players can access and enjoy the core game without an initial purchase. While the game itself is free to start, F2P games typically generate revenue through optional in-game purchases, also known as microtransactions.",
+    "links": [
+      { "title": "What is F2P in Gaming? - GameTree", "url": "https://gametree.me/glossary/f2p/" },
+      { "title": "Free-to-play - Wikipedia", "url": "https://en.wikipedia.org/wiki/Free-to-play" }
+    ]
+  },
+  "Farming/Grinding": {
+    "summary": "\"Farming\" and \"grinding\" in gaming refer to repetitive actions undertaken by a player to gain rewards, resources, experience, or in-game currency. While often used interchangeably, grinding generally describes repeating tasks for XP or stats, and farming focuses on acquiring specific items or resources.",
+    "links": [
+      { "title": "Grinding (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Grinding_(video_games)" },
+      { "title": "What is Grinding in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-grinding-in-gaming/" }
+    ]
+  },
+  "Flaming": {
+    "summary": "\"Flaming\" in gaming refers to displaying hostility towards other players through insults, swearing, or other offensive language. It is considered a toxic behavior that can negatively impact the gaming experience for everyone involved, often stemming from frustration or anonymity in online environments.",
+    "links": [
+      { "title": "What is Flaming in Gaming? - Kidas", "url": "https://www.getkidas.com/post/what-is-flaming-in-gaming" },
+      { "title": "Flaming (internet) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Flaming_(internet)" }
+    ]
+  },
+  "Forum": {
+    "summary": "\"Forum gaming\" refers to the social aspect of video gaming that takes place on online forums. These forums serve as online discussion boards where gamers can connect, discuss, and engage with games and gaming culture. They foster community, allow for information exchange, and can be platforms for community-driven content.",
+    "links": [
+      { "title": "Gaming Forums - Interect", "url": "https://interect.ca/gaming-forums/" },
+      { "title": "Internet forum - Wikipedia", "url": "https://en.wikipedia.org/wiki/Internet_forum" }
+    ]
+  },
+  "FPS (First-Person Shooter)": {
+    "summary": "FPS (First-Person Shooter) gaming refers to a video game genre where the player experiences the action through the eyes of the character they are controlling. The camera perspective is placed inside the character's head, simulating what they see. The primary gameplay mechanic typically involves shooting enemies using guns or other projectile weapons, often in fast-paced, skill-based environments.",
+    "links": [
+      { "title": "What is FPS in Gaming? - ExitLag", "url": "https://www.exitlag.com/blog/what-is-fps-in-gaming" },
+      { "title": "First-person shooter - Wikipedia", "url": "https://en.wikipedia.org/wiki/First_person_shooter" }
+    ]
+  },
+  "Gank": {
+    "summary": "In gaming, \"gank\" refers to a strategic move where players coordinate to ambush and eliminate unsuspecting opponents. This often involves a numerical advantage (e.g., two players attacking one) or a surprise attack on a weaker or lower-level player. It is a popular tactic in games like MOBAs and MMORPGs to gain an advantage.",
+    "links": [
+      { "title": "What is Gank in Gaming? - LevlUp", "url": "https://levlup.com/blogs/gaming-glossary/what-is-gank-in-gaming" },
+      { "title": "Gank - Wikipedia", "url": "https://en.wikipedia.org/wiki/Gank" }
+    ]
+  },
+  "GG (Good Game)": {
+    "summary": "In gaming, \"GG\" is an abbreviation that stands for \"Good Game.\" It is commonly used by players at the end of a multiplayer match to show sportsmanship and acknowledge that the game was enjoyable or well-played. While primarily used at the end of a game, it can also be used in variations like \"GG WP\" (Good Game, Well Played) or \"GG HF\" (Good Luck, Have Fun).",
+    "links": [
+      { "title": "GG (Good Game) - Wikipedia", "url": "https://en.wikipedia.org/wiki/GG" },
+      { "title": "What Does GG Mean in Gaming? - Screen Rant", "url": "https://screenrant.com/what-does-gg-mean-gaming/" }
+    ]
+  },
+  "GOAT (Greatest Of All Time)": {
+    "summary": "\"GOAT\" in gaming, as in other fields, is an acronym that stands for \"Greatest Of All Time.\" It is used to describe individuals who have demonstrated exceptional performance, achievements, and dominance in their respective gaming field over a long period. This can include winning numerous tournaments, influencing the evolution of a game, and inspiring future generations.",
+    "links": [
+      { "title": "GOAT (Greatest Of All Time) - Dunia Games", "url": "https://www.duniagames.co.id/discover/1900-what-is-goat-in-gaming" },
+      { "title": "GOAT (Greatest Of All Time) - Wikipedia", "url": "https://en.wikipedia.org/wiki/GOAT_(disambiguation)" }
+    ]
+  },
+  "Griefing": {
+    "summary": "\"Griefing\" in gaming refers to the deliberate act of a player spoiling the enjoyment of other players through disruptive, annoying, or harassing behavior within a game, often in multiplayer settings. This behavior is typically not aimed at winning the game, but rather at causing frustration or distress to others.",
+    "links": [
+      { "title": "What is Griefing in Gaming? - Kidas", "url": "https://www.getkidas.com/post/what-is-griefing-in-gaming" },
+      { "title": "Griefing - Wikipedia", "url": "https://en.wikipedia.org/wiki/Griefing" }
+    ]
+  },
+  "HP (Health Points/Hit Points)": {
+    "summary": "In gaming, HP stands for \"Health Points\" or \"Hit Points\" and represents a character's or object's health or durability. It is a numerical value that quantifies how much damage a character can sustain before being incapacitated or defeated. When a character's HP reaches zero, it typically means they are defeated, leading to a \"game over\" or a respawn.",
+    "links": [
+      { "title": "What is HP in Gaming? - GameTree", "url": "https://gametree.me/glossary/hp/" },
+      { "title": "Health (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Health_(gaming)" }
+    ]
+  },
+  "HUD (Heads-Up Display)": {
+    "summary": "In gaming, HUD stands for Heads-Up Display. It refers to the visual information displayed on the screen as part of a game's user interface, relaying crucial information to the player without requiring them to look away from the main gameplay area. Common elements include health points, items, ammunition count, score, level, and mini-maps.",
+    "links": [
+      { "title": "Heads-up display (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Head-up_display_(video_games)" },
+      { "title": "What is HUD in Gaming? - Webopedia", "url": "https://www.webopedia.com/definitions/hud-gaming/" }
+    ]
+  },
+  "Indie Game": {
+    "summary": "\"Indie Game gaming\" refers to the activity of playing \"Indie Games,\" which are video games developed by individuals or small teams without the financial and technical support of large game publishers. This often leads to creative freedom and innovative gameplay experiences, typically distributed digitally.",
+    "links": [
+      { "title": "Indie game - Wikipedia", "url": "https://en.wikipedia.org/wiki/Indie_game" },
+      { "title": "What is an Indie Game? - Gameopedia", "url": "https://www.gameopedia.com/glossary/indie-game/" }
+    ]
+  },
+  "IRL (In Real Life)": {
+    "summary": "\"IRL\" in gaming stands for \"In Real Life.\" It is a term used to differentiate between events, actions, or circumstances that occur in a player's actual physical life and those that happen within the virtual world of a game. This distinction helps to separate the player's real-world identity and experiences from their in-game character and activities.",
+    "links": [
+      { "title": "What Does IRL Mean in Gaming? - Writing Games", "url": "https://writing-games.com/what-is-irl-in-gaming/" },
+      { "title": "IRL (In Real Life) - Wikipedia", "url": "https://en.wikipedia.org/wiki/In_real_life" }
+    ]
+  },
+  "Lag": {
+    "summary": "\"Lag\" in gaming refers to the delay or latency experienced in video games, which can significantly impact gameplay and user experience. This delay occurs between a player's action (input) and the game's response, or between the game client and the server in online games. It can be caused by network issues (high ping), input device delays, or insufficient hardware (low FPS).",
+    "links": [
+      { "title": "Lag (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Lag_(video_games)" },
+      { "title": "What is Lag in Gaming? - Noping", "url": "https://www.noping.com/blog/what-is-lag-in-gaming/" }
+    ]
+  },
+  "Loot": {
+    "summary": "In gaming, \"loot\" refers to any item or currency that a player can acquire within a digital game. This can include a wide variety of \"things\" such as currency (coins, gems), gear (weapons, armor, jewelry), actions (spells, abilities), creatures (characters, pets), resources (ingredients, materials), or cosmetics (skins, avatars). Loot is often obtained as a reward for defeating enemies, completing tasks or quests, or discovering hidden treasures.",
+    "links": [
+      { "title": "Loot (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Loot_(video_games)" },
+      { "title": "What is Loot in Gaming? - Yostream", "url": "https://yostream.io/blog/what-is-loot-in-gaming/" }
+    ]
+  },
+  "Lurker": {
+    "summary": "In gaming, the term \"lurker\" can have two primary meanings: in tactical shooter games, a lurker is a specific player role who separates from their team to take alternative routes, gather information, and flank enemies; in online gaming communities or general internet culture, a lurker refers to a member who observes and consumes content but rarely or never actively participates.",
+    "links": [
+      { "title": "Lurker (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Lurker" },
+      { "title": "What is a Lurker in Gaming? - Blast.tv", "url": "https://blast.tv/news/what-is-a-lurker-in-gaming" }
+    ]
+  },
+  "Meta": {
+    "summary": "\"Metagaming\" in the context of gaming generally refers to using out-of-character knowledge to influence in-character decisions or gameplay. This means a player uses information they, as a person, know about the game (e.g., rules, monster weaknesses, future plot points, or common strategies) that their character would not realistically possess within the game's fictional universe. In competitive gaming, \"metagame\" (often shortened to \"meta\") can also refer to the prevailing strategies, character choices, or tactics that are most effective at a given time.",
+    "links": [
+      { "title": "Metagaming - Wikipedia", "url": "https://en.wikipedia.org/wiki/Metagaming" },
+      { "title": "What is Metagaming? - Quora", "url": "https://www.quora.com/What-is-metagaming" }
+    ]
+  },
+  "Microtransactions": {
+    "summary": "Microtransactions in gaming refer to a business model where users can purchase virtual in-game goods or content with small payments of real-world money. These purchases are typically low in monetary value, ranging from a few cents to several dollars, but can generate substantial revenue for developers. They involve buying virtual items, such as in-game currency, cosmetic items (like character skins), power-ups, or to unlock specific features or content.",
+    "links": [
+      { "title": "Microtransaction - Wikipedia", "url": "https://en.wikipedia.org/wiki/Microtransaction" },
+      { "title": "What are Microtransactions in Gaming? - Investopedia", "url": "https://www.investopedia.com/terms/m/microtransaction.asp" }
+    ]
+  },
+  "1:1 (One-to-One)": {
+    "summary": "\"1:1 (One-to-One) educational technology\" refers to an educational program where schools provide each student with their own personal learning device, such as a laptop, tablet, or Chromebook. This initiative aims to create a personalized and dynamic learning environment by ensuring every student has consistent access to digital tools and resources for educational purposes.",
+    "links": [
+      { "title": "One-to-one computing - Wikipedia", "url": "https://en.wikipedia.org/wiki/One-to-one_computing" },
+      { "title": "What is 1:1 Computing? - GoFMX", "url": "https://www.gofmx.com/blog/what-is-1-to-1-computing" }
+    ]
+  },
+  "Adaptive Learning": {
+    "summary": "Adaptive learning educational technology refers to digital tools and software designed to personalize educational experiences by dynamically adjusting content, pace, and assessments to meet the unique needs of each student. This technology leverages data-driven instruction, computer algorithms, and artificial intelligence (AI) to tailor learning pathways based on a student's progress, engagement, and performance.",
+    "links": [
+      { "title": "Adaptive learning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Adaptive_learning" },
+      { "title": "What is Adaptive Learning? - Skillshub", "url": "https://skillshub.com/adaptive-learning/" }
+    ]
+  },
+  "Asynchronous Learning": {
+    "summary": "Asynchronous learning in educational technology refers to a flexible method of education where students can access course materials, engage with content, and interact with instructors and peers at their own pace and on their own schedule, without the need for real-time, simultaneous participation. This approach leverages various digital tools and platforms to facilitate learning outside the constraints of time and place.",
+    "links": [
+      { "title": "Asynchronous learning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Asynchronous_learning" },
+      { "title": "What is Asynchronous Learning? - Coursera", "url": "https://www.coursera.org/articles/what-is-asynchronous-learning" }
+    ]
+  },
+  "Blended Learning": {
+    "summary": "Blended learning, within the context of educational technology, is an educational approach that integrates traditional face-to-face instruction with digital, online learning mediums and resources. This hybrid model goes beyond merely using technology as a supplementary tool; it incorporates digital elements directly into lesson plans and teaching methodologies to create a more flexible, effective, and engaging learning environment.",
+    "links": [
+      { "title": "Blended learning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Blended_learning" },
+      { "title": "What is Blended Learning? - Whatfix", "url": "https://whatfix.com/blog/blended-learning/" }
+    ]
+  },
+  "Bring Your Own Device (BYOD)": {
+    "summary": "\"Bring Your Own Device\" (BYOD) in educational technology refers to a policy where students are allowed or encouraged to bring their personal electronic devices, such as smartphones, tablets, and laptops, into the classroom to use as learning tools. This approach leverages the technology students already own and are familiar with, aiming to enhance engagement, accessibility to educational resources, and student-centered learning.",
+    "links": [
+      { "title": "Bring Your Own Device - Wikipedia", "url": "https://en.wikipedia.org/wiki/Bring_your_own_device" },
+      { "title": "What is BYOD in Education? - Top Hat", "url": "https://tophat.com/glossary/b/byod-in-education/" }
+    ]
+  },
+  "E-learning (Electronic Learning)": {
+    "summary": "E-learning, or electronic learning, refers to an educational approach that utilizes information and communication technologies (ICT) to deliver educational content and facilitate learning experiences, typically over the internet or a corporate intranet. This method allows students and other learners to access instruction and participate in organized learning regardless of their physical location, often using electronic devices such as computers, smartphones, and tablets.",
+    "links": [
+      { "title": "E-learning - Wikipedia", "url": "https://en.wikipedia.org/wiki/E-learning" },
+      { "title": "What is E-Learning? - TechTarget", "url": "https://www.techtarget.com/whatis/definition/e-learning" }
+    ]
+  },
+  "Flipped Classroom": {
+    "summary": "The \"Flipped Classroom\" is an educational strategy and a type of blended learning that inverts the traditional teaching model. Instead of receiving lectures in class and doing homework at home, students are introduced to new content (such as pre-recorded video lectures, readings, or simulations) outside of the classroom. Class time is then dedicated to active learning, discussions, problem-solving, collaborative activities, and applying the learned material with the guidance of the instructor.",
+    "links": [
+      { "title": "Flipped classroom - Wikipedia", "url": "https://en.wikipedia.org/wiki/Flipped_classroom" },
+      { "title": "What is a Flipped Classroom? - Panopto", "url": "https://www.panopto.com/blog/what-is-a-flipped-classroom/" }
+    ]
+  },
+  "Gamification": {
+    "summary": "Gamification in educational technology (EdTech) is an approach that integrates game design elements and principles into non-game learning environments to enhance student engagement, motivation, and learning outcomes. It aims to make learning more interactive, enjoyable, and effective by leveraging the captivating allure of games.",
+    "links": [
+      { "title": "Gamification - Wikipedia", "url": "https://en.wikipedia.org/wiki/Gamification" },
+      { "title": "What is Gamification in Education? - Educational Technology", "url": "https://educationaltechnology.net/what-is-gamification-in-education/" }
+    ]
+  },
+  "Learning Management System (LMS)": {
+    "summary": "A Learning Management System (LMS) in educational technology is a software application or web-based platform designed to create, deliver, manage, and track educational courses, training programs, and learning content. It serves as a centralized hub for organizing and delivering online learning materials to students, employees, or other learners.",
+    "links": [
+      { "title": "Learning management system - Wikipedia", "url": "https://en.wikipedia.org/wiki/Learning_management_system" },
+      { "title": "What is an LMS? - Moodle", "url": "https://moodle.com/what-is-lms/" }
+    ]
+  },
+  "Massive Open Online Course (MOOC)": {
+    "summary": "A Massive Open Online Course (MOOC) is a model of educational technology that delivers learning content online to an unlimited number of participants, providing open access via the internet. MOOCs are designed to accommodate a large, often unlimited, number of students, are typically free to enroll in, and utilize various digital tools and platforms for content delivery, assessment, and interaction.",
+    "links": [
+      { "title": "Massive open online course - Wikipedia", "url": "https://en.wikipedia.org/wiki/Massive_open_online_course" },
+      { "title": "What is a MOOC? - MOOC.org", "url": "https://www.mooc.org/" }
+    ]
+  },
+  "Open Educational Resources (OER)": {
+    "summary": "Open Educational Resources (OER) in the context of educational technology refer to teaching, learning, and research materials that are freely available and openly licensed. This open licensing permits no-cost access, use, adaptation, and redistribution by others. OER can encompass a broad range of materials, including full courses, modules, textbooks, videos, and software, leveraging technology for easier sharing and customization.",
+    "links": [
+      { "title": "Open Educational Resources - Wikipedia", "url": "https://en.wikipedia.org/wiki/Open_educational_resources" },
+      { "title": "What are Open Educational Resources? - EdTech Books", "url": "https://edtechbooks.org/k12handbook/open_educational_resources" }
+    ]
+  },
+  "Synchronous Learning": {
+    "summary": "Synchronous learning in educational technology refers to a learning environment where instructors and students engage in educational activities simultaneously, often facilitated by digital platforms, regardless of their geographical location. This means that learners and teachers are in real-time contact, exchanging ideas and participating in shared experiences at the same time.",
+    "links": [
+      { "title": "Synchronous learning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Synchronous_learning" },
+      { "title": "What is Synchronous Learning? - Teachfloor", "url": "https://www.teachfloor.com/blog/synchronous-learning" }
+    ]
+  },
+  "Augmented Reality (AR)": {
+    "summary": "Augmented Reality (AR) educational technology refers to the integration of digital information, such as 3D models, images, videos, and sounds, into the real-world environment to enhance the learning experience. Unlike virtual reality (VR), which immerses users in a completely digital world, AR overlays virtual content onto the real world, blending physical and digital elements.",
+    "links": [
+      { "title": "Augmented reality in education - Wikipedia", "url": "https://en.wikipedia.org/wiki/Augmented_reality_in_education" },
+      { "title": "Augmented Reality in Education: Benefits and Examples - Eastern Peak", "url": "https://easternpeak.com/blog/augmented-reality-in-education-benefits-and-examples/" }
+    ]
+  },
+  "Artificial Intelligence (AI) in Education": {
+    "summary": "Artificial Intelligence (AI) in Education educational technology, often referred to as AIEd, involves the application of artificial intelligence to enhance teaching, learning, and administrative processes within educational settings. This technology enables machines to perform tasks that typically require human intelligence, such as learning, adapting, and processing large datasets.",
+    "links": [
+      { "title": "Artificial intelligence in education - Wikipedia", "url": "https://en.wikipedia.org/wiki/Artificial_intelligence_in_education" },
+      { "title": "AI in Education: Benefits and Examples - Top Hat", "url": "https://tophat.com/blog/ai-in-education/" }
+    ]
+  },
+  "Cloud Computing": {
+    "summary": "Cloud Computing educational technology refers to the application of cloud computing principles and services within the field of educational technology (EdTech) to enhance learning and teaching. It involves using internet-based platforms and remote servers to store, manage, and access educational resources, tools, and applications, eliminating the need for extensive physical hardware and infrastructure.",
+    "links": [
+      { "title": "Cloud Computing in Education - One Advanced", "url": "https://www.oneadvanced.com/news-insights/cloud-computing-in-education/" },
+      { "title": "Cloud computing - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cloud_computing" }
+    ]
+  },
+  "Virtual Reality (VR)": {
+    "summary": "Virtual Reality (VR) educational technology refers to the use of computer-generated, immersive, and interactive experiences to simulate three-dimensional environments for teaching and learning purposes. This technology often utilizes specialized hardware like headsets and controllers to create a sense of presence within a virtual world, allowing users to engage with and explore digital content as if they were physically there.",
+    "links": [
+      { "title": "Virtual reality in education - Wikipedia", "url": "https://en.wikipedia.org/wiki/Virtual_reality_in_education" },
+      { "title": "Virtual Reality in Education: Benefits and Examples - Immersion VR", "url": "https://immersionvr.co.uk/virtual-reality-in-education-benefits-and-examples/" }
+    ]
+  },
+  "Collaborative Learning": {
+    "summary": "Collaborative Learning educational technology refers to the application of digital tools and platforms to facilitate and enhance educational approaches where students work together in groups to achieve common learning goals. This pedagogical method emphasizes joint intellectual effort, peer interaction, and the co-creation of knowledge, moving beyond traditional teacher-centered instruction.",
+    "links": [
+      { "title": "Collaborative learning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Collaborative_learning" },
+      { "title": "What is Collaborative Learning? - RingCentral", "url": "https://www.ringcentral.com/us/en/blog/what-is-collaborative-learning/" }
+    ]
+  },
+  "Differentiated Instruction": {
+    "summary": "Differentiated Instruction (DI) educational technology refers to the use of digital tools and resources to tailor teaching methods, content, and assessments to meet the diverse and individual needs of students. This pedagogical approach recognizes that every student has unique learning styles, readiness levels, interests, and abilities, and aims to provide personalized learning experiences to ensure all students can learn effectively and achieve success.",
+    "links": [
+      { "title": "Differentiated instruction - Wikipedia", "url": "https://en.wikipedia.org/wiki/Differentiated_instruction" },
+      { "title": "What is Differentiated Instruction? - Oklahoma State University", "url": "https://education.okstate.edu/news/what-is-differentiated-instruction.html" }
+    ]
+  },
+  "Personalized Learning": {
+    "summary": "Personalized learning educational technology refers to the use of digital tools and platforms to tailor educational experiences to the unique needs, preferences, interests, and pace of individual students. This approach moves away from a one-size-fits-all model, aiming to optimize learning outcomes for each learner.",
+    "links": [
+      { "title": "Personalized learning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Personalized_learning" },
+      { "title": "What is Personalized Learning? - HMHCo", "url": "https://www.hmhco.com/blog/what-is-personalized-learning" }
+    ]
+  },
+  "MMORPG (Massively Multiplayer Online Role-Playing Game)": {
+    "summary": "A Massively Multiplayer Online Role-Playing Game (MMORPG) is a video game that integrates elements of role-playing games (RPGs) with the large-scale, interactive environments of massively multiplayer online (MMO) games. Key characteristics include massive player interaction, a persistent world, role-playing elements, character progression, and extensive social interaction.",
+    "links": [
+      { "title": "MMORPG - Wikipedia", "url": "https://en.wikipedia.org/wiki/MMORPG" },
+      { "title": "What is an MMORPG? - Plarium", "url": "https://plarium.com/en/blog/what-is-mmorpg/" }
+    ]
+  },
+  "MOBA (Multiplayer Online Battle Arena)": {
+    "summary": "MOBA stands for Multiplayer Online Battle Arena. It is a subgenre of strategy video games where two teams of players compete on a structured battlefield. Key characteristics include team-based gameplay, unique characters, a primary objective to destroy the opposing team's central structure, strategic combat, and the presence of lanes and minions.",
+    "links": [
+      { "title": "Multiplayer online battle arena - Wikipedia", "url": "https://en.wikipedia.org/wiki/Multiplayer_online_battle_arena" },
+      { "title": "What is MOBA in Gaming? - Acer", "url": "https://www.acer.com/ac/en/US/content/acer-innovates/what-is-moba-in-gaming" }
+    ]
+  },
+  "Mod (Modification)": {
+    "summary": "\"Mod gaming\" refers to the practice of modifying video games, where \"mod\" is short for \"modification.\" These changes are typically made by players or fans rather than the original game developers. Mods can vary greatly in scope and complexity, ranging from minor tweaks to complete overhauls of a game, adding new content, changing mechanics, or improving visuals.",
+    "links": [
+      { "title": "Mod (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Mod_(video_games)" },
+      { "title": "What is a Mod in Gaming? - GameTree", "url": "https://gametree.me/glossary/mod/" }
+    ]
+  },
+  "Moderator": {
+    "summary": "A moderator in gaming, often shortened to \"mod,\" is an individual who helps maintain order and a positive environment within online gaming communities, chatrooms, and forums. They enforce rules, manage content, resolve disputes, and address disruptive players, ensuring a fair and respectful experience for all.",
+    "links": [
+      { "title": "What is a Moderator in Gaming? - Writing Games", "url": "https://writing-games.com/what-is-a-moderator-in-gaming/" },
+      { "title": "Moderator (online) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Moderator_(online)" }
+    ]
+  },
+  "Nerf": {
+    "summary": "In gaming, \"nerf\" refers to the act of reconfiguring an existing character, weapon, ability, or other game element to make it less powerful or effective. This is typically done by game developers to balance gameplay, prevent any single strategy or item from dominating, and ensure a fair and diverse gaming experience. The term originated from the Nerf brand of foam toys, implying that something powerful has been turned into a weaker, \"foam\" version of itself.",
+    "links": [
+      { "title": "Nerf (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Nerf_(video_games)" },
+      { "title": "What is Nerf in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-nerf-in-gaming/" }
+    ]
+  },
+  "Noob": {
+    "summary": "In gaming, \"noob\" (often spelled \"n00b\" or \"nub\") is a slang term derived from \"newbie,\" referring to someone new or inexperienced in a particular game or activity. While \"newbie\" is generally a neutral or friendly term for a beginner, \"noob\" often carries a more teasing, critical, or even derogatory connotation, implying a lack of skill or unwillingness to improve.",
+    "links": [
+      { "title": "Noob - Wikipedia", "url": "https://en.wikipedia.org/wiki/Noob" },
+      { "title": "What is a Noob in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-a-noob-in-gaming/" }
+    ]
+  },
+  "NPC (Non-Player Character)": {
+    "summary": "In gaming, NPC stands for Non-Player Character. An NPC is a character within a game that is not controlled by a human player, but instead by the game's software or artificial intelligence. NPCs serve various purposes, including advancing the narrative, populating the game world, providing services, or acting as antagonists.",
+    "links": [
+      { "title": "Non-player character - Wikipedia", "url": "https://en.wikipedia.org/wiki/Non-player_character" },
+      { "title": "What is an NPC in Gaming? - Rosebud AI", "url": "https://www.rosebud.ai/ai-glossary/what-is-npc-in-gaming" }
+    ]
+  },
+  "OP (Overpowered)": {
+    "summary": "In gaming, \"OP\" stands for \"Overpowered.\" It refers to a character, ability, item, or strategy that is considered too strong or unbalanced, making it unfairly dominant in gameplay.",
+    "links": [
+      { "title": "Overpowered (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Overpowered_(gaming)" },
+      { "title": "What does OP mean in gaming? - Slang.net", "url": "https://slang.net/meaning/op" }
+    ]
+  },
+  "Patch": {
+    "summary": "In gaming, a \"patch\" refers to a software update released by game developers after a game's initial launch. These updates are designed to address various issues and improve the overall gaming experience, including bug fixes, performance improvements, and the addition of new features or balance adjustments.",
+    "links": [
+      { "title": "Patch (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Patch_(video_games)" },
+      { "title": "What is a Patch in Gaming? - GameTree", "url": "https://gametree.me/glossary/patch/" }
+    ]
+  },
+  "Ping": {
+    "summary": "In gaming, \"ping\" refers to the time it takes for data to travel from a player's device to the game server and back, measured in milliseconds (ms). This round-trip time is a crucial indicator of online gaming performance. A lower ping signifies a more responsive connection, while a higher ping results in noticeable delays, commonly known as \"lag.\"",
+    "links": [
+      { "title": "Ping (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Ping_(gaming)" },
+      { "title": "What is Ping in Gaming? - Lenovo", "url": "https://www.lenovo.com/us/en/faqs/gaming/what-is-ping/" }
+    ]
+  },
+  "Post": {
+    "summary": "In gaming, \"postgame\" refers to additional gameplay or content that becomes available after the main storyline of a game has been completed. It can also refer to anything \"occurring after a game,\" such as postgame interviews, analysis, or celebrations.",
+    "links": [
+      { "title": "Post-game content - Wikipedia", "url": "https://en.wikipedia.org/wiki/Post-game_content" },
+      { "title": "Postgame - Merriam-Webster", "url": "https://www.merriam-webster.com/dictionary/postgame" }
+    ]
+  },
+  "PvE (Player vs. Environment)": {
+    "summary": "PvE (Player versus Environment) gaming refers to a type of gameplay where players face challenges and obstacles presented by the game's environment or non-player characters (NPCs), rather than competing directly against other human players. It stands in contrast to PvP (Player versus Player) and can offer a more relaxed and collaborative experience.",
+    "links": [
+      { "title": "Player versus environment - Wikipedia", "url": "https://en.wikipedia.org/wiki/Player_versus_environment" },
+      { "title": "What is PvE in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-pve-in-gaming/" }
+    ]
+  },
+  "PvP (Player vs. Player)": {
+    "summary": "PvP (Player versus Player) in gaming refers to a type of interactive conflict within a game where human players compete directly against each other. This can involve two or more players, either individually or as part of a team. PvP is often contrasted with PvE (Player versus Environment), where players compete against computer-controlled opponents.",
+    "links": [
+      { "title": "Player versus player - Wikipedia", "url": "https://en.wikipedia.org/wiki/Player_versus_player" },
+      { "title": "What is PvP in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-pvp-in-gaming/" }
+    ]
+  },
+  "Ragequit": {
+    "summary": "In gaming, a \"rage quit\" refers to a player abruptly leaving a game due to intense frustration or anger, often in response to losing, encountering difficulty, or perceived unfairness. This act is characterized by an emotional outburst, which can sometimes involve physical reactions like throwing a controller. It is particularly common in competitive online games.",
+    "links": [
+      { "title": "What is Rage Quit in Gaming? - LevlUp", "url": "https://levlup.com/blogs/gaming-glossary/what-is-rage-quit-in-gaming" },
+      { "title": "Rage-quit - Wikipedia", "url": "https://en.wikipedia.org/wiki/Rage-quit" }
+    ]
+  },
+  "Respawn": {
+    "summary": "In gaming, \"respawn\" refers to the process by which a player or character reappears in the game world after being defeated or eliminated. This fundamental mechanic allows players to continue gameplay and progress through the game without facing permanent loss. It also applies to non-player characters (NPCs) and enemies reappearing in the game world.",
+    "links": [
+      { "title": "Respawn (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Respawn" },
+      { "title": "What is Respawn in Gaming? - Yostream", "url": "https://yostream.io/blog/what-is-respawn-in-gaming/" }
+    ]
+  },
+  "RNG (Random Number Generator)": {
+    "summary": "In gaming, RNG stands for Random Number Generator. It refers to the use of algorithms to produce unpredictable outcomes, introducing an element of chance and variability into gameplay. RNG influences many aspects of games, including loot drops, damage dealt, success rates for actions, and procedural generation of content.",
+    "links": [
+      { "title": "Random number generator - Wikipedia", "url": "https://en.wikipedia.org/wiki/Random_number_generator" },
+      { "title": "What is RNG in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-rng-in-gaming/" }
+    ]
+  },
+  "RPG (Role-Playing Game)": {
+    "summary": "A Role-Playing Game (RPG) is a genre of game in which players assume the roles of characters within a fictional setting. The core concept involves players making decisions that influence the narrative and the development of their chosen character. Key aspects include character progression, detailed storylines, fictional worlds, and various forms like tabletop, live-action, and video game RPGs.",
+    "links": [
+      { "title": "Role-playing game - Wikipedia", "url": "https://en.wikipedia.org/wiki/Role-playing_game" },
+      { "title": "What is an RPG in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-rpg-in-gaming/" }
+    ]
+  },
+  "Skin": {
+    "summary": "\"Skin gaming\" primarily refers to two related concepts: \"skins\" themselves and \"skin gambling.\" Skins are virtual cosmetic items within video games that alter the appearance of a player's character, weapons, or other in-game elements. They are primarily aesthetic and generally do not provide any gameplay advantages. Skin gambling is a form of online gambling where players use these virtual skins as a form of currency to bet on the outcomes of online games, esports matches, or other events.",
+    "links": [
+      { "title": "Skin (video games) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Skin_(video_games)" },
+      { "title": "What is Skin Gaming? - Engaged Family Gaming", "url": "https://engagedfamilygaming.com/what-is-skin-gaming/" }
+    ]
+  },
+  "Smurfing": {
+    "summary": "\"Smurfing\" in gaming refers to the practice of an experienced or highly skilled player creating a new account to play against less skilled opponents. This allows them to compete in lower skill levels or ranks, often manipulating the skill-based matchmaking system. Reasons for smurfing include ego boosting, playing with lower-ranked friends, or exploring new strategies.",
+    "links": [
+      { "title": "Smurfing (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Smurfing_(gaming)" },
+      { "title": "What is Smurfing in Gaming? - GankNow", "url": "https://ganknow.com/what-is-smurfing-in-gaming/" }
+    ]
+  },
+  "Speedrun": {
+    "summary": "Speedrunning is the activity of playing a video game, or a specific section of it, with the primary objective of completing it as quickly as possible. This often involves meticulous planning, extensive practice, and sometimes the exploitation of in-game bugs or glitches to bypass sections or complete them more efficiently than intended.",
+    "links": [
+      { "title": "Speedrun - Wikipedia", "url": "https://en.wikipedia.org/wiki/Speedrun" },
+      { "title": "What is Speedrunning? - Merriam-Webster", "url": "https://www.merriam-webster.com/dictionary/speedrun" }
+    ]
+  },
+  "Streamer": {
+    "summary": "\"Streamer gaming\" refers to the activity of a person, known as a \"streamer,\" broadcasting themselves playing video games live to an online audience. This content is typically shared through streaming platforms such as Twitch and YouTube. Key aspects include live broadcasts, audience interaction, content focus on video games, and monetization through donations, subscriptions, and sponsorships.",
+    "links": [
+      { "title": "Streamer (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Streamer_(gaming)" },
+      { "title": "What is a Streamer in Gaming? - GankNow", "url": "https://ganknow.com/what-is-a-streamer-in-gaming/" }
+    ]
+  },
+  "Tank": {
+    "summary": "In gaming, a \"tank\" refers to a character class or role designed to absorb a significant amount of damage and protect other, more vulnerable team members. This role is common in cooperative video games such as real-time strategy games, role-playing games, fighting games, and multiplayer online battle arenas (MOBAs). Their primary function is to attract enemy attention and attacks, often through game mechanics that force enemies to target them.",
+    "links": [
+      { "title": "Tank (gaming) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Tank_(gaming)" },
+      { "title": "What is a Tank in Gaming? - G2A", "url": "https://www.g2a.com/news/what-is-a-tank-in-gaming/" }
+    ]
+  },
+  "Thread": {
+    "summary": "In gaming, a \"thread\" refers to a sequence of instructions that a Central Processing Unit (CPU) can execute independently. In gaming, threads are crucial for how a game distributes its workload across the processor's cores and logical processors. Multithreading allows different aspects of a game, such as graphics rendering, physics simulations, and AI behavior, to be processed simultaneously, enhancing overall gaming experience.",
+    "links": [
+      { "title": "Thread (computing) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Thread_(computing)" },
+      { "title": "What is a Thread in Gaming? - Larksuite", "url": "https://www.larksuite.com/en_us/blog/what-is-a-thread-in-gaming" }
+    ]
+  },
+  "Toxic": {
+    "summary": "\"Toxic gaming\" refers to abusive player behavior that negatively impacts the enjoyment of other players in an online gaming context. This behavior goes beyond mere banter and can include bullying, harassment, and mean-spirited or personal attacks. It is often fueled by the anonymity of online gaming spaces and can lead to emotional distress for those on the receiving end.",
+    "links": [
+      { "title": "Toxic Gaming - Wikipedia", "url": "https://en.wikipedia.org/wiki/Toxic_gaming_community" },
+      { "title": "What is Toxic Gaming? - Kidas", "url": "https://www.getkidas.com/post/what-is-toxic-gaming" }
+    ]
+  },
+  "Anonymization": {
+    "summary": "Anonymization in cybersecurity is the process of protecting private or sensitive information by removing or obscuring identifiers that link an individual to stored data. The primary goal is to safeguard individual privacy while still allowing the data to be used for various purposes like analysis, research, and machine learning.",
+    "links": [
+      { "title": "What is Data Anonymization? - Imperva", "url": "https://www.imperva.com/learn/data-security/data-anonymization/" },
+      { "title": "What is Data Anonymization? - TechTarget", "url": "https://www.techtarget.com/whatis/definition/data-anonymization" },
+      { "title": "Data Anonymization - K2View", "url": "https://k2view.com/data-anonymization/" },
+      { "title": "What is Data Anonymization? - MojoAuth", "url": "https://mojoauth.com/blog/data-anonymization/" },
+      { "title": "What is Data Anonymization? - Splunk", "url": "https://www.splunk.com/en_us/data-solutions/data-anonymization.html" }
+    ]
+  },
+  "Phubbing": {
+    "summary": "Phubbing is the act of snubbing someone in a social setting by looking at your phone instead of paying attention. It's a portmanteau of 'phone' and 'snubbing.' This behavior can negatively impact relationships and social interactions, contributing to feelings of neglect and isolation.",
+    "links": [
+      { "title": "What is Phubbing? - Verywell Mind", "url": "https://www.verywellmind.com/what-is-phubbing-5093410" },
+      { "title": "Phubbing - Wikipedia", "url": "https://en.wikipedia.org/wiki/Phubbing" }
+    ]
+  },
+  "Propaganda": {
+    "summary": "Propaganda is the dissemination of information—which can include facts, arguments, rumors, half-truths, or lies—with the primary goal of influencing public opinion, emotions, attitudes, or behavior to further a specific agenda. It is characterized by its deliberate and often manipulative approach, distinguishing it from casual conversation or the free exchange of ideas. Historically, \"propaganda\" was a neutral term, but in the 20th century, it acquired a negative connotation, often implying the intentional spread of false or misleading information to support political actions or ideologies.",
+    "links": [
+      { "title": "Propaganda - Wikipedia", "url": "https://en.wikipedia.org/wiki/Propaganda" },
+      { "title": "Propaganda - Britannica", "url": "https://www.britannica.com/topic/propaganda" },
+      { "title": "Propaganda - Dictionary.com", "url": "https://www.dictionary.com/browse/propaganda" }
+    ]
+  },
+  "Sexting": {
+    "summary": "Sexting is defined as sending, receiving, or forwarding sexually explicit messages, photographs, or videos, primarily using mobile phones or other digital devices. The term is a portmanteau of \"sex\" and \"texting.\" While sexting is practiced by people of all ages, it has become more common with the rise of camera phones and smartphones. For teenagers, sexting can be an experimental phase or a prelude to sexual activity. It's important to note that legal implications of sexting can vary, especially when minors are involved.",
+    "links": [
+      { "title": "Sexting - Wikipedia", "url": "https://en.wikipedia.org/wiki/Sexting" },
+      { "title": "Sexting - Britannica", "url": "https://www.britannica.com/dictionary/sexting" },
+      { "title": "Sexting - Merriam-Webster", "url": "https://www.merriam-webster.com/dictionary/sexting" },
+      { "title": "Sexting - NCAC.org", "url": "https://ncac.org/resource/sexting-what-everyone-needs-to-know" }
+    ]
+  },
+  "Prey": {
+    "summary": "In online safety, \"prey\" refers to individuals who are targeted and exploited by online predators. These predators use the internet to find and manipulate vulnerable people, often children and teenagers, for various harmful purposes, including sexual abuse, fraud, or other forms of exploitation. Online predators often employ tactics such as creating fake identities, building trust through deception (grooming), and exploiting their victims' vulnerabilities. The anonymity of the internet allows predators to conceal their true identities and reach potential victims without geographical limitations.",
+    "links": [
+      { "title": "Online Safety for Kids - InternetSafety101.org", "url": "https://internetsafety101.org/" },
+      { "title": "Online Predators - Crime Awareness Kids", "url": "https://crimeawarenesskids.com/online-predators/" },
+      { "title": "Online Child Exploitation - Laws.com", "url": "https://www.laws.com/articles/online-child-exploitation.html" },
+      { "title": "Online Predator - Britannica", "url": "https://www.britannica.com/topic/online-predator" },
+      { "title": "Online Grooming - GCFGlobal.org", "url": "https://www.gcfglobal.org/internet-safety/online-grooming/1/" },
+      { "title": "Online Predator - Webroot", "url": "https://www.webroot.com/us/en/resources/glossary/online-predator" }
+    ]
+  },
+  "Sockpuppet": {
+    "summary": "A sockpuppet is a false online identity created for deceptive purposes, often to manipulate online discussions, bypass restrictions, or for marketing. It's distinct from a pseudonym because it's presented as an independent third-party.",
+    "links": [
+      { "title": "Sock puppet (Internet) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Sock_puppet_(Internet)" },
+      { "title": "What is a sock puppet account? - Quora", "url": "https://www.quora.com/What-is-a-sock-puppet-account" },
+      { "title": "Sockpuppet - Encyclopedia", "url": "https://encyclopedia.pub/entry/30360" },
+      { "title": "What is a Sock Puppet? - YouTube", "url": "https://www.youtube.com/watch?v=Tq4h-yS6B-A" },
+      { "title": "Sockpuppet - Fanlore", "url": "https://fanlore.org/wiki/Sockpuppet" }
+    ]
+  },
+  "Digital Reputation": {
+    "summary": "A digital reputation is the public perception of a person or brand online, formed by their online activity, what others post about them, and search engine results. A positive digital reputation can build trust and credibility, while a negative one can be damaging.",
+    "links": [
+      { "title": "What is Digital Reputation and Why is it Important?", "url": "https://www.aimtechnologies.co/blog/what-is-digital-reputation-and-why-is-it-important/" },
+      { "title": "Digital reputation - eSafety Commissioner", "url": "https://www.esafety.gov.au/key-issues/digital-reputation" },
+      { "title": "What is Digital Reputation? - Reputation Crisis", "url": "https://reputationcrisis.org/what-is-digital-reputation/" },
+      { "title": "What is Online Reputation? - Reputation X", "url": "https://www.reputationx.com/what-is-online-reputation" },
+      { "title": "What is Digital Reputation? - Determ", "url": "https://www.determ.com/blog/digital-reputation/" }
+    ]
+  },
+  "XP (Experience Points)": {
+    "summary": "Experience Points (XP) are a mechanic in many games, especially RPGs, used to measure a player's progress. Earning XP by completing quests, defeating enemies, or exploring allows a player's character to 'level up', becoming more powerful and unlocking new abilities.",
+    "links": [
+      { "title": "Experience point - Wikipedia", "url": "https://en.wikipedia.org/wiki/Experience_point" },
+      { "title": "What are Experience Points (XP) in Gaming? - Growth Engineering", "url": "https://www.growthengineering.co.uk/what-are-experience-points-xp-in-gaming/" },
+      { "title": "What does XP mean in gaming? - G2A", "url": "https://www.g2a.com/news/what-does-xp-mean-in-gaming/" },
+      { "title": "What Is XP And How Does It Work In Video Games? - Larksuite", "url": "https://www.larksuite.com/en_us/blog/what-is-xp-and-how-does-it-work-in-video-games" },
+      { "title": "What are experience points? - Reddit", "url": "https://www.reddit.com/r/explainlikeimfive/comments/1z9q3b/what_are_experience_points/" }
+    ]
+  },
+  "Debunking": {
+    "summary": "Debunking is the act of exposing the falseness of a claim, idea, or belief by proving it to be untrue. It is often associated with skeptical investigation of controversial topics like paranormal phenomena, pseudoscience, and conspiracy theories.",
+    "links": [
+      { "title": "debunk | meaning of debunk in Longman Dictionary of Contemporary ...", "url": "https://www.ldoceonline.com/dictionary/debunk" },
+      { "title": "Debunking - Wikipedia", "url": "https://en.wikipedia.org/wiki/Debunking" },
+      { "title": "Debunk Definition & Meaning - Merriam-Webster", "url": "https://www.merriam-webster.com/dictionary/debunk" },
+      { "title": "DEBUNK | English meaning - Cambridge Dictionary", "url": "https://dictionary.cambridge.org/dictionary/english/debunk" },
+      { "title": "Debunk - Definition, Meaning & Synonyms - Vocabulary.com", "url": "https://www.vocabulary.com/dictionary/debunk" }
+    ]
+  }
+}

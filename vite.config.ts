@@ -24,4 +24,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist/public",
   },
+  optimizeDeps: {
+    exclude: ['d3-force-boundary'],
+  },
 }));
