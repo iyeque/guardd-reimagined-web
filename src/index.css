@@ -101,23 +101,3 @@
     @apply bg-transparent text-foreground;
   }
 }
-
-/* Target Cursor Styles */
-.target-cursor {
-  transition: transform 0.1s ease-out;
-}
-
-.target-cursor.animate svg {
-  animation: pulse 0.3s ease-out;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}

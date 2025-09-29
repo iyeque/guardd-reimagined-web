@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { Renderer, Program, Mesh, Color, Triangle, Camera } from 'ogl';
 import './Galaxy.css';
 import { cn } from '@/lib/utils';
@@ -213,16 +213,51 @@ export default function Galaxy({
   const smoothMousePos = useRef({ x: 0.5, y: 0.5 });
   const targetMouseActive = useRef(0.0);
   const smoothMouseActive = useRef(0.0);
+  
+  // Performance optimization: Throttle mouse updates
+  const lastMouseUpdate = useRef(0);
+  const MOUSE_UPDATE_THROTTLE = 16; // ~60fps
+  
+  // Performance optimization: Memoize expensive calculations
+  const optimizedParams = useMemo(() => ({
+    devicePixelRatio: Math.min(window.devicePixelRatio, 1.5), // Further limit DPR for better performance
+    animationFrameRate: disableAnimation ? 0 : 60,
+    mouseLerpFactor: 0.08, // Slightly faster mouse following
+  }), [disableAnimation]);
+
+  // Throttled mouse move handler for better performance
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const now = performance.now();
+    if (now - lastMouseUpdate.current < MOUSE_UPDATE_THROTTLE) {
+      return;
+    }
+    lastMouseUpdate.current = now;
+    
+    const rect = ctnDom.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = 1.0 - (e.clientY - rect.top) / rect.height;
+    targetMousePos.current = { x, y };
+    targetMouseActive.current = 1.0;
+  }, [MOUSE_UPDATE_THROTTLE]);
+
+  const handleMouseLeave = useCallback(() => {
+    targetMouseActive.current = 0.0;
+  }, []);
 
   useEffect(() => {
     if (!ctnDom.current) return;
     const ctn = ctnDom.current;
     
-    // Create renderer with proper pixel ratio
+    // Create renderer with optimized settings for faster loading
     const renderer = new Renderer({
       alpha: transparent,
       premultipliedAlpha: false,
-      dpr: Math.min(window.devicePixelRatio, 2), // Limit DPR for performance
+      dpr: optimizedParams.devicePixelRatio,
+      antialias: false, // Disable antialiasing for better performance
+      powerPreference: 'high-performance',
+      preserveDrawingBuffer: false, // Don't preserve buffer for better performance
     });
     
     const gl = renderer.gl;
@@ -284,19 +319,33 @@ export default function Galaxy({
     resizeObserver.observe(ctn);
     resize();
 
+    // Optimized animation loop with adaptive throttling based on mouse interaction
+    let lastFrameTime = 0;
+    const TARGET_FPS = mouseInteraction ? 60 : 30; // Lower FPS when no mouse interaction
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
+    
     function update(t: number) {
       animateId = requestAnimationFrame(update);
+      
+      // Less aggressive throttling for smoother animation
+      if (t - lastFrameTime < FRAME_INTERVAL * 0.8) {
+        return;
+      }
+      lastFrameTime = t;
+      
       if (!disableAnimation) {
         program.uniforms.uTime.value = t * 0.001;
         program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
       }
 
-      const lerpFactor = 0.05;
+      // Optimized mouse interpolation
+      const lerpFactor = optimizedParams.mouseLerpFactor;
       smoothMousePos.current.x += (targetMousePos.current.x - smoothMousePos.current.x) * lerpFactor;
       smoothMousePos.current.y += (targetMousePos.current.y - smoothMousePos.current.y) * lerpFactor;
 
       smoothMouseActive.current += (targetMouseActive.current - smoothMouseActive.current) * lerpFactor;
 
+      // Batch uniform updates
       program.uniforms.uMouse.value[0] = smoothMousePos.current.x;
       program.uniforms.uMouse.value[1] = smoothMousePos.current.y;
       program.uniforms.uMouseActiveFactor.value = smoothMouseActive.current;
@@ -306,21 +355,14 @@ export default function Galaxy({
     animateId = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
 
-    function handleMouseMove(e: MouseEvent) {
-      const rect = ctn.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = 1.0 - (e.clientY - rect.top) / rect.height;
-      targetMousePos.current = { x, y };
-      targetMouseActive.current = 1.0;
-    }
-
-    function handleMouseLeave() {
-      targetMouseActive.current = 0.0;
-    }
-
+    // Only add mouse listeners if mouse interaction is enabled
     if (mouseInteraction) {
       ctn.addEventListener('mousemove', handleMouseMove);
       ctn.addEventListener('mouseleave', handleMouseLeave);
+    } else {
+      // Set default mouse position when interaction is disabled
+      targetMousePos.current = { x: 0.5, y: 0.5 };
+      smoothMousePos.current = { x: 0.5, y: 0.5 };
     }
 
     return () => {
@@ -351,7 +393,10 @@ export default function Galaxy({
     rotationSpeed,
     repulsionStrength,
     autoCenterRepulsion,
-    transparent
+    transparent,
+    optimizedParams,
+    handleMouseMove,
+    handleMouseLeave
   ]);
 
   return <div ref={ctnDom} className="galaxy-container" {...rest} />;
