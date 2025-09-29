@@ -1,43 +1,49 @@
-
 import { Users, Monitor, BookOpen, GamepadIcon, MessageCircle, Heart } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 export const Services = () => {
   const services = [
     {
       icon: Monitor,
-      title: "Screen Time Management",
-      description: "Learn healthy boundaries and create balanced screen time routines that work for your family."
+      title: "Master Your Screen Time",
+      description: "Transform your family's digital habits with practical strategies for balanced and healthy screen use. Ready to reclaim your time?",
+      link: "/screen-time-management"
     },
     {
       icon: Users,
-      title: "Family Digital Agreements",
-      description: "Build collaborative agreements that help everyone understand expectations and responsibilities."
+      title: "Harmonize Your Digital Home",
+      description: "Create clear, collaborative family agreements that foster understanding and shared responsibility online. Start building trust today.",
+      link: "/family-digital-agreements"
     },
     {
       icon: BookOpen,
-      title: "Educational Blog",
-      description: "Expert insights, tips, and research-backed strategies for digital wellness and family safety."
+      title: "Unlock Expert Digital Wisdom",
+      description: "Dive into our blog for cutting-edge insights, actionable tips, and research-backed strategies to empower your family's digital journey. Explore our latest articles.",
+      link: "/educational-blog"
     },
     {
       icon: GamepadIcon,
-      title: "Interactive Games",
-      description: "Fun, educational games that teach digital citizenship and online safety skills."
+      title: "Play & Learn Safely Online",
+      description: "Engage with fun, interactive games designed to build essential digital citizenship and online safety skills for all ages. Discover our game library!",
+      link: "/educational-games"
     },
     {
       icon: MessageCircle,
-      title: "Video Resources",
-      description: "Engaging video content covering digital wellness topics for parents and children."
+      title: "Visual Guides for Digital Life",
+      description: "Access a library of engaging video content, offering clear, concise guidance on key digital wellness topics for both parents and children. Watch and learn.",
+      link: "/video-resources"
     },
     {
       icon: Heart,
-      title: "Ongoing Support",
-      description: "Access to community support, expert guidance, and resources when you need them most."
+      title: "Your Digital Wellness Community",
+      description: "Connect with a supportive network, receive expert guidance, and find the resources you need, exactly when you need them. Join our community.",
+      link: "/community-support"
     }
   ];
 
   return (
-    <section id="resources" className="py-20 px-6 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <section id="resources" className="py-20 px-6 bg-transparent">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
@@ -51,19 +57,23 @@ export const Services = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="bg-white/80 border-green-200/50 hover:border-green-300/70 transition-all hover:shadow-lg">
-              <CardHeader>
-                <service.icon className="h-12 w-12 text-green-600 mb-4" />
-                <CardTitle className="text-slate-800 text-xl">{service.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-slate-600 text-base">
-                  {service.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
+            <Link to={service.link} key={index}>
+              <Card className="bg-transparent/80 border-green-200/50 hover:border-green-300/70 transition-all hover:shadow-lg">
+                <CardHeader>
+                  <service.icon className="h-12 w-12 text-green-600 mb-4" />
+                  <CardTitle className="text-slate-800 text-xl">{service.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-600 text-base">
+                    {service.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
+
+        
       </div>
     </section>
   );

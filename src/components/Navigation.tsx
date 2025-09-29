@@ -1,10 +1,11 @@
 
 import { Heart, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export const Navigation = () => {
   return (
-    <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-green-200/30 shadow-sm">
+    <nav className="fixed top-0 w-full z-50 bg-transparent">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -20,9 +21,11 @@ export const Navigation = () => {
             <a href="#contact" className="text-slate-600 hover:text-green-600 transition-colors font-medium">Contact</a>
           </div>
           
-          <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white">
-            Get Started
-          </Button>
+          <Link to="/workshop">
+            <Button className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white">
+              Get Started
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>

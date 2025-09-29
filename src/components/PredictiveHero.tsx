@@ -71,7 +71,9 @@ const PredictiveHero: React.FC = () => {
     fetchData();
   }, []);
 
-  const allNodeTerms: NodeTerm[] = clusters.flatMap((c) => c.nodes);
+  const allNodeTerms: NodeTerm[] = React.useMemo(() => {
+    return clusters.flatMap((c) => c.nodes);
+  }, [clusters]);
 
   useEffect(() => {
     if (input.length === 0) {
@@ -187,7 +189,7 @@ const PredictiveHero: React.FC = () => {
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             placeholder="Search for a topic..."
-            className="text-xl px-8 py-5 rounded-full shadow-lg border-2 border-gray-200 focus:border-blue-500 bg-white transition-all duration-300"
+            className="text-xl px-8 py-5 rounded-full shadow-lg border-2 border-gray-200 focus:border-blue-500 bg-transparent transition-all duration-300"
             autoComplete="off"
           />
         </div>
@@ -307,7 +309,7 @@ const PredictiveHero: React.FC = () => {
   };
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-[90vh] bg-gray-50 py-16 relative w-full">
+    <section className="flex flex-col items-center justify-center min-h-[90vh] bg-transparent py-16 relative w-full">
       <div className="w-full max-w-6xl mx-auto text-center">
         {selectedTerm ? (
           (() => {
@@ -327,7 +329,7 @@ const PredictiveHero: React.FC = () => {
                 }}
               >
                 <Card
-                  className="p-8 text-left shadow-2xl border-2 border-gray-200 relative z-30 max-w-3xl bg-white rounded-2xl"
+                  className="p-8 text-left shadow-2xl border-2 border-gray-200 relative z-30 max-w-3xl bg-transparent rounded-2xl"
                   onClick={e => e.stopPropagation()}
                 >
                   <h3 className="text-3xl font-bold mb-4">{selectedTerm.name}</h3>

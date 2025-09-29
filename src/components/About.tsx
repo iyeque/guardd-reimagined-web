@@ -12,7 +12,7 @@ export const About = () => {
   ];
 
   return (
-    <section id="about" className="py-20 px-6 bg-white">
+    <section id="about" className="py-20 px-6 bg-transparent">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
@@ -37,7 +37,7 @@ export const About = () => {
           
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-blue-400/20 blur-2xl rounded-lg"></div>
-            <div className="relative bg-white/90 backdrop-blur-sm border border-green-200/50 rounded-lg p-8 shadow-xl">
+            <div className="relative bg-transparent/90 backdrop-blur-sm border border-green-200/50 rounded-lg p-8 shadow-xl">
               <div className="text-center">
                 <div className="text-5xl font-bold text-green-600 mb-2">5+</div>
                 <div className="text-slate-600 mb-6">Years of Experience</div>

@@ -1769,5 +1769,173 @@
       { "title": "DEBUNK | English meaning - Cambridge Dictionary", "url": "https://dictionary.cambridge.org/dictionary/english/debunk" },
       { "title": "Debunk - Definition, Meaning & Synonyms - Vocabulary.com", "url": "https://www.vocabulary.com/dictionary/debunk" }
     ]
+  },
+  "Astroturfing": {
+    "summary": "Astroturfing is a deceptive marketing or public relations practice where the appearance of grassroots support is fabricated. It involves creating fake accounts, reviews, or testimonials to mislead the public into believing that there is widespread, genuine enthusiasm for a product, service, or political viewpoint. This manipulation of public opinion is often orchestrated by corporations or political entities to advance their own agendas.",
+    "links": [
+      { "title": "What is Astroturfing? - Wikipedia", "url": "https://en.wikipedia.org/wiki/Astroturfing" },
+      { "title": "Astroturfing: What It Is and Why It Matters - BigCommerce", "url": "https://www.bigcommerce.com/ecommerce-answers/what-is-astroturfing/" },
+      { "title": "The Guardian view on astroturfing: the fake grassroots are still growing - The Guardian", "url": "https://www.theguardian.com/commentisfree/2019/jan/23/the-guardian-view-on-astroturfing-the-fake-grassroots-are-still-growing" }
+    ]
+  },
+  "Gaming & Online Communities": {
+    "summary": "Gaming and online communities are virtual spaces where people with shared interests, particularly in video games, come together to interact. These communities can be found on various platforms, including in-game chat, forums like Reddit, and communication tools like Discord. They provide a space for players to collaborate, share knowledge, and build social connections, enhancing the overall gaming experience.",
+    "links": [
+      { "title": "Online community - Wikipedia", "url": "https://en.wikipedia.org/wiki/Online_community" },
+      { "title": "What Are Gaming Communities? - WePlay Holding", "url": "https://weplayholding.com/blog/what-are-gaming-communities/" },
+      { "title": "The Power of Gaming Communities - Stanford University", "url": "https://web.stanford.edu/group/htgg/cgi-bin/drupal/?q=node/113" }
+    ]
+  },
+  "Content Marketing": {
+    "summary": "Content marketing is a strategic marketing approach focused on creating and distributing valuable, relevant, and consistent content to attract and retain a clearly defined audience. Instead of directly pitching products or services, it aims to build trust and relationships with potential customers by providing them with useful information. This can take the form of blog posts, videos, podcasts, and other media, with the ultimate goal of driving profitable customer action.",
+    "links": [
+      { "title": "Content Marketing - Wikipedia", "url": "https://en.wikipedia.org/wiki/Content_marketing" },
+      { "title": "What Is Content Marketing? - Mailchimp", "url": "https://mailchimp.com/marketing-glossary/content-marketing/" },
+      { "title": "Content Marketing Strategy, Definition, and Examples - Salesforce", "url": "https://www.salesforce.com/products/marketing-cloud/what-is-content-marketing/" }
+    ]
+  },
+  "Critical Thinking": {
+    "summary": "Critical thinking is the process of analyzing information objectively to form a judgment. It involves a disciplined approach to conceptualizing, applying, analyzing, synthesizing, and evaluating information gathered from observation, experience, or communication. At its core, critical thinking is about being an active learner rather than a passive recipient of information.",
+    "links": [
+      { "title": "Critical Thinking - Wikipedia", "url": "https://en.wikipedia.org/wiki/Critical_thinking" },
+      { "title": "What is Critical Thinking? - The Foundation for Critical Thinking", "url": "https://www.criticalthinking.org/pages/defining-critical-thinking/766" },
+      { "title": "Critical Thinking: What It Is and Why It's Important - General Assembly", "url": "https://generalassemb.ly/blog/what-is-critical-thinking-and-why-is-it-important/" }
+    ]
+  },
+  "Cybersecurity & Privacy": {
+    "summary": "Cybersecurity and Privacy are two intertwined concepts crucial for navigating the digital world. Cybersecurity focuses on protecting digital systems, networks, and data from malicious attacks and unauthorized access. It employs technologies and practices to ensure the confidentiality, integrity, and availability of information. Privacy, on the other hand, is about an individual's right to control their personal information. It deals with how data is collected, used, and shared, emphasizing transparency, consent, and individual rights. In essence, cybersecurity is the \"how\" of data protection, while privacy is the \"why.\"",
+    "links": [
+      { "title": "Cybersecurity - National Institute of Standards and Technology (NIST)", "url": "https://www.nist.gov/cybersecurity" },
+      { "title": "Data Privacy Guide - Cloudflare", "url": "https://www.cloudflare.com/learning/privacy/data-privacy-guide/" },
+      { "title": "What is Cybersecurity? - IBM", "url": "https://www.ibm.com/topics/cybersecurity" }
+    ]
+  },
+  "Mental Health & Well-being": {
+    "summary": "Mental health and well-being refer to a state of psychological, emotional, and social wellness. It's not merely the absence of a mental health condition, but the ability to cope with the normal stresses of life, work productively, and contribute to one's community. It encompasses our emotional, psychological, and social well-being, affecting how we think, feel, and act.",
+    "links": [
+      { "title": "Mental health: strengthening our response - World Health Organization (WHO)", "url": "https://www.who.int/news-room/fact-sheets/detail/mental-health-strengthening-our-response" },
+      { "title": "What is Mental Health? - MentalHealth.gov", "url": "https://www.mentalhealth.gov/basics/what-is-mental-health" },
+      { "title": "Well-being - EveryMind", "url": "https://everymind.org.au/well-being" }
+    ]
+  },
+  "Digital Citizenship & Etiquette": {
+    "summary": "Digital citizenship and etiquette are essential for navigating the online world responsibly and respectfully. Digital citizenship refers to the rights and responsibilities of users in digital spaces, encompassing online safety, digital literacy, and respectful interaction. Digital etiquette, or \"netiquette,\" provides the practical guidelines for polite and appropriate online behavior, such as using respectful language, avoiding spam, and being mindful of different communication contexts.",
+    "links": [
+      { "title": "Digital Citizenship - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_citizenship" },
+      { "title": "Digital Citizenship - MediaSmarts", "url": "https://mediasmarts.ca/digital-media-literacy/general-information/digital-media-literacy-fundamentals/digital-citizenship" },
+      { "title": "The Core Rules of Netiquette - Albion.com", "url": "https://www.albion.com/netiquette/corerules.html" }
+    ]
+  },
+  "Parental Controls & Monitoring": {
+    "summary": "Parental controls and monitoring tools are essential for ensuring children's online safety. These features, often built into devices and apps, allow parents to filter inappropriate content, set screen time limits, and manage app usage. Monitoring features provide insights into a child's online activity, including websites visited and social media interactions, helping parents to protect them from cyberbullying, online predators, and other digital dangers.",
+    "links": [
+      { "title": "Parental Controls - eSafety Commissioner", "url": "https://www.esafety.gov.au/parents/parental-controls" },
+      { "title": "Parental Controls: A Complete Guide for Parents - ConnectSafely", "url": "https://www.connectsafely.org/parental-controls/" },
+      { "title": "Parental control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Parental_control" }
+    ]
+  },
+  "Crisis Management": {
+    "summary": "Crisis management is the process by which an organization deals with a disruptive and unexpected event that threatens to harm the organization, its stakeholders, or the general public. The goal of crisis management is to minimize damage and enable the organization to recover as quickly as possible. It involves having a plan in place before a crisis hits, as well as a designated team to execute that plan.",
+    "links": [
+      { "title": "Crisis management - Wikipedia", "url": "https://en.wikipedia.org/wiki/Crisis_management" },
+      { "title": "What Is Crisis Management and Why Is It Important? - Asana", "url": "https://asana.com/resources/crisis-management" },
+      { "title": "Crisis Management: Definition, How It Works, Types, and Example - Investopedia", "url": "https://www.investopedia.com/terms/c/crisis-management.asp" }
+    ]
+  },
+  "Misinformation & Critical Thinking": {
+    "summary": "Misinformation is false or inaccurate information, often spread unintentionally, while critical thinking is the process of skillfully analyzing and evaluating information to form a reasoned judgment. In an age of information overload, critical thinking is the primary tool for combating misinformation. By evaluating sources, identifying biases, and verifying facts, individuals can become more resilient to false narratives and make more informed decisions.",
+    "links": [
+      { "title": "Misinformation - Wikipedia", "url": "https://en.wikipedia.org/wiki/Misinformation" },
+      { "title": "Critical Thinking and Misinformation - The Ohio State University", "url": "https://fcs.osu.edu/news/critical-thinking-and-misinformation" },
+      { "title": "How to Combat Misinformation with Critical Thinking - Psychology Today", "url": "https://www.psychologytoday.com/us/blog/the-skeptical-shrink/202011/how-combat-misinformation-critical-thinking" }
+    ]
+  },
+  "Reasoning": {
+    "summary": "Reasoning is the cognitive process of thinking in a logical and sensible way to form conclusions or judgments. It involves analyzing information, identifying problems, and evaluating solutions. The main types of reasoning are deductive (from general to specific), inductive (from specific to general), and abductive (inference to the best explanation).",
+    "links": [
+      { "title": "Reasoning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Reasoning" },
+      { "title": "What is Reasoning? - Unacademy", "url": "https://unacademy.com/content/reasoning/what-is-reasoning/" },
+      { "title": "Reasoning: Its Meaning and Types | Psychology - Psychology Discussion", "url": "https://www.psychologydiscussion.net/thinking/reasoning-its-meaning-and-types-psychology/2013" }
+    ]
+  },
+  "Digital Footprint & Reputation": {
+    "summary": "Your digital footprint is the trail of data you leave online, including both active (intentional posts) and passive (unintentional data collection) traces. This footprint shapes your digital reputation, which is the public perception of you based on your online activity. Managing your digital footprint by being mindful of what you share is crucial for building a positive digital reputation, which can have a significant impact on your personal and professional life.",
+    "links": [
+      { "title": "Digital footprint - Wikipedia", "url": "https://en.wikipedia.org/wiki/Digital_footprint" },
+      { "title": "Digital reputation - eSafety Commissioner", "url": "https://www.esafety.gov.au/key-issues/digital-reputation" },
+      { "title": "What is a Digital Footprint? - Kaspersky", "url": "https://www.kaspersky.com/resource-center/definitions/what-is-a-digital-footprint" }
+    ]
+  },
+  "Authorization": {
+    "summary": "Authorization is the process of determining what a user is allowed to do within a system. It follows authentication, which verifies a user's identity. Authorization works by checking a set of permissions or policies to grant or deny access to specific resources, such as files, applications, or features. Common authorization models include Role-Based Access Control (RBAC) and Attribute-Based Access Control (ABAC).",
+    "links": [
+      { "title": "Authorization - Wikipedia", "url": "https://en.wikipedia.org/wiki/Authorization" },
+      { "title": "What is Authorization? - Fortinet", "url": "https://www.fortinet.com/resources/cyberglossary/authorization" },
+      { "title": "Authentication vs. Authorization - Auth0", "url": "https://auth0.com/docs/get-started/identity-fundamentals/authentication-and-authorization" }
+    ]
+  },
+  "Identity and Access Management (IAM)": {
+    "summary": "Identity and Access Management (IAM) is a cybersecurity framework that manages digital identities and user access to an organization's resources. It ensures that the right people have the right access to the right information at the right time. IAM systems handle both authentication (verifying a user's identity) and authorization (determining their access rights), and often include features like Single Sign-On (SSO) and Multi-Factor Authentication (MFA) to enhance security and user experience.",
+    "links": [
+      { "title": "Identity and access management - Wikipedia", "url": "https://en.wikipedia.org/wiki/Identity_and_access_management" },
+      { "title": "What is Identity and Access Management (IAM)? - IBM", "url": "https://www.ibm.com/topics/identity-access-management" },
+      { "title": "What is IAM? - Microsoft Security", "url": "https://www.microsoft.com/en-us/security/business/security-101/what-is-iam" }
+    ]
+  },
+  "Single Sign-On (SSO)": {
+    "summary": "Single Sign-On (SSO) is an authentication method that allows users to securely access multiple applications and services with a single set of credentials. Instead of logging in to each application individually, users authenticate once with an Identity Provider (IdP), which then grants them access to all connected Service Providers (SPs). This improves user experience, enhances security by enabling centralized policy enforcement like MFA, and simplifies administration.",
+    "links": [
+      { "title": "Single sign-on - Wikipedia", "url": "https://en.wikipedia.org/wiki/Single_sign-on" },
+      { "title": "What is Single Sign-On (SSO)? - Fortinet", "url": "https://www.fortinet.com/resources/cyberglossary/sso" },
+      { "title": "How SSO Works - OneLogin", "url": "https://www.onelogin.com/learn/how-sso-works" }
+    ]
+  },
+  "Online Safety & Predator Awareness": {
+    "summary": "Online safety and predator awareness are crucial for navigating the digital world securely. Online safety involves protecting personal information, managing your digital reputation, and avoiding online threats like hacking and phishing. Predator awareness is a key component of online safety, focusing on recognizing and avoiding individuals who use the internet to exploit and manipulate others, particularly children and teenagers.",
+    "links": [
+      { "title": "Online safety - Wikipedia", "url": "https://en.wikipedia.org/wiki/Online_safety" },
+      { "title": "Internet Safety - GCFGlobal.org", "url": "https://gcfglobal.org/en/internetsafety/" },
+      { "title": "Online Predators - Crime Awareness for Kids", "url": "https://crimeawarenesskids.com/online-predators/" }
+    ]
+  },
+  "Online Reputation Management (ORM)": {
+    "summary": "Online Reputation Management (ORM) is the practice of monitoring and influencing the public perception of a person or brand online. It involves a combination of digital marketing, public relations, and SEO strategies to shape the online narrative. The goal of ORM is to promote positive content and address negative feedback to ensure that the information people find online is favorable and accurate.",
+    "links": [
+      { "title": "Online reputation management - Wikipedia", "url": "https://en.wikipedia.org/wiki/Online_reputation_management" },
+      { "title": "What Is Online Reputation Management? - Sprout Social", "url": "https://sproutsocial.com/insights/online-reputation-management/" },
+      { "title": "What Is Online Reputation Management (ORM)? - Semrush", "url": "https://www.semrush.com/blog/what-is-online-reputation-management/" }
+    ]
+  },
+  "Educational Technology": {
+    "summary": "Educational technology, or EdTech, is the use of technology to facilitate learning and improve performance. It involves integrating hardware, software, and educational theories to create more engaging, inclusive, and personalized learning experiences. EdTech encompasses a wide range of tools, from interactive whiteboards and online courses to virtual reality and artificial intelligence.",
+    "links": [
+      { "title": "Educational technology - Wikipedia", "url": "https://en.wikipedia.org/wiki/Educational_technology" },
+      { "title": "What Is Educational Technology (EdTech)? - Built In", "url": "https://builtin.com/edtech" },
+      { "title": "Educational Technology - University of San Diego", "url": "https://onlinedegrees.sandiego.edu/educational-technology-defined/" }
+    ]
+  },
+  "Brand Monitoring": {
+    "summary": "Brand monitoring is the process of tracking online conversations to understand what is being said about a brand. It involves monitoring various digital channels, such as social media, news sites, and review platforms, to gather mentions of a brand. This practice helps companies manage their reputation, gather customer feedback, and identify market trends.",
+    "links": [
+      { "title": "What is Brand Monitoring? - Brandwatch", "url": "https://www.brandwatch.com/blog/what-is-brand-monitoring/" },
+      { "title": "The What, Why, and How of Brand Monitoring - Hootsuite", "url": "https://blog.hootsuite.com/brand-monitoring/" },
+      { "title": "What is Brand Monitoring and Why is it Important? - Sprout Social", "url": "https://sproutsocial.com/insights/brand-monitoring/" }
+    ]
+  },
+  "Trolling": {
+    "summary": "Trolling is the act of deliberately posting offensive, provocative, or off-topic messages online to upset people, provoke conflict, or disrupt conversations. Trolls often hide behind anonymous accounts and are motivated by a desire for attention or a malicious intent to cause harm. The most common advice for dealing with trolls is to not \"feed\" them by responding to their provocations.",
+    "links": [
+      { "title": "Internet troll - Wikipedia", "url": "https://en.wikipedia.org/wiki/Internet_troll" },
+      { "title": "Online Trolling - eSafety Commissioner", "url": "https://www.esafety.gov.au/key-issues/online-trolling" },
+      { "title": "What is Trolling? - GCFGlobal.org", "url": "https://gcfglobal.org/en/internetsafety/what-is-trolling/1/" }
+    ]
+  },
+  "Sentiment Analysis": {
+    "summary": "Sentiment analysis, also known as opinion mining, is the use of natural language processing (NLP) to identify and extract subjective information from text. It's used to determine the emotional tone behind a piece of writing—whether it's positive, negative, or neutral. Businesses use sentiment analysis to track brand reputation, analyze customer feedback, and understand market trends.",
+    "links": [
+      { "title": "Sentiment analysis - Wikipedia", "url": "https://en.wikipedia.org/wiki/Sentiment_analysis" },
+      { "title": "What is Sentiment Analysis? - IBM", "url": "https://www.ibm.com/topics/sentiment-analysis" },
+      { "title": "Sentiment Analysis: A Beginner's Guide - Sprout Social", "url": "https://sproutsocial.com/insights/sentiment-analysis/" }
+    ]
   }
 }

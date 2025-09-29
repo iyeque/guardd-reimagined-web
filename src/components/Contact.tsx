@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Contact = () => {
   return (
-    <section id="contact" className="py-20 px-6 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+    <section id="contact" className="py-20 px-6 bg-transparent">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
@@ -20,7 +20,7 @@ export const Contact = () => {
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <Card className="bg-white/90 border-green-200/50 shadow-lg">
+          <Card className="bg-transparent/90 border-green-200/50 shadow-lg">
             <CardHeader>
               <CardTitle className="text-slate-800 text-2xl">Send us a message</CardTitle>
             </CardHeader>

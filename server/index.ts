@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let capturedJsonResponse: Record<string, unknown> | undefined = undefined;
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
@@ -43,8 +43,8 @@ app.use((req, res, next) => {
     log("Registering routes...");
     const server = await registerRoutes(app);
 
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
+    app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+      const status = (err as any).status || (err as any).statusCode || 500;
       const message = err.message || "Internal Server Error";
       res.status(status).json({ message });
       throw err;
@@ -61,7 +61,7 @@ app.use((req, res, next) => {
     }
 
     // Add error handling for server startup
-    server.on('error', (error: any) => {
+    server.on('error', (error: NodeJS.ErrnoException) => {
       if (error.code === 'EADDRINUSE') {
         log(`Error: Port 5000 is already in use. Please ensure no other process is using this port.`);
         process.exit(1);
