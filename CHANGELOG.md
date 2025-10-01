@@ -1,3 +1,13 @@
+## [Unreleased] - 2025-09-30
+
+### Improved
+- Tuned Galaxy background for smoother, less glitchy animation: reduced density, speed, and increased glow for a more subtle, high-performance effect.
+- Set Galaxy background to solid black for better contrast and visual clarity.
+- Optimized Galaxy layering and z-index for consistent background placement.
+- Updated ElectricBorder card props for less chaos, slower speed, and softer border radius for a more polished, less jittery lightning effect.
+- Enhanced card backgrounds and shadows for better readability and contrast over the galaxy background.
+- Improved card hover and transition effects for a more interactive, modern feel.
+
 # Changelog
 
 ## [Unreleased] - 2025-01-15

@@ -1,5 +1,6 @@
 import { Users, Monitor, BookOpen, GamepadIcon, MessageCircle, Heart } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import ElectricBorder from "@/components/ElectricBorder";
 import { Link } from "react-router-dom";
 
 export const Services = () => {
@@ -58,17 +59,28 @@ export const Services = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <Link to={service.link} key={index}>
-              <Card className="bg-transparent/80 border-green-200/50 hover:border-green-300/70 transition-all hover:shadow-lg">
-                <CardHeader>
-                  <service.icon className="h-12 w-12 text-green-600 mb-4" />
-                  <CardTitle className="text-slate-800 text-xl">{service.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-slate-600 text-base">
-                    {service.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              <ElectricBorder
+                color="#7df9ff"
+                speed={0.7}
+                chaos={0.22}
+                thickness={1.5}
+                style={{ borderRadius: 22 }}
+              >
+                <Card
+                  className="bg-black/70 dark:bg-black/80 border-cyan-300/60 hover:border-cyan-400/80 transition-all duration-200 hover:shadow-2xl shadow-lg backdrop-blur-md"
+                  style={{ borderRadius: 20, boxShadow: '0 4px 32px 0 rgba(0,255,255,0.08)' }}
+                >
+                  <CardHeader>
+                    <service.icon className="h-12 w-12 text-cyan-300 mb-4" />
+                    <CardTitle className="text-cyan-100 text-xl font-semibold drop-shadow">{service.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-cyan-100/80 text-base">
+                      {service.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </ElectricBorder>
             </Link>
           ))}
         </div>

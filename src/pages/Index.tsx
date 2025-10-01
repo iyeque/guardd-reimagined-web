@@ -20,22 +20,22 @@ const Index: FC = () => {
         }>
           <Galaxy
             className="w-full h-full"
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0 }}
             focal={[0.5, 0.5]}
             rotation={[1, 0]}
-            starSpeed={0.5}
-            density={1.2}
+            starSpeed={0.2}
+            density={1.7}
             hueShift={140}
-            speed={1.2}
-            mouseInteraction={false}
-            glowIntensity={0.25}
+            speed={0.3}
+            mouseInteraction={true}
+            glowIntensity={0.4}
             saturation={0.3}
-            mouseRepulsion={false}
+            mouseRepulsion={true}
             twinkleIntensity={0.5}
-            rotationSpeed={0.15}
+            rotationSpeed={0.03}
             repulsionStrength={0.8}
             autoCenterRepulsion={0}
-            transparent={true}
+            transparent={false}
           />
         </Suspense>
       </div>
