@@ -10,10 +10,10 @@ export const Contact = () => {
     <section id="contact" className="py-20 px-6 bg-transparent">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Let's Connect
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-200 max-w-3xl mx-auto">
             Have questions about digital wellness? Need support for your family's journey? 
             We're here to help every step of the way.
           </p>
@@ -22,7 +22,7 @@ export const Contact = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <Card className="bg-transparent/90 border-green-200/50 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-slate-800 text-2xl">Send us a message</CardTitle>
+              <CardTitle className="text-white text-2xl">Send us a message</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

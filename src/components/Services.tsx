@@ -47,10 +47,10 @@ export const Services = () => {
     <section id="resources" className="py-20 px-6 bg-transparent">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Resources for Every Family
           </h2>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-200 max-w-3xl mx-auto">
             Comprehensive tools and resources designed to support your family's digital wellness journey, 
             from screen time management to online safety education.
           </p>

@@ -1,13 +1,23 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
+interface Bubble {
+  x: number;
+  y: number;
+  radius: number;
+  speed: number;
+  color: string;
+  text: string;
+  isWellness: boolean;
+}
+
 const DigitalWellnessGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score, setScore] = useState(0);
   const [stress, setStress] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
-  const bubblesRef = useRef<any[]>([]);
+  const bubblesRef = useRef<Bubble[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -98,25 +108,25 @@ const DigitalWellnessGame: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
-      <h2 className="text-2xl font-bold text-center mb-4">Digital Wellness Game</h2>
+    <div className="w-full max-w-2xl mx-auto bg-black/70 border border-green-500/30 rounded-lg shadow-lg p-8 backdrop-blur-sm text-white">
+      <h2 className="text-2xl font-bold text-center mb-4 text-white">Digital Wellness Game</h2>
       <div className="flex justify-between mb-4">
-        <div>Score: {score}</div>
-        <div>Stress: {stress.toFixed(0)}%</div>
+        <div className="text-green-400 font-bold">Score: {score}</div>
+        <div className="text-red-400 font-bold">Stress: {stress.toFixed(0)}%</div>
       </div>
       <canvas
         ref={canvasRef}
         width={600}
         height={400}
-        className="bg-gray-100 rounded-lg"
+        className="bg-gray-900 rounded-lg border border-gray-700 w-full"
         onClick={handleCanvasClick}
       ></canvas>
       {gameOver && (
         <div className="text-center mt-4">
-          <h3 className="text-xl font-bold">Game Over</h3>
-          <p>Your final score is {score}</p>
+          <h3 className="text-xl font-bold text-white">Game Over</h3>
+          <p className="text-gray-200">Your final score is {score}</p>
           <button
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            className="mt-4 px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-lg"
             onClick={() => {
               setScore(0);
               setStress(0);

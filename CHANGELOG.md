@@ -1,3 +1,29 @@
+## [Unreleased] - 2026-01-06
+
+### Added
+- **Global Layout**: Implemented a `Layout` component to ensure the Galaxy background and Navigation persist across all pages.
+- **Screen Time Management Page**: Launched full content for `/screen-time-management` with strategies, stats, and tools.
+- **Family Digital Agreements**: Launched interactive agreement builder (`/family-digital-agreements`) allowing families to customize and "print" their digital rules.
+- **Educational Blog**: Launched blog listing page (`/educational-blog`) with categorized article cards and hover effects.
+- **Educational Games**: Launched game hub (`/educational-games`) with two interactive activities:
+  - **Digital Wellness Pop**: A reflex game about balancing wellness vs. distractions.
+  - **Cyber Defense Quiz**: A 5-question quiz testing knowledge on passwords, privacy, and online safety.
+- **Video Resources**: Launched video hub (`/video-resources`) embedding the official YouTube channel (`UCCRU...`) uploads playlist for dynamic content access.
+- **Community Support**: Launched community hub (`/community-support`) featuring:
+  - **Discussion Forums**: Threaded discussions on parenting, tech reviews, and safety.
+  - **Events Calendar**: Listings for webinars and Q&A sessions.
+  - **Mentorship Program**: Call-to-action for community volunteers.
+
+### Fixed
+- **Improved Legibility**: Updated font colors across all main components (`PredictiveHero`, `Navigation`, `Stats`, `Services`, `About`, `Contact`) to `text-white`, `text-gray-200`, and brighter accent colors (`green-400`, `blue-400`, `purple-400`) to ensure readability against the dark starry background.
+- **Predictive Search**: Enhanced the search input and modal card readability with dark semi-transparent backgrounds and light text.
+- **Page Consistency**: Updated `Workshop`, `EducationalGames`, and other sub-pages to match the dark galaxy theme with transparent backgrounds and white text.
+- **Navigation**: Fixed navigation links to work correctly from sub-pages (absolute paths).
+
+### Upcoming Work
+- **Expansion**: Further populate content across all modules based on user feedback.
+- **Backend Integration**: Prepare for future backend connections (currently using mock data).
+
 ## [Unreleased] - 2025-09-30
 
 ### Improved

@@ -189,7 +189,7 @@ const PredictiveHero: React.FC = () => {
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             placeholder="Search for a topic..."
-            className="text-xl px-8 py-5 rounded-full shadow-lg border-2 border-gray-200 focus:border-blue-500 bg-transparent transition-all duration-300"
+            className="text-xl px-8 py-5 rounded-full shadow-lg border-2 border-gray-200 focus:border-blue-500 bg-transparent transition-all duration-300 text-white placeholder:text-gray-300"
             autoComplete="off"
           />
         </div>
@@ -288,7 +288,7 @@ const PredictiveHero: React.FC = () => {
 
     return (
       <div className="w-full min-h-full p-8 absolute inset-0 pt-24 overflow-y-auto" onClick={() => setSelectedCluster(null)}>
-        <h2 className="text-5xl font-bold text-gray-800 mb-12 text-center">{selectedCluster.name}</h2>
+        <h2 className="text-5xl font-bold text-white mb-12 text-center">{selectedCluster.name}</h2>
         <div className="flex flex-wrap justify-center gap-4">
           {selectedCluster.nodes.map((node) => (
             <button
@@ -329,22 +329,22 @@ const PredictiveHero: React.FC = () => {
                 }}
               >
                 <Card
-                  className="p-8 text-left shadow-2xl border-2 border-gray-200 relative z-30 max-w-3xl bg-transparent rounded-2xl"
+                  className="p-8 text-left shadow-2xl border-2 border-gray-600 relative z-30 max-w-3xl bg-black/90 rounded-2xl text-white"
                   onClick={e => e.stopPropagation()}
                 >
-                  <h3 className="text-3xl font-bold mb-4">{selectedTerm.name}</h3>
+                  <h3 className="text-3xl font-bold mb-4 text-white">{selectedTerm.name}</h3>
                   {summary?.summary ? (
-                    <p className="mb-6 text-gray-700 text-lg leading-relaxed">{summary.summary}</p>
+                    <p className="mb-6 text-gray-200 text-lg leading-relaxed">{summary.summary}</p>
                   ) : (
-                    <p className="mb-6 text-gray-500 text-lg italic">No summary available for this term.</p>
+                    <p className="mb-6 text-gray-400 text-lg italic">No summary available for this term.</p>
                   )}
                   {summary?.links && summary.links.length > 0 ? (
                     <div>
-                      <h4 className="font-semibold mb-3 text-lg">Related Links:</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-white">Related Links:</h4>
                       <ul className="list-disc pl-6 space-y-2">
                         {summary.links.map((l, idx) => (
                           <li key={idx}>
-                            <a href={l.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-lg">{l.title}</a>
+                            <a href={l.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline text-lg">{l.title}</a>
                           </li>
                         ))}
                       </ul>

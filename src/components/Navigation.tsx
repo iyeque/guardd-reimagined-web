@@ -9,16 +9,16 @@ export const Navigation = () => {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Heart className="h-8 w-8 text-green-600" />
-            <span className="text-2xl font-bold text-slate-800">DigitalGuard</span>
+            <Heart className="h-8 w-8 text-green-400" />
+            <span className="text-2xl font-bold text-white">DigitalGuard</span>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-slate-600 hover:text-green-600 transition-colors font-medium">Home</a>
-            <a href="#about" className="text-slate-600 hover:text-green-600 transition-colors font-medium">About</a>
-            <a href="#resources" className="text-slate-600 hover:text-green-600 transition-colors font-medium">Resources</a>
-            <a href="#support" className="text-slate-600 hover:text-green-600 transition-colors font-medium">Support</a>
-            <a href="#contact" className="text-slate-600 hover:text-green-600 transition-colors font-medium">Contact</a>
+            <a href="/#home" className="text-gray-200 hover:text-green-400 transition-colors font-medium">Home</a>
+            <a href="/#about" className="text-gray-200 hover:text-green-400 transition-colors font-medium">About</a>
+            <a href="/#resources" className="text-gray-200 hover:text-green-400 transition-colors font-medium">Resources</a>
+            <a href="/#support" className="text-gray-200 hover:text-green-400 transition-colors font-medium">Support</a>
+            <a href="/#contact" className="text-gray-200 hover:text-green-400 transition-colors font-medium">Contact</a>
           </div>
           
           <Link to="/workshop">
