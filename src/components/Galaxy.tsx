@@ -37,7 +37,7 @@ uniform bool uTransparent;
 
 varying vec2 vUv;
 
-#define NUM_LAYER 4.0
+#define NUM_LAYER 2.0
 #define STAR_COLOR_CUTOFF 0.2
 #define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
 #define PERIOD 3.0
@@ -220,7 +220,7 @@ export default function Galaxy({
   
   // Performance optimization: Memoize expensive calculations
   const optimizedParams = useMemo(() => ({
-    devicePixelRatio: Math.min(window.devicePixelRatio, 1.5), // Further limit DPR for better performance
+    devicePixelRatio: Math.min(window.devicePixelRatio, 1.0), // Further limit DPR for better performance
     animationFrameRate: disableAnimation ? 0 : 60,
     mouseLerpFactor: 0.08, // Slightly faster mouse following
   }), [disableAnimation]);
@@ -320,18 +320,10 @@ export default function Galaxy({
     resize();
 
     // Optimized animation loop with adaptive throttling based on mouse interaction
-    let lastFrameTime = 0;
-    const TARGET_FPS = mouseInteraction ? 60 : 30; // Lower FPS when no mouse interaction
-    const FRAME_INTERVAL = 1000 / TARGET_FPS;
+    const lastFrameTime = 0;
     
     function update(t: number) {
       animateId = requestAnimationFrame(update);
-      
-      // Less aggressive throttling for smoother animation
-      if (t - lastFrameTime < FRAME_INTERVAL * 0.8) {
-        return;
-      }
-      lastFrameTime = t;
       
       if (!disableAnimation) {
         program.uniforms.uTime.value = t * 0.001;
@@ -401,3 +393,4 @@ export default function Galaxy({
 
   return <div ref={ctnDom} className="galaxy-container" {...rest} />;
 }
+

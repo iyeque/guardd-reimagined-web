@@ -1,4 +1,4 @@
-import React, { CSSProperties, PropsWithChildren, useEffect, useId, useLayoutEffect, useRef } from 'react';
+import React, { CSSProperties, PropsWithChildren, useEffect, useId, useLayoutEffect, useRef, useCallback } from 'react';
 
 import './ElectricBorder.css';
 
@@ -26,7 +26,7 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
   const rootRef = useRef<HTMLDivElement | null>(null);
   const strokeRef = useRef<HTMLDivElement | null>(null);
 
-  const updateAnim = () => {
+  const updateAnim = useCallback(() => {
     const svg = svgRef.current;
     const host = rootRef.current;
     if (!svg || !host) return;
@@ -66,19 +66,21 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
     }
 
     requestAnimationFrame(() => {
-      [...dyAnims, ...dxAnims].forEach((a: any) => {
+      [...dyAnims, ...dxAnims].forEach((a: SVGAnimateElement) => {
         if (typeof a.beginElement === 'function') {
           try {
             a.beginElement();
-          } catch {}
+          } catch (e) {
+            // Animation may not be ready, ignore error
+          }
         }
       });
     });
-  };
+  }, [svgRef, rootRef, strokeRef, filterId, speed, chaos]);
 
   useEffect(() => {
     updateAnim();
-  }, [speed, chaos]);
+  }, [speed, chaos, updateAnim]);
 
   useLayoutEffect(() => {
     if (!rootRef.current) return;
@@ -86,11 +88,11 @@ const ElectricBorder: React.FC<ElectricBorderProps> = ({
     ro.observe(rootRef.current);
     updateAnim();
     return () => ro.disconnect();
-  }, []);
+  }, [updateAnim]);
 
   const vars: CSSProperties = {
-    ['--electric-border-color' as any]: color,
-    ['--eb-border-width' as any]: `${thickness}px`
+    '--electric-border-color': color,
+    '--eb-border-width': `${thickness}px`
   };
 
   return (

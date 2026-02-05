@@ -1,4 +1,47 @@
-## [Unreleased] - 2026-01-06
+# Changelog
+
+## [2026-02-05]
+
+### Fixed
+- **SunnySky Rendering Error**: Resolved ESLint error regarding ref usage in `useEffect` cleanup.
+- **Linting & Type Errors**:
+  - Fixed `@typescript-eslint/no-explicit-any` errors in `server/index.ts` and `src/components/ElectricBorder.tsx`.
+  - Fixed `no-empty` error in `src/components/ElectricBorder.tsx`.
+  - Fixed `prefer-const` error in `src/components/Galaxy.tsx`.
+  - Fixed `react-hooks/exhaustive-deps` warnings in `src/components/ElectricBorder.tsx`.
+  - Fixed `react-refresh/only-export-components` warnings by restructuring exports in `button.tsx`, `sonner.tsx`, and `ThemeContext.tsx`, and introducing new files for shared components/contexts.
+  - Resolved all TypeScript import errors caused by restructuring.
+
+### Improved
+- **SunnySky Visuals**: Significantly enhanced the `SunnySky.tsx` component.
+  - Implemented hyper-realistic sky with advanced GLSL shaders, including domain warping, multiple FBM noise layers, and improved cloud coloring.
+  - Enabled antialiasing for smoother rendering.
+  - Increased cloud movement speed for a more noticeable and dynamic effect.
+  - Increased device pixel ratio (DPR) cap to 2.5 for better resolution on high-DPI displays.
+- **UI/UX - Theme Legibility**: Comprehensive updates to ensure maximum text legibility in both light and dark modes.
+  - Refactored theme handling in `src/context/ThemeContext.tsx` to correctly apply light/dark classes to `document.documentElement`.
+  - Adjusted CSS variables in `src/index.css` for proper light and dark mode color definitions (dark text on light background, white text on dark background).
+  - Updated text elements across `PredictiveHero.tsx`, `Services.tsx`, `About.tsx`, `Contact.tsx`, `Navigation.tsx`, and `Stats.tsx` to use theme-adaptive `text-foreground` and `text-muted-foreground` classes.
+  - Added `bg-background` to `src/components/Layout.tsx` to ensure a solid, theme-adaptive background behind the text for optimal contrast.
+
+## [Unreleased]
+
+### Added
+- **Modernized Hero Section**: Updated the hero section with a "Cyber/Neon" aesthetic.
+  - Implemented a "Cyber Neon" color palette for category buttons.
+  - Standardized button styles with glassmorphism, neon borders, and glow effects.
+  - Enhanced "Digital Wellness" button with a distinct Green/Emerald gradient.
+  - Updated search input with semi-transparent dark background and improved focus states.
+
+### Improved
+- **Galaxy Background Performance**: Significant optimization of the `Galaxy.tsx` component.
+  - Reduced shader complexity by lowering `NUM_LAYER` from 4.0 to 2.0.
+  - Capped `devicePixelRatio` to 1.0 to prevent rendering overhead on high-DPI screens.
+  - Reduced star density (1.7 -> 1.2) for better frame rates.
+  - Removed manual JS frame throttling to allow native `requestAnimationFrame` optimization.
+  - Result: Much smoother animation and reduced GPU load.
+
+## [2026-01-06]
 
 ### Added
 - **Global Layout**: Implemented a `Layout` component to ensure the Galaxy background and Navigation persist across all pages.
@@ -24,7 +67,7 @@
 - **Expansion**: Further populate content across all modules based on user feedback.
 - **Backend Integration**: Prepare for future backend connections (currently using mock data).
 
-## [Unreleased] - 2025-09-30
+## [2025-09-30]
 
 ### Improved
 - Tuned Galaxy background for smoother, less glitchy animation: reduced density, speed, and increased glow for a more subtle, high-performance effect.
@@ -34,9 +77,14 @@
 - Enhanced card backgrounds and shadows for better readability and contrast over the galaxy background.
 - Improved card hover and transition effects for a more interactive, modern feel.
 
-# Changelog
+## [2025-09-23]
 
-## [Unreleased] - 2025-01-15
+### Added
+- Enhanced Galaxy background component with WebGL rendering and optimized performance.
+- Stylelint configuration to ignore Tailwind-specific at-rules.
+- VSCode settings to disable built-in CSS validation for improved development experience.
+
+## [2025-01-15]
 
 ### Major Project Optimization & Cleanup
 - **Removed 30+ unused UI components** (accordion, alert, avatar, badge, calendar, checkbox, dialog, form, etc.)
@@ -57,7 +105,6 @@
   - Reduced animation parameters: density (2.5→1.8), glow intensity (0.3→0.25), twinkle intensity (0.7→0.5)
   - Batched uniform updates to reduce GPU calls and improve rendering efficiency
 
-
 ### Fixed
 - **Galaxy Background**: Resolved stuttering and glitchy star animations
 - **Performance**: Eliminated frame drops and inconsistent animation speeds
@@ -73,28 +120,3 @@
 - **Simplified Interaction**: Disabled mouse interaction and mouse repulsion for cleaner, static background
 - **Reduced Complexity**: Lowered star density (1.8→1.2) and star speed (0.8→0.5) for subtle background effect
 - **Removed Custom Cursor**: Eliminated TargetCursor component and all related functionality for simpler user experience
-
-## [Unreleased] - 2025-09-23
-
-### Added
-- Enhanced Galaxy background component with WebGL rendering and optimized performance.
-- Stylelint configuration to ignore Tailwind-specific at-rules.
-- VSCode settings to disable built-in CSS validation for improved development experience.
-
-
-## [Unreleased]
-### Added
-- Integrated a Galaxy WebGL background component with interactive, glowing stars and dark background, inspired by reactbits.dev.
-- Exposed props for density, glow, hue, twinkle, rotation, repulsion, and animation speed for full customization.
-- Made all main page and UI components transparent to allow the galaxy background to show through.
-
-### Fixed
-- Fixed issue where the site background was white, hiding the galaxy effect.
-- Fixed fragment shader to always render a black background for a true dark galaxy look.
-
-### Changed
-- Updated theme to dark by default in `index.css`.
-- Optimized Galaxy component for performance and responsiveness.
-
----
-

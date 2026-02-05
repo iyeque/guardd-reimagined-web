@@ -2,6 +2,11 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+interface HttpError extends Error {
+  status?: number;
+  statusCode?: number;
+}
+
 log("Starting server initialization...");
 
 const app = express();
@@ -43,9 +48,8 @@ app.use((req, res, next) => {
     log("Registering routes...");
     const server = await registerRoutes(app);
 
-    app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-      const status = (err as any).status || (err as any).statusCode || 500;
-      const message = err.message || "Internal Server Error";
+    app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;      const message = err.message || "Internal Server Error";
       res.status(status).json({ message });
       throw err;
     });

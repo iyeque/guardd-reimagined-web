@@ -16,10 +16,10 @@ export const About = () => {
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Why Choose DigitalGuard?
             </h2>
-            <p className="text-xl text-gray-200 mb-8">
+            <p className="text-xl text-muted-foreground mb-8">
               We believe technology should enhance family life, not complicate it. Our mission 
               is to empower families with the knowledge, tools, and support needed to create 
               healthy digital habits that last a lifetime.
@@ -29,7 +29,7 @@ export const About = () => {
               {features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-200 text-lg">{feature}</span>
+                  <span className="text-foreground text-lg">{feature}</span>
                 </div>
               ))}
             </div>
@@ -40,13 +40,13 @@ export const About = () => {
             <div className="relative bg-transparent/90 backdrop-blur-sm border border-green-200/50 rounded-lg p-8 shadow-xl">
               <div className="text-center">
                 <div className="text-5xl font-bold text-green-400 mb-2">5+</div>
-                <div className="text-gray-200 mb-6">Years of Experience</div>
+                <div className="text-muted-foreground mb-6">Years of Experience</div>
                 
                 <div className="text-4xl font-bold text-blue-400 mb-2">98%</div>
-                <div className="text-gray-200 mb-6">Family Satisfaction</div>
+                <div className="text-muted-foreground mb-6">Family Satisfaction</div>
                 
                 <div className="text-4xl font-bold text-purple-400 mb-2">24/7</div>
-                <div className="text-gray-200">Community Support</div>
+                <div className="text-muted-foreground">Community Support</div>
               </div>
             </div>
           </div>
