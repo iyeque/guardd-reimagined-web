@@ -39,14 +39,14 @@ export const About = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-blue-400/20 blur-2xl rounded-lg"></div>
             <div className="relative bg-transparent/90 backdrop-blur-sm border border-green-200/50 rounded-lg p-8 shadow-xl">
               <div className="text-center">
-                <div className="text-5xl font-bold text-green-400 mb-2">5+</div>
-                <div className="text-muted-foreground mb-6">Years of Experience</div>
+                <div className="text-5xl font-bold text-green-400 mb-2">2024</div>
+                <div className="text-muted-foreground mb-6">Founded with a Mission</div>
                 
-                <div className="text-4xl font-bold text-blue-400 mb-2">98%</div>
-                <div className="text-muted-foreground mb-6">Family Satisfaction</div>
+                <div className="text-4xl font-bold text-blue-400 mb-2">15+</div>
+                <div className="text-muted-foreground mb-6">Expert Contributors</div>
                 
-                <div className="text-4xl font-bold text-purple-400 mb-2">24/7</div>
-                <div className="text-muted-foreground">Community Support</div>
+                <div className="text-4xl font-bold text-purple-400 mb-2">Active</div>
+                <div className="text-muted-foreground">Family Community Support</div>
               </div>
             </div>
           </div>

@@ -1,6 +1,5 @@
 import { Users, Monitor, BookOpen, GamepadIcon, MessageCircle, Heart } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import ElectricBorder from "@/components/ElectricBorder";
 import { Link } from "react-router-dom";
 
 export const Services = () => {
@@ -58,29 +57,20 @@ export const Services = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <Link to={service.link} key={index}>
-              <ElectricBorder
-                color="#7df9ff"
-                speed={0.7}
-                chaos={0.22}
-                thickness={1.5}
-                style={{ borderRadius: 22 }}
+            <Link to={service.link} key={index} className="group">
+              <Card
+                className="h-full bg-card/50 dark:bg-card/20 border-border hover:border-cyan-400/50 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 shadow-lg backdrop-blur-md"
               >
-                <Card
-                  className="bg-black/70 dark:bg-black/80 border-cyan-300/60 hover:border-cyan-400/80 transition-all duration-200 hover:shadow-2xl shadow-lg backdrop-blur-md"
-                  style={{ borderRadius: 20, boxShadow: '0 4px 32px 0 rgba(0,255,255,0.08)' }}
-                >
-                  <CardHeader>
-                    <service.icon className="h-12 w-12 text-cyan-300 mb-4" />
-                    <CardTitle className="text-primary text-xl font-semibold drop-shadow">{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-muted-foreground text-base">
-                      {service.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </ElectricBorder>
+                <CardHeader>
+                  <service.icon className="h-12 w-12 text-cyan-500 mb-4 group-hover:scale-110 transition-transform duration-300" />
+                  <CardTitle className="text-foreground text-xl font-semibold">{service.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-muted-foreground text-base">
+                    {service.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
             </Link>
           ))}
         </div>

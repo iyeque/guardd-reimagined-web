@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Bubble {
@@ -9,136 +8,235 @@ interface Bubble {
   color: string;
   text: string;
   isWellness: boolean;
+  opacity: number;
 }
 
-const DigitalWellnessGame: React.FC = () => {
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  color: string;
+}
+
+const DigitalWellnessPop: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [score, setScore] = useState(0);
   const [stress, setStress] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const [highScore, setHighScore] = useState(0);
 
   const bubblesRef = useRef<Bubble[]>([]);
+  const particlesRef = useRef<Particle[]>([]);
+  const requestRef = useRef<number>();
+  const lastTimeRef = useRef<number>();
+
+  const createParticles = (x: number, y: number, color: string) => {
+    for (let i = 0; i < 10; i++) {
+      particlesRef.current.push({
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 10,
+        vy: (Math.random() - 0.5) * 10,
+        life: 1.0,
+        color
+      });
+    }
+  };
+
+  const resizeCanvas = () => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+    
+    const dpr = window.devicePixelRatio || 1;
+    const rect = container.getBoundingClientRect();
+    
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.scale(dpr, dpr);
+  };
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    return () => window.removeEventListener('resize', resizeCanvas);
+  }, []);
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+  const animate = (time: number) => {
+    if (lastTimeRef.current !== undefined) {
+      const deltaTime = (time - lastTimeRef.current) / 1000;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    let animationFrameId: number;
+      const width = canvas.width / (window.devicePixelRatio || 1);
+      const height = canvas.height / (window.devicePixelRatio || 1);
 
-    const gameLoop = () => {
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Clear with slight trail
+      ctx.fillStyle = 'rgba(17, 24, 39, 0.2)';
+      ctx.fillRect(0, 0, width, height);
+
+      // Update and draw particles
+      particlesRef.current.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= 0.02;
+        if (p.life <= 0) particlesRef.current.splice(i, 1);
+        else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2 * p.life, 0, Math.PI * 2);
+          ctx.fillStyle = p.color.replace(')', `, ${p.life})`).replace('rgb', 'rgba');
+          ctx.fill();
+        }
+      });
 
       // Update and draw bubbles
-      bubblesRef.current.forEach((bubble, index) => {
-        bubble.y -= bubble.speed;
-        if (bubble.y < -bubble.radius) {
-          bubblesRef.current.splice(index, 1);
+      bubblesRef.current.forEach((b, i) => {
+        b.y -= b.speed * 60 * deltaTime;
+        if (b.y < -b.radius) bubblesRef.current.splice(i, 1);
+        else {
+          ctx.beginPath();
+          const gradient = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.radius);
+          gradient.addColorStop(0, b.color);
+          gradient.addColorStop(1, 'rgba(255,255,255,0.1)');
+          
+          ctx.fillStyle = gradient;
+          ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.fillStyle = 'white';
+          ctx.font = 'bold 10px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(b.text, b.x, b.y + 4);
         }
-
-        ctx.beginPath();
-        ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-        ctx.fillStyle = bubble.color;
-        ctx.fill();
-        ctx.closePath();
-
-        ctx.fillStyle = 'white';
-        ctx.font = '12px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(bubble.text, bubble.x, bubble.y + 4);
       });
 
-      // Add new bubbles
-      if (Math.random() < 0.02) {
-        const radius = Math.random() * 20 + 10;
-        const x = Math.random() * (canvas.width - radius * 2) + radius;
-        const y = canvas.height + radius;
-        const speed = Math.random() * 2 + 1;
-        const isWellness = Math.random() > 0.3;
-        const color = isWellness ? '#4ade80' : '#f87171';
-        const text = isWellness ? 'Wellness' : 'Distraction';
-        bubblesRef.current.push({ x, y, radius, speed, color, text, isWellness });
+      // Spawn bubbles
+      if (Math.random() < 0.03) {
+        const isWellness = Math.random() > 0.4;
+        const radius = Math.random() * 25 + 20;
+        bubblesRef.current.push({
+          x: Math.random() * (width - radius * 2) + radius,
+          y: height + radius,
+          radius,
+          speed: (Math.random() * 2 + 1.5) + (score / 500),
+          color: isWellness ? 'rgb(74, 222, 128)' : 'rgb(248, 113, 113)',
+          text: isWellness ? 'FOCUS' : 'ALERTS',
+          isWellness,
+          opacity: 1
+        });
       }
 
-      // Update stress
-      setStress(prevStress => {
-        const newStress = prevStress + 0.1;
-        if (newStress >= 100) {
-          setGameOver(true);
-        }
-        return newStress;
+      // Smoothly update stress
+      setStress(prev => {
+        const next = prev + 0.08;
+        if (next >= 100) setGameOver(true);
+        return next;
       });
-
-      animationFrameId = requestAnimationFrame(gameLoop);
-    };
-
-    if (!gameOver) {
-      gameLoop();
     }
+    
+    lastTimeRef.current = time;
+    if (!gameOver) {
+      requestRef.current = requestAnimationFrame(animate);
+    }
+  };
 
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(animate);
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [gameOver]);
+  }, [gameOver, score]);
 
-  const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const handlePointer = (e: React.PointerEvent) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    // Check if a bubble was clicked
-    bubblesRef.current.forEach((bubble, index) => {
-      const distance = Math.sqrt(Math.pow(x - bubble.x, 2) + Math.pow(y - bubble.y, 2));
-      if (distance < bubble.radius) {
-        if (bubble.isWellness) {
-          setScore(prevScore => prevScore + 10);
-          setStress(prevStress => Math.max(0, prevStress - 10));
+    bubblesRef.current.forEach((b, i) => {
+      const dist = Math.sqrt((x - b.x) ** 2 + (y - b.y) ** 2);
+      if (dist < b.radius) {
+        createParticles(b.x, b.y, b.color);
+        if (b.isWellness) {
+          setScore(s => s + 10);
+          setStress(prev => Math.max(0, prev - 8));
         } else {
-          setStress(prevStress => Math.min(100, prevStress + 10));
+          setStress(prev => Math.min(100, prev + 15));
         }
-        bubblesRef.current.splice(index, 1);
+        bubblesRef.current.splice(i, 1);
       }
     });
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-black/70 border border-green-500/30 rounded-lg shadow-lg p-8 backdrop-blur-sm text-white">
-      <h2 className="text-2xl font-bold text-center mb-4 text-white">Digital Wellness Game</h2>
-      <div className="flex justify-between mb-4">
-        <div className="text-green-400 font-bold">Score: {score}</div>
-        <div className="text-red-400 font-bold">Stress: {stress.toFixed(0)}%</div>
-      </div>
-      <canvas
-        ref={canvasRef}
-        width={600}
-        height={400}
-        className="bg-gray-900 rounded-lg border border-gray-700 w-full"
-        onClick={handleCanvasClick}
-      ></canvas>
-      {gameOver && (
-        <div className="text-center mt-4">
-          <h3 className="text-xl font-bold text-white">Game Over</h3>
-          <p className="text-gray-200">Your final score is {score}</p>
-          <button
-            className="mt-4 px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-lg"
-            onClick={() => {
-              setScore(0);
-              setStress(0);
-              setGameOver(false);
-            }}
-          >
-            Play Again
-          </button>
+    <div className="w-full max-w-3xl mx-auto space-y-6">
+      <div className="flex justify-between items-end">
+        <div>
+          <div className="text-gray-400 text-xs uppercase font-bold tracking-widest mb-1">Total Score</div>
+          <div className="text-4xl font-black text-green-400">{score}</div>
         </div>
-      )}
+        <div className="w-48">
+          <div className="flex justify-between text-xs font-bold mb-2">
+            <span className="text-red-400">DIGITAL STRESS</span>
+            <span>{Math.floor(stress)}%</span>
+          </div>
+          <div className="h-3 bg-gray-800 rounded-full overflow-hidden border border-white/5">
+            <div 
+              className="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 transition-all duration-300"
+              style={{ width: `${stress}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div 
+        ref={containerRef} 
+        className="relative aspect-video bg-gray-900 rounded-[2rem] border border-white/10 overflow-hidden cursor-crosshair shadow-2xl shadow-black"
+      >
+        <canvas
+          ref={canvasRef}
+          className="w-full h-full block"
+          onPointerDown={handlePointer}
+        />
+        
+        {gameOver && (
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center text-center p-8 animate-in fade-in zoom-in duration-300">
+            <div className="space-y-6">
+              <h2 className="text-5xl font-black text-white italic tracking-tighter">SCREEN OVERLOAD!</h2>
+              <p className="text-gray-400 text-lg">You maintained balance for a total score of <span className="text-green-400 font-bold">{score}</span>.</p>
+              <Button 
+                onClick={() => {
+                  setScore(0);
+                  setStress(0);
+                  setGameOver(false);
+                  bubblesRef.current = [];
+                  lastTimeRef.current = undefined;
+                }}
+                className="bg-green-500 hover:bg-green-600 text-black font-black px-12 py-8 text-xl rounded-full shadow-[0_0_30px_rgba(74,222,128,0.4)]"
+              >
+                TRY AGAIN
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <p className="text-center text-gray-500 text-sm italic">
+        Pop the green <span className="text-green-400 font-bold">FOCUS</span> bubbles to stay calm. Avoid <span className="text-red-400 font-bold">ALERTS</span>!
+      </p>
     </div>
   );
 };
 
-export default DigitalWellnessGame;
+export default DigitalWellnessPop;
