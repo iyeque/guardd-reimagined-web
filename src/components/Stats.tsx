@@ -20,10 +20,10 @@ export const Stats = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {stats.map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-5xl md:text-6xl font-bold text-green-400 mb-2">
+              <div className="text-5xl md:text-6xl font-bold text-green-600 dark:text-green-400 mb-2">
                 {stat.number}
               </div>
-              <div className="text-muted-foreground text-xl font-medium">
+              <div className="text-foreground text-xl font-bold">
                 {stat.label}
               </div>
             </div>

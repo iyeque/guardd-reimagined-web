@@ -28,8 +28,8 @@ export const About = () => {
             <div className="space-y-4">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3">
-                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0" />
-                  <span className="text-foreground text-lg">{feature}</span>
+                  <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0" />
+                  <span className="text-foreground text-lg font-medium">{feature}</span>
                 </div>
               ))}
             </div>
@@ -37,16 +37,16 @@ export const About = () => {
           
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-blue-400/20 blur-2xl rounded-lg"></div>
-            <div className="relative bg-transparent/90 backdrop-blur-sm border border-green-200/50 rounded-lg p-8 shadow-xl">
+            <div className="relative bg-white/80 dark:bg-black/40 backdrop-blur-sm border border-border rounded-lg p-8 shadow-xl">
               <div className="text-center">
-                <div className="text-5xl font-bold text-green-400 mb-2">2024</div>
-                <div className="text-muted-foreground mb-6">Founded with a Mission</div>
+                <div className="text-5xl font-bold text-green-600 dark:text-green-400 mb-2">2024</div>
+                <div className="text-muted-foreground font-bold mb-6">Founded with a Mission</div>
                 
-                <div className="text-4xl font-bold text-blue-400 mb-2">15+</div>
-                <div className="text-muted-foreground mb-6">Expert Contributors</div>
+                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">15+</div>
+                <div className="text-muted-foreground font-bold mb-6">Expert Contributors</div>
                 
-                <div className="text-4xl font-bold text-purple-400 mb-2">Active</div>
-                <div className="text-muted-foreground">Family Community Support</div>
+                <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">Active</div>
+                <div className="text-muted-foreground font-bold">Family Community Support</div>
               </div>
             </div>
           </div>

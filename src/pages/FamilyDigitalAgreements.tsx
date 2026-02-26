@@ -476,10 +476,10 @@ const FamilyDigitalAgreements: React.FC = () => {
                   </Button>
                 </div>
                 {customRules.length > 0 && (
-                  <div className="mt-4 grid grid-cols-1 gap-2">
+                  <div className="mt-6 grid grid-cols-1 gap-3">
                     {customRules.map((rule, i) => (
-                      <div key={i} className="flex items-center gap-2 p-3 bg-card/30 rounded-lg border border-white/5">
-                        <Check className="h-4 w-4 text-orange-400" />
+                      <div key={i} className="flex items-center gap-3 p-4 bg-white/60 dark:bg-card/30 rounded-2xl border border-border shadow-sm font-bold">
+                        <Check className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                         <span>{rule}</span>
                       </div>
                     ))}
@@ -492,23 +492,24 @@ const FamilyDigitalAgreements: React.FC = () => {
           {/* Sidebar / Actions */}
           <div className="lg:w-1/3">
             <div className="sticky top-32 space-y-6">
-              <Card className="bg-gradient-to-br from-indigo-900/40 to-black border-white/10 shadow-2xl">
+              <Card className="bg-white/60 dark:bg-black/40 border-border shadow-2xl backdrop-blur-md rounded-3xl overflow-hidden">
+                <div className="h-2 bg-gradient-to-r from-indigo-500 to-purple-500" />
                 <CardHeader>
-                  <CardTitle>Ready to Commit?</CardTitle>
+                  <CardTitle className="text-foreground font-black">Ready to Commit?</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground font-medium leading-relaxed">
                     Review your agreement in preview mode, then print to sign or save as a PDF.
                   </p>
                   <div className="space-y-3">
-                    <Button onClick={() => setIsPreview(true)} className="w-full h-14 text-lg gap-2 bg-white text-black hover:bg-gray-200">
+                    <Button onClick={() => setIsPreview(true)} className="w-full h-14 text-lg gap-2 bg-foreground text-background hover:opacity-90 font-black rounded-xl">
                       <Printer className="h-5 w-5" />
                       Print Preview
                     </Button>
                     <Button 
                       variant="outline" 
                       onClick={handleDownloadPDF}
-                      className="w-full border-white/20 text-white hover:bg-white/10 h-12"
+                      className="w-full border-border text-foreground hover:bg-muted h-12 font-bold rounded-xl"
                     >
                       <Download className="h-4 w-4 mr-2" />
                       Download as PDF
@@ -517,12 +518,12 @@ const FamilyDigitalAgreements: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <div className="p-6 bg-card/40 border border-white/10 rounded-2xl space-y-4">
-                <h4 className="font-bold flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-pink-400" />
+              <div className="p-8 bg-white/40 dark:bg-card/40 border border-border rounded-3xl space-y-4 shadow-lg backdrop-blur-sm">
+                <h4 className="font-black flex items-center gap-3 text-foreground italic">
+                  <Heart className="h-6 w-6 text-pink-600 dark:text-pink-400 animate-pulse" />
                   Why this matters
                 </h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed font-medium">
                   Collaborative agreements lead to higher compliance and less conflict compared to imposed rules.
                 </p>
               </div>

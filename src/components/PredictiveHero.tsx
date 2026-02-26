@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useWellness } from "@/context/WellnessContext";
+import { useTheme } from "@/context/useTheme";
+import { motion, AnimatePresence } from "framer-motion";
 
-// TypeScript interfaces
 interface NodeTerm {
   id: string;
   name: string;
@@ -24,6 +26,8 @@ interface Summary {
 }
 
 const PredictiveHero: React.FC = () => {
+  const { mode } = useWellness();
+  const { theme } = useTheme();
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<NodeTerm[]>([]);
   const [clusters, setClusters] = useState<Cluster[]>([]);
@@ -119,173 +123,131 @@ const PredictiveHero: React.FC = () => {
     }
   };
 
-  const digitalWellnessCluster = clusters.find(c => c.group === 0);
-  const otherClusters = clusters.filter(c => c.group !== 0);
+  // Filter clusters based on mode
+  const filteredClusters = React.useMemo(() => {
+    if (mode === 'child') {
+      return clusters.filter(c => [0, 2, 3, 9, 10].includes(c.group));
+    } else if (mode === 'parent') {
+      return clusters.filter(c => [0, 1, 4, 5, 6, 7, 8].includes(c.group));
+    }
+    return clusters; // 'family' mode shows all
+  }, [clusters, mode]);
 
-  // Updated color palette to match the Cyber/Digital theme (Green/Cyan/Purple/Pink accents)
+  const digitalWellnessCluster = filteredClusters.find(c => c.group === 0);
+  const otherClusters = filteredClusters.filter(c => c.group !== 0);
+
+  // Updated color palette: slightly darker for light mode, vibrant for dark mode
   const clusterColors = [
-    '#22d3ee', // Cyan
-    '#34d399', // Emerald
-    '#a78bfa', // Violet
-    '#f472b6', // Pink
-    '#60a5fa', // Blue
-    '#818cf8', // Indigo
-    '#c084fc', // Purple
-    '#2dd4bf', // Teal
-    '#fb7185', // Rose
-    '#38bdf8', // Sky
+    'var(--chart-1, #0891b2)', 
+    'var(--chart-2, #059669)', 
+    'var(--chart-3, #7c3aed)', 
+    '#db2777', 
+    '#2563eb', 
+    '#4f46e5', 
+    '#9333ea', 
+    '#0d9488', 
+    '#e11d48', 
+    '#0284c7', 
   ];
 
-  const renderAllClustersView = () => (
-    <div className="grid grid-cols-3 gap-8 p-8 items-center">
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[0] && (
-            <button
-              key={otherClusters[0].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] focus:outline-none focus:ring-4 focus:ring-cyan-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[0], color: clusterColors[0] }}
-              onClick={() => setSelectedCluster(otherClusters[0])}
-            >
-              {otherClusters[0].name}
-            </button>
-        )}
-      </div>
-      <div className="col-span-1 flex justify-center items-center">
-        {digitalWellnessCluster && (
-            <button
-              key={digitalWellnessCluster.group}
-              className="px-8 py-4 rounded-full shadow-[0_0_30px_rgba(16,185,129,0.4)] bg-gradient-to-r from-green-500 to-emerald-600 text-foreground text-2xl font-bold transition-all duration-300 hover:scale-110 hover:from-green-400 hover:to-emerald-500 hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-75 border border-green-400/30"
-              onClick={() => {
-                const digitalWellnessTerm = allNodeTerms.find(t => t.name === "Digital Wellness");
-                if (digitalWellnessTerm) {
-                  setSelectedTerm(digitalWellnessTerm);
-                }
-              }}
-            >
-              {digitalWellnessCluster.name}
-            </button>
-        )}
-      </div>
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[1] && (
-            <button
-              key={otherClusters[1].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(52,211,153,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(52,211,153,0.5)] focus:outline-none focus:ring-4 focus:ring-emerald-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[1], color: clusterColors[1] }}
-              onClick={() => setSelectedCluster(otherClusters[1])}
-            >
-              {otherClusters[1].name}
-            </button>
-        )}
-      </div>
+  const getClusterColor = (idx: number) => {
+    // High-contrast legible colors for light mode (Darker tones)
+    const lightColors = ['#0891b2', '#059669', '#7c3aed', '#db2777', '#2563eb', '#4f46e5', '#9333ea', '#0d9488', '#e11d48', '#0284c7'];
+    // Vibrant, high-visibility colors for dark mode (Brighter tones)
+    const darkColors = ['#22d3ee', '#34d399', '#a78bfa', '#f472b6', '#60a5fa', '#818cf8', '#c084fc', '#2dd4bf', '#fb7185', '#38bdf8'];
+    
+    const isDark = theme === 'dark' || mode === 'child';
+    return isDark ? darkColors[idx % 10] : lightColors[idx % 10];
+  };
 
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[2] && (
-            <button
-              key={otherClusters[2].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(167,139,250,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(167,139,250,0.5)] focus:outline-none focus:ring-4 focus:ring-violet-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[2], color: clusterColors[2] }}
-              onClick={() => setSelectedCluster(otherClusters[2])}
-            >
-              {otherClusters[2].name}
-            </button>
-        )}
-      </div>
-      <div className="relative w-full max-w-2xl mx-auto col-span-1">
+  const renderAllClustersView = () => (
+    <div className="flex flex-col gap-12 p-8 max-w-7xl mx-auto">
+      {/* Search Input in its own row/center */}
+      <div className="w-full">
+        <div className="relative w-full max-w-3xl mx-auto">
           <Input
             ref={inputRef}
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
-            placeholder="Search for a topic..."
-            className="text-xl px-8 py-5 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.1)] border-2 border-white/20 focus:border-green-400 focus:shadow-[0_0_20px_rgba(74,222,128,0.3)] bg-black/40 backdrop-blur-md transition-all duration-300 text-foreground placeholder:text-muted-foreground"
+            placeholder={`Search for a ${mode === 'child' ? 'game or topic' : 'resource'}...`}
+            className="text-2xl px-10 py-8 rounded-full shadow-[0_0_40px_rgba(79,209,197,0.2)] border-2 border-[#4FD1C5]/30 focus:border-[#4FD1C5] focus:shadow-[0_0_60px_rgba(79,209,197,0.4)] bg-white/40 dark:bg-black/40 backdrop-blur-md transition-all duration-300 text-foreground placeholder:text-muted-foreground font-bold"
             autoComplete="off"
           />
+          {showDropdown && suggestions.length > 0 && (
+             <div className="absolute top-full left-0 right-0 mt-4 bg-white dark:bg-slate-900 border border-border rounded-3xl shadow-2xl z-50 overflow-hidden">
+                {suggestions.map((s, i) => (
+                  <button
+                    key={s.id}
+                    className={cn(
+                      "w-full text-left px-8 py-4 hover:bg-muted transition-colors text-lg font-bold text-foreground",
+                      highlighted === i && "bg-muted"
+                    )}
+                    onClick={() => handleSelect(s)}
+                  >
+                    {s.name}
+                  </button>
+                ))}
+             </div>
+          )}
         </div>
-        <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[3] && (
-            <button
-              key={otherClusters[3].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(244,114,182,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(244,114,182,0.5)] focus:outline-none focus:ring-4 focus:ring-pink-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[3], color: clusterColors[3] }}
-              onClick={() => setSelectedCluster(otherClusters[3])}
-            >
-              {otherClusters[3].name}
-            </button>
-        )}
       </div>
 
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[4] && (
-            <button
-              key={otherClusters[4].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(96,165,250,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(96,165,250,0.5)] focus:outline-none focus:ring-4 focus:ring-blue-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[4], color: clusterColors[4] }}
-              onClick={() => setSelectedCluster(otherClusters[4])}
-            >
-              {otherClusters[4].name}
-            </button>
-        )}
-      </div>
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[5] && (
-            <button
-              key={otherClusters[5].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(129,140,248,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(129,140,248,0.5)] focus:outline-none focus:ring-4 focus:ring-indigo-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[5], color: clusterColors[5] }}
-              onClick={() => setSelectedCluster(otherClusters[5])}
-            >
-              {otherClusters[5].name}
-            </button>
-        )}
-      </div>
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[6] && (
-            <button
-              key={otherClusters[6].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(192,132,252,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(192,132,252,0.5)] focus:outline-none focus:ring-4 focus:ring-purple-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[6], color: clusterColors[6] }}
-              onClick={() => setSelectedCluster(otherClusters[6])}
-            >
-              {otherClusters[6].name}
-            </button>
-        )}
-      </div>
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[7] && (
-            <button
-              key={otherClusters[7].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(45,212,191,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(45,212,191,0.5)] focus:outline-none focus:ring-4 focus:ring-teal-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[7], color: clusterColors[7] }}
-              onClick={() => setSelectedCluster(otherClusters[7])}
-            >
-              {otherClusters[7].name}
-            </button>
-        )}
-      </div>
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[8] && (
-            <button
-              key={otherClusters[8].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(251,113,133,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(251,113,133,0.5)] focus:outline-none focus:ring-4 focus:ring-rose-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[8], color: clusterColors[8] }}
-              onClick={() => setSelectedCluster(otherClusters[8])}
-            >
-              {otherClusters[8].name}
-            </button>
-        )}
-      </div>
-      <div className="col-span-1 flex justify-center items-center">
-        {otherClusters[9] && (
-            <button
-              key={otherClusters[9].group}
-              className="p-4 rounded-xl shadow-[0_0_15px_rgba(56,189,248,0.3)] border border-white/10 text-foreground font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(56,189,248,0.5)] focus:outline-none focus:ring-4 focus:ring-sky-400/50 backdrop-blur-sm bg-opacity-90"
-              style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: clusterColors[9], color: clusterColors[9] }}
-              onClick={() => setSelectedCluster(otherClusters[9])}
-            >
-              {otherClusters[9].name}
-            </button>
-        )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="col-span-1 lg:col-span-1 flex justify-center items-center">
+          {otherClusters[0] && (
+              <button
+                key={otherClusters[0].group}
+                className="w-full h-full min-h-[90px] p-4 rounded-[1.5rem] shadow-lg border-2 border-white/10 text-foreground font-black text-lg transition-all duration-300 hover:scale-105 backdrop-blur-md bg-white/5 dark:bg-black/20 flex items-center justify-center text-center"
+                style={{ borderColor: getClusterColor(0), color: getClusterColor(0) }}
+                onClick={() => setSelectedCluster(otherClusters[0])}
+              >
+                {otherClusters[0].name}
+              </button>
+          )}
+        </div>
+
+        <div className="col-span-1 lg:col-span-2 flex justify-center items-center">
+          {digitalWellnessCluster && (
+              <button
+                key={digitalWellnessCluster.group}
+                className="w-full py-6 px-6 rounded-[2rem] shadow-[0_0_40px_rgba(79,209,197,0.3)] bg-gradient-to-br from-[#4FD1C5] to-[#38B2AC] text-white text-2xl font-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_60px_rgba(79,209,197,0.5)] focus:outline-none ring-offset-background focus:ring-4 focus:ring-[#4FD1C5] border-2 border-white/30 flex items-center justify-center text-center"
+                onClick={() => {
+                  const digitalWellnessTerm = allNodeTerms.find(t => t.name === "Digital Wellness");
+                  if (digitalWellnessTerm) {
+                    setSelectedTerm(digitalWellnessTerm);
+                  }
+                }}
+              >
+                {digitalWellnessCluster.name}
+              </button>
+          )}
+        </div>
+
+        <div className="col-span-1 lg:col-span-1 flex justify-center items-center">
+          {otherClusters[1] && (
+              <button
+                key={otherClusters[1].group}
+                className="w-full h-full min-h-[90px] p-4 rounded-[1.5rem] shadow-lg border-2 border-white/10 text-foreground font-black text-lg transition-all duration-300 hover:scale-105 backdrop-blur-md bg-white/5 dark:bg-black/20 flex items-center justify-center text-center"
+                style={{ borderColor: getClusterColor(1), color: getClusterColor(1) }}
+                onClick={() => setSelectedCluster(otherClusters[1])}
+              >
+                {otherClusters[1].name}
+              </button>
+          )}
+        </div>
+
+        {otherClusters.slice(2).map((cluster, idx) => (
+           <div key={cluster.group} className="col-span-1 flex justify-center items-center">
+              <button
+                className="w-full h-full min-h-[90px] p-4 rounded-[1.5rem] shadow-lg border-2 border-white/10 text-foreground font-black text-lg transition-all duration-300 hover:scale-105 backdrop-blur-md bg-white/5 dark:bg-black/20 flex items-center justify-center text-center"
+                style={{ borderColor: getClusterColor(idx + 2), color: getClusterColor(idx + 2) }}
+                onClick={() => setSelectedCluster(cluster)}
+              >
+                {cluster.name}
+              </button>
+           </div>
+        ))}
       </div>
     </div>
   );
@@ -293,17 +255,29 @@ const PredictiveHero: React.FC = () => {
   const renderSingleClusterView = () => {
     if (!selectedCluster) return null;
 
-    const clusterColor = clusterColors[otherClusters.findIndex(c => c.group === selectedCluster.group) % clusterColors.length];
+    const clusterIdx = otherClusters.findIndex(c => c.group === selectedCluster.group);
+    const clusterColor = getClusterColor(clusterIdx === -1 ? 0 : clusterIdx);
 
     return (
-      <div className="w-full min-h-full p-8 absolute inset-0 pt-24 overflow-y-auto" onClick={() => setSelectedCluster(null)}>
-        <h2 className="text-5xl font-bold text-foreground mb-12 text-center">{selectedCluster.name}</h2>
-        <div className="flex flex-wrap justify-center gap-4">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full py-12 px-8 z-20 backdrop-blur-xl bg-white/20 dark:bg-black/20 rounded-[4rem] border-2 border-border"
+      >
+        <button 
+          className="mb-8 hover:underline flex items-center gap-3 mx-auto font-black text-xl transition-colors"
+          style={{ color: clusterColor }}
+          onClick={() => setSelectedCluster(null)}
+        >
+          <span className="text-2xl">←</span> Back to All Topics
+        </button>
+        <h2 className="text-4xl md:text-6xl font-black mb-12 text-center drop-shadow-md tracking-tighter" style={{ color: clusterColor }}>{selectedCluster.name}</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
           {selectedCluster.nodes.map((node) => (
             <button
               key={node.id}
-              className="px-5 py-3 rounded-lg shadow-md text-base font-medium transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2"
-              style={{ backgroundColor: 'white', color: clusterColor, border: `2px solid ${clusterColor}` }}
+              className="px-6 py-4 rounded-[1.2rem] shadow-md text-lg font-black transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 backdrop-blur-md bg-white/60 dark:bg-black/40 border-2 flex items-center justify-center text-center leading-tight"
+              style={{ color: clusterColor, borderColor: `${clusterColor}80` }}
               onClick={(e) => {
                 e.stopPropagation();
                 handleSelect(node);
@@ -313,54 +287,78 @@ const PredictiveHero: React.FC = () => {
             </button>
           ))}
         </div>
-      </div>
+      </motion.div>
     );
   };
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-[90vh] bg-transparent py-16 relative w-full">
-      <div className="w-full max-w-6xl mx-auto text-center">
+    <section className="flex flex-col items-center justify-center min-h-[90vh] bg-transparent py-16 relative w-full overflow-hidden">
+      <div className="w-full max-w-6xl mx-auto text-center relative z-10">
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           animate={{ opacity: 1, y: 0 }}
+           key={mode}
+           className="mb-12"
+        >
+          <h1 className="text-6xl md:text-7xl font-black text-foreground mb-4 tracking-tighter">
+             {mode === 'child' ? 'Explore the Digital World! 🚀' : mode === 'parent' ? 'Family Protection Hub' : 'Digital Wellness Reimagined'}
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
+             {mode === 'child' ? 'Learn how to stay safe and have fun online with our interactive guide.' : mode === 'parent' ? 'Expert tools and resources to manage your family\'s digital life safely.' : 'A modern, immersive approach to family digital well-being and safety.'}
+          </p>
+        </motion.div>
+
         {selectedTerm ? (
           (() => {
             const summary = summaryMap[selectedTerm.name];
             return (
               <div
-                className="w-screen h-screen bg-black bg-opacity-25 flex items-center justify-center z-30 fixed left-0 top-0"
+                className="w-screen h-screen bg-black/60 flex items-center justify-center z-50 fixed left-0 top-0 backdrop-blur-md"
                 onClick={() => {
-                  if (selectedTerm?.name === "Digital Wellness") {
-                    setSelectedCluster(null);
-                  } else {
-                    const parentCluster = clusters.find(c => c.nodes.some(n => n.id === selectedTerm.id));
-                    setSelectedCluster(parentCluster || null);
-                  }
                   setSelectedTerm(null);
                   setInput("");
                 }}
               >
                 <Card
-                  className="p-8 text-left shadow-2xl border-2 border-gray-600 relative z-30 max-w-3xl bg-black/90 rounded-2xl text-white"
+                  className="p-10 text-left shadow-2xl border-2 border-[#4FD1C5]/30 relative z-50 max-w-3xl bg-white dark:bg-slate-900 rounded-[2.5rem] text-foreground"
                   onClick={e => e.stopPropagation()}
                 >
-                  <h3 className="text-3xl font-bold mb-4 text-foreground">{selectedTerm.name}</h3>
+                  <h3 className="text-4xl font-black mb-6 text-foreground tracking-tight">{selectedTerm.name}</h3>
                   {summary?.summary ? (
-                    <p className="mb-6 text-foreground text-lg leading-relaxed">{summary.summary}</p>
+                    <p className="mb-8 text-foreground text-xl leading-relaxed font-medium">{summary.summary}</p>
                   ) : (
-                    <p className="mb-6 text-muted-foreground text-lg italic">No summary available for this term.</p>
+                    <p className="mb-8 text-muted-foreground text-xl italic font-medium">Detailed information for this topic is coming soon!</p>
                   )}
                   {summary?.links && summary.links.length > 0 ? (
                     <div>
-                      <h4 className="font-semibold mb-3 text-lg text-foreground">Related Links:</h4>
-                      <ul className="list-disc pl-6 space-y-2">
+                      <h4 className="font-bold mb-4 text-xl text-foreground">Next Steps:</h4>
+                      <ul className="space-y-3">
                         {summary.links.map((l, idx) => (
                           <li key={idx}>
-                            <a href={l.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline text-lg">{l.title}</a>
+                            <a 
+                              href={l.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="hover:opacity-80 font-bold text-lg flex items-center gap-2 transition-colors"
+                              style={{ color: getClusterColor(0) }}
+                            >
+                               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: getClusterColor(0) }} /> {l.title}
+                            </a>
                           </li>
                         ))}
                       </ul>
                     </div>
                   ) : (
-                    <p className="text-gray-400 italic">No related links.</p>
+                    <div className="p-4 bg-muted/20 rounded-2xl border border-border">
+                       <p className="font-bold" style={{ color: getClusterColor(0) }}>Ask the Wellness Companion for more tips on this!</p>
+                    </div>
                   )}
+                  <button 
+                    className="absolute top-6 right-6 text-muted-foreground hover:text-foreground p-2"
+                    onClick={() => setSelectedTerm(null)}
+                  >
+                    ✕
+                  </button>
                 </Card>
               </div>
             );

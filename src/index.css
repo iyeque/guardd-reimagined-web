@@ -14,7 +14,7 @@
     --foreground: 222.2 47.4% 11.2%; /* Dark Blue */
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 16.3% 35%; /* Darker for better contrast */
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 47.4% 11.2%;
@@ -22,8 +22,8 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
 
-    --border: 217.2 32.6% 80%;
-    --input: 217.2 32.6% 80%;
+    --border: 217.2 32.6% 70%; /* Darker border for light mode */
+    --input: 217.2 32.6% 70%;
     --ring: 222.2 47.4% 11.2%;
 
     --primary: 222.2 47.4% 11.2%;
@@ -67,7 +67,7 @@
     --secondary-foreground: 210 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 75%; /* Lightened for better dark mode readability */
 
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
@@ -75,8 +75,8 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 217.2 32.6% 25%; /* Lightened border for better definition in dark mode */
+    --input: 217.2 32.6% 25%;
     --ring: 212.7 26.8% 83.9%;
 
     --sidebar-background: 240 5.9% 10%;
@@ -99,5 +99,71 @@
   body {
     /* Set body background to transparent */
     @apply bg-transparent text-foreground;
+  }
+}
+
+/* Wellness Background Animations */
+@keyframes blob-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+@keyframes blob-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-30px, 40px) scale(1.05); }
+  66% { transform: translate(20px, -30px) scale(0.95); }
+}
+
+@keyframes blob-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 20px) scale(1.08); }
+}
+
+@keyframes blob-4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, -25px) scale(1.15); }
+}
+
+.animate-blob-1 { animation: blob-1 20s ease-in-out infinite; }
+.animate-blob-2 { animation: blob-2 25s ease-in-out infinite; }
+.animate-blob-3 { animation: blob-3 18s ease-in-out infinite; }
+.animate-blob-4 { animation: blob-4 15s ease-in-out infinite; }
+
+/* Breathing animation - 12 seconds for relaxation rhythm */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.animate-breathe {
+  animation: breathe 12s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, -30px) scale(1.1); }
+}
+
+@keyframes drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-40px, 40px) scale(1.15); }
+}
+
+@keyframes drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 30px) scale(1.05); }
+}
+
+.animate-drift-1 { animation: drift-1 18s ease-in-out infinite; will-change: transform; }
+.animate-drift-2 { animation: drift-2 22s ease-in-out infinite; will-change: transform; }
+.animate-drift-3 { animation: drift-3 20s ease-in-out infinite; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
