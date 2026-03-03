@@ -240,7 +240,7 @@ const SocialNavigator = () => {
     }
   ];
 
-  const handleChoice = (opt: any) => {
+  const handleChoice = (opt: { text: string; result: string; ok: boolean }) => {
     setOutcome(opt.result);
     if (opt.ok) setTotalSuccess(s => s + 1);
   };

@@ -1,0 +1,59 @@
+{
+  "featuredVideoId": "qwUSyXCnAGs",
+  "categories": [
+    {
+      "id": "tutorials",
+      "title": "Step-by-Step Tutorials",
+      "icon": "ShieldCheck",
+      "description": "Technical guides to secure your family's devices.",
+      "videos": [
+        { "id": "tut-1", "ytId": "qwUSyXCnAGs", "title": "Digital Guardian: 2025 Guide", "duration": "8:45", "thumbnail": "🛡️", "description": "Complete walkthrough of safety features.", "category": "Technical Guide" },
+        { "id": "tut-2", "ytId": "76C7tauF-oI", "title": "Email Security Mastery", "duration": "7:30", "thumbnail": "📧", "description": "Protecting your digital master key.", "category": "Security" },
+        { "id": "tut-3", "ytId": "YW4N-wdiwe8", "title": "iOS Safety Controls", "duration": "10:15", "thumbnail": "📱", "description": "Blocking content at the source.", "category": "Technical Guide" },
+        { "id": "tut-4", "ytId": "QZsqRG14UyE", "title": "Google Family Link Mastery", "duration": "6:20", "thumbnail": "🤖", "description": "Manage Android phones effectively.", "category": "Technical Guide" },
+        { "id": "tut-5", "ytId": "JhoDgE31eNQ", "title": "Router Security Setup", "duration": "5:45", "thumbnail": "🌐", "description": "Protecting your home Wi-Fi.", "category": "Security" },
+        { "id": "tut-6", "ytId": "OiIX2Jzjhko", "title": "Building Digital Trust", "duration": "9:10", "thumbnail": "🤝", "description": "Connecting with your kids.", "category": "Psychology" },
+        { "id": "tut-7", "ytId": "2ccUPADdBWk", "title": "Screen Time Configuration", "duration": "7:55", "thumbnail": "⏱️", "description": "Managing limits and habits.", "category": "Technical Guide" },
+        { "id": "tut-8", "ytId": "p9_3M_B1_pU", "title": "Gaming Privacy Settings", "duration": "4:30", "thumbnail": "🎮", "description": "Safe settings for Roblox & Discord.", "category": "Privacy" },
+        { "id": "tut-9", "ytId": "37I1CIdXmFk", "title": "Digital Footprint Guide", "duration": "6:15", "thumbnail": "👣", "description": "Protecting your online reputation.", "category": "Security" },
+        { "id": "tut-10", "ytId": "qwUSyXCnAGs", "title": "Advanced Safety Audit", "duration": "8:00", "thumbnail": "📋", "description": "Full family security checkup.", "category": "Security" }
+      ]
+    },
+    {
+      "id": "expert-talks",
+      "title": "Expert Insights",
+      "icon": "GraduationCap",
+      "description": "Interviews with leading psychologists.",
+      "videos": [
+        { "id": "talk-1", "ytId": "HjxPZ6IayNk", "title": "The Psychology of Screen Time", "duration": "14:20", "thumbnail": "🧠", "description": "Impact on development.", "category": "Professional Talk" },
+        { "id": "talk-2", "ytId": "76C7tauF-oI", "title": "Trust in the Digital Age", "duration": "12:50", "thumbnail": "🤝", "description": "Building connections.", "category": "Professional Talk" },
+        { "id": "talk-3", "ytId": "YW4N-wdiwe8", "title": "The Master Key Breaches", "duration": "15:10", "thumbnail": "🔑", "description": "Real cases of email hacks.", "category": "Psychology" },
+        { "id": "talk-4", "ytId": "qwUSyXCnAGs", "title": "Guardianship Philosophy", "duration": "18:30", "thumbnail": "🛡️", "description": "New safety paradigms.", "category": "Research" },
+        { "id": "talk-5", "ytId": "QZsqRG14UyE", "title": "Digital Resilience", "duration": "11:45", "thumbnail": "🧗", "description": "Preparing kids for challenges.", "category": "Professional Talk" },
+        { "id": "talk-6", "ytId": "JhoDgE31eNQ", "title": "Online Predation Defense", "duration": "22:00", "thumbnail": "🛡️", "description": "Critical safety measures.", "category": "Safety" },
+        { "id": "talk-7", "ytId": "OiIX2Jzjhko", "title": "AI & Child Safety", "duration": "16:20", "thumbnail": "🤖", "description": "The future of the web.", "category": "Professional Talk" },
+        { "id": "talk-8", "ytId": "2ccUPADdBWk", "title": "Social Media Anxiety", "duration": "13:40", "thumbnail": "😰", "description": "Managing mental health.", "category": "Psychology" },
+        { "id": "talk-9", "ytId": "7u0K_78zV3g", "title": "Healthy Tech Modeling", "duration": "10:50", "thumbnail": "👨‍👩‍👧‍👦", "description": "Leading by example.", "category": "Parenting" },
+        { "id": "talk-10", "ytId": "Np_HmOfZ_-Q", "title": "Digital Wellbeing Standards", "duration": "19:15", "thumbnail": "📜", "description": "Policy and regulation.", "category": "Policy" }
+      ]
+    },
+    {
+      "id": "webinars",
+      "title": "Community Webinars",
+      "icon": "Users",
+      "description": "Past community workshops.",
+      "videos": [
+        { "id": "web-1", "ytId": "p9_3M_B1_pU", "title": "2026 Gaming Safety Workshop", "duration": "42:00", "thumbnail": "🎮", "description": "Roblox and Discord safety.", "category": "Community Event" },
+        { "id": "web-2", "ytId": "37I1CIdXmFk", "title": "Digital Wellness Kickoff 2026", "duration": "35:45", "thumbnail": "🚀", "description": "Setting healthy boundaries.", "category": "Community Event" },
+        { "id": "web-3", "ytId": "qwUSyXCnAGs", "title": "Parent Q&A: Guardian Mode", "duration": "50:20", "thumbnail": "❓", "description": "Answering local concerns.", "category": "Q&A Session" },
+        { "id": "web-4", "ytId": "76C7tauF-oI", "title": "Back to School Digital Prep", "duration": "40:15", "thumbnail": "🎒", "description": "Safety for the school year.", "category": "Community Event" },
+        { "id": "web-5", "ytId": "YW4N-wdiwe8", "title": "Holiday Tech Gifts Guide", "duration": "38:50", "thumbnail": "🎁", "description": "Safe devices for children.", "category": "Workshop" },
+        { "id": "web-6", "ytId": "QZsqRG14UyE", "title": "Privacy Settings Mastery", "duration": "45:30", "thumbnail": "🕵️", "description": "Live walkthrough session.", "category": "Workshop" },
+        { "id": "web-7", "ytId": "JhoDgE31eNQ", "title": "Managing Discord Servers", "duration": "33:10", "thumbnail": "💬", "description": "Safety for teen gamers.", "category": "Community Event" },
+        { "id": "web-8", "ytId": "OiIX2Jzjhko", "title": "Mental Health Awareness", "duration": "55:00", "thumbnail": "💚", "description": "Supporting digital balance.", "category": "Community Event" },
+        { "id": "web-9", "ytId": "2ccUPADdBWk", "title": "Family Agreement Builder", "duration": "48:25", "thumbnail": "📝", "description": "Drafting your first contract.", "category": "Workshop" },
+        { "id": "web-10", "ytId": "Np_HmOfZ_-Q", "title": "Emerging Tech Trends 2027", "duration": "41:40", "thumbnail": "🔮", "description": "Looking into the future.", "category": "Community Event" }
+      ]
+    }
+  ]
+}

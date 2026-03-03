@@ -1,90 +1,63 @@
-# Digital Guardian v2.0
+# GUARDD: Family Digital Wellness Reimagined
 
-This project is the consolidated full-stack application for Digital Guardian v2.0, combining the `guardd-reimagined-web` frontend with the `DigitalGuardian` backend.
+**GUARDD** is a next-generation platform designed to help modern families navigate the digital world safely. It combines high-fidelity interactive elements, educational gaming, and expert-vetted resources into a unified, immersive experience.
 
-## Key Features
+## 🚀 Key Features
 
-*   Age-appropriate content filtering (5-15 years)
-*   Real-time parental monitoring
-*   Educational games and activities
-*   Screen time management
-*   Achievement system
-*   Safe family communication
-*   Progress tracking
-*   Personalized recommendations
+### 1. Predictive Hero & Search
+*   **Intelligent Topic Mapping:** Interactive cluster-based search for digital safety topics.
+*   **Expert Summaries:** Instant, scrollable definitions for complex terms like "Online Trolling", "Data Privacy", and "Cyberbullying".
+*   **Adaptive UX:** The experience shifts based on whether you are in **Parent**, **Child**, or **Family** mode.
 
-## Tech Stack
+### 2. Educational Game Hub
+*   **Digital Wellness Pop:** A high-performance reflex game designed to teach children to prioritize "Focus" over "Alerts". Features a combo system, dynamic difficulty, and stress-tracking visuals.
+*   **Cyber-Safe Quiz:** A tiered achievement system that tests and validates cybersecurity knowledge across multiple levels.
 
-### Frontend
+### 3. Community Pulse (Hub)
+*   **Live Activity Sync:** Real-time tracking of active families and online experts.
+*   **Global Event Calendar:** Deep-indexed 2026/27 schedule of international safety conferences and local workshops.
+*   **Elite Mentor Circle:** Direct access to certified digital wellness experts via a professional application system.
 
-*   **Framework**: React (react, react-dom)
-*   **Language**: TypeScript (typescript)
-*   **Build Tool**: Vite (vite)
-*   **Styling**: Tailwind CSS (tailwindcss, tailwind-merge, tailwindcss-animate)
-*   **UI Components**: Radix UI (@radix-ui/react-* for components like accordion, dialog, etc.), shadcn-ui
-*   **Form Handling**: React Hook Form (react-hook-form)
-*   **Data Fetching & State Management**: React Query (@tanstack/react-query)
-*   **Animations**: Framer Motion (framer-motion)
-*   **Routing**: Wouter (wouter), react-router-dom
-*   **Data Visualization**: Recharts (recharts)
-*   **Icons**: Lucide React (lucide-react), React Icons (react-icons)
+### 4. Visual Academy
+*   **On-Demand Learning:** A curated library of step-by-step tutorials, expert talks, and webinar recordings.
+*   **Interactive Player:** High-fidelity video modal system for distraction-free learning.
 
-### Backend
+### 5. Family Utility Tools
+*   **Agreement Builder:** Interactive workshop to create and "sign" custom family digital contracts.
+*   **Screen Time Management:** Comprehensive strategies and visualization tools for balanced tech usage.
 
-*   **Runtime**: Node.js
-*   **Framework**: Express.js (express)
-*   **Language**: TypeScript (typescript)
-*   **Authentication**: Passport.js (passport, passport-local)
-*   **Session Management**: Express Session (express-session), with session storage using connect-pg-simple (PostgreSQL)
-*   **Database ORM**: Drizzle ORM (drizzle-orm, drizzle-zod)
-*   **Validation**: Zod (zod, zod-validation-error)
-*   **Real-Time Communication**: WebSockets (ws)
+## 🛠 Tech Stack
 
-### Database
+*   **Frontend**: React 18, TypeScript, Vite, Tailwind CSS.
+*   **State & Logic**: Framer Motion (Animations), React Query (Data Fetching), Context API (Theme & Mode management).
+*   **UI Foundation**: Radix UI, shadcn/ui, Lucide Icons.
+*   **Backend & Data**: Express (Node.js), PostgreSQL (Drizzle ORM), Dynamic JSON data syncing for community features.
 
-*   **Database**: PostgreSQL (@neondatabase/serverless for serverless PostgreSQL)
-*   **Schema Management**: Drizzle Kit (drizzle-kit)
+## 📦 Getting Started
 
-### Development Tools
-
-*   **Type Checking**: TypeScript (typescript)
-*   **Build Tools**:
-    *   Frontend: Vite (vite)
-    *   Backend: esbuild (esbuild) for bundling server code
-*   **Execution**: TSX (tsx) for running TypeScript files directly
-
-## Getting Started
-
-To get started with the project, follow these steps:
-
-1.  **Navigate to the project directory:**
-
-    ```bash
-    cd C:\Users\Huawei\Downloads\DigitalGuardian\guardd-reimagined-web
-    ```
-
-2.  **Install dependencies:**
-
+1.  **Installation:**
     ```bash
     npm install
     ```
 
-3.  **Run the development server:**
-
+2.  **Run Development Server:**
     ```bash
     npm run dev
     ```
 
-    This will start both the frontend and backend servers.
+3.  **Update Community Data (Manual Refresh):**
+    ```bash
+    npm run update-data
+    ```
 
-4.  **Build for production:**
-
+4.  **Build for Production:**
     ```bash
     npm run build
     ```
 
-5.  **Start the production server:**
+## 📅 Maintenance & Automation
 
-    ```bash
-    npm start
-    ```
+The project includes a specialized script (`scripts/update-community-data.ts`) that pulls the latest 2026/27 safety events. This script is intended to be run via a daily cron job or GitHub Action to keep the Community Hub fresh.
+
+---
+*Created with focus on Family, Safety, and Balance.*

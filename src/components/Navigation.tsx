@@ -12,34 +12,58 @@ export const Navigation = () => {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const handleNavClick = (sectionId: string) => {
+  const handleNavClick = (href: string) => {
     setIsOpen(false);
-    if (location.pathname !== '/') {
-      navigate('/' + sectionId);
-    } else {
-      const element = document.querySelector(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+    if (href.startsWith('#')) {
+      const id = href.substring(1);
+      if (location.pathname !== '/') {
+        navigate('/#' + id);
+        // The scroll will be handled by a global scroll handler or by being on the home page with the hash
+      } else {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
+    } else {
+      navigate(href);
     }
   };
 
+  const navItems = [
+    { label: "About", href: "#about" },
+    { label: "Resources", href: "#resources" },
+    { label: "Support", href: "#support" },
+    { label: "Blog", href: "/educational-blog" },
+    { label: "Contact", href: "#contact" },
+  ];
+
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/10 dark:bg-black/10 backdrop-blur-md border-b border-border transition-all duration-300">
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-6 py-2">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-2 group">
+          <button onClick={() => handleNavClick('#home')} className="flex items-center space-x-2 group">
             <Heart className="h-8 w-8 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300" />
-            <span className="text-2xl font-black text-foreground tracking-tight">DigitalGuard</span>
-          </Link>
+            <span className="text-2xl font-black text-foreground tracking-tight uppercase">Digital Guardian</span>
+          </button>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <button onClick={() => handleNavClick('#home')} className="text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Home</button>
-            <button onClick={() => handleNavClick('#about')} className="text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">About</button>
-            <button onClick={() => handleNavClick('#resources')} className="text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Resources</button>
-            <button onClick={() => handleNavClick('#support')} className="text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Support</button>
-            <button onClick={() => handleNavClick('#contact')} className="text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Contact</button>
+            <button 
+              onClick={() => handleNavClick('#home')} 
+              className="text-xs font-black text-muted-foreground hover:text-foreground transition-all uppercase tracking-widest"
+            >
+              Home
+            </button>
+            {navItems.filter(item => item.label !== "Blog").map((item) => (
+              <button 
+                key={item.label}
+                onClick={() => handleNavClick(item.href)} 
+                className="text-xs font-black text-muted-foreground hover:text-foreground transition-all uppercase tracking-widest"
+              >
+                {item.label}
+              </button>
+            ))}
             
             <Button
               variant="ghost"
@@ -84,11 +108,21 @@ export const Navigation = () => {
         {isOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-white dark:bg-black/95 backdrop-blur-xl border-b border-border shadow-2xl animate-in slide-in-from-top-5 duration-300">
             <div className="flex flex-col space-y-4 p-6">
-              <button onClick={() => handleNavClick('#home')} className="text-left text-lg text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Home</button>
-              <button onClick={() => handleNavClick('#about')} className="text-left text-lg text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">About</button>
-              <button onClick={() => handleNavClick('#resources')} className="text-left text-lg text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Resources</button>
-              <button onClick={() => handleNavClick('#support')} className="text-left text-lg text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Support</button>
-              <button onClick={() => handleNavClick('#contact')} className="text-left text-lg text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold">Contact</button>
+              <button 
+                onClick={() => handleNavClick('#home')} 
+                className="text-left text-lg text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold uppercase tracking-wider"
+              >
+                Home
+              </button>
+              {navItems.filter(item => item.label !== "Blog").map((item) => (
+                <button 
+                  key={item.label}
+                  onClick={() => handleNavClick(item.href)} 
+                  className="text-left text-lg text-foreground hover:text-green-600 dark:hover:text-green-400 transition-colors font-bold uppercase tracking-wider"
+                >
+                  {item.label}
+                </button>
+              ))}
               <Link to="/workshop" onClick={toggleMenu} className="pt-2">
                 <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black shadow-lg rounded-xl h-12">
                   Get Started

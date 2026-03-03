@@ -31,7 +31,7 @@ const Layout = () => {
       {/* Personalized Experience Switcher */}
       <FamilyModeSwitcher currentMode={mode} onModeChange={setMode} />
 
-      <main className="relative z-10">
+      <main className="relative">
         <Outlet />
       </main>
       

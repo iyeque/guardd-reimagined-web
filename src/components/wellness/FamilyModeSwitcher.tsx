@@ -21,7 +21,7 @@ export const FamilyModeSwitcher: FC<FamilyModeSwitcherProps> = ({ currentMode, o
     <motion.div 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col items-end gap-2"
+      className="fixed right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col items-end gap-2 no-print"
       initial={false}
     >
       <motion.div 

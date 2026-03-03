@@ -313,14 +313,14 @@ const PredictiveHero: React.FC = () => {
             const summary = summaryMap[selectedTerm.name];
             return (
               <div
-                className="w-screen h-screen bg-black/60 flex items-center justify-center z-50 fixed left-0 top-0 backdrop-blur-md"
+                className="w-screen h-screen bg-black/60 flex items-center justify-center z-[100] fixed left-0 top-0 backdrop-blur-md"
                 onClick={() => {
                   setSelectedTerm(null);
                   setInput("");
                 }}
               >
                 <Card
-                  className="p-10 text-left shadow-2xl border-2 border-[#4FD1C5]/30 relative z-50 max-w-3xl bg-white dark:bg-slate-900 rounded-[2.5rem] text-foreground"
+                  className="p-10 text-left shadow-2xl border-2 border-[#4FD1C5]/30 relative z-[101] max-w-3xl bg-white dark:bg-slate-900 rounded-[2.5rem] text-foreground max-h-[90vh] overflow-y-auto"
                   onClick={e => e.stopPropagation()}
                 >
                   <h3 className="text-4xl font-black mb-6 text-foreground tracking-tight">{selectedTerm.name}</h3>

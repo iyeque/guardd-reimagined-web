@@ -1,4 +1,4 @@
-import { useState, FC, useEffect } from 'react';
+import { useState, FC, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWellness } from '@/context/WellnessContext';
 import { useNavigate } from 'react-router-dom';
@@ -51,43 +51,42 @@ export const WellnessCompanion: FC = () => {
       setMessage(tipLabel);
     }
   };
+const modeContent = useMemo(() => ({
+  parent: {
+    greeting: "Welcome to the Parent Hub. How can I assist with your family's digital safety today? 🌿",
+    tips: [
+      "Review this week's screen time reports. 📊",
+      "Create a family digital agreement. 📝",
+      "Discuss online footprints with your teens. 👣",
+      "Practice 3 deep breaths. 🌬️"
+    ]
+  },
+  child: {
+    greeting: "Hi there, explorer! Ready to learn about the digital world? 🎨",
+    tips: [
+      "Play a quick cybersecurity quiz! 🎮",
+      "Watch a fun wellness video. 🍿",
+      "Take a 20-20-20 eye break! 👁️",
+      "Practice 3 deep breaths. 🌬️"
+    ]
+  },
+  family: {
+    greeting: "Hello! I'm here to help your family stay balanced and connected. ❤️",
+    tips: [
+      "Plan a device-free family walk. 🌳",
+      "Create a family digital agreement. 📝",
+      "Watch a wellness video together. 🍿",
+      "Practice 3 deep breaths together. 🌬️"
+    ]
+  }
+}), []);
 
-  const modeContent = {
-    parent: {
-      greeting: "Welcome to the Parent Hub. How can I assist with your family's digital safety today? 🌿",
-      tips: [
-        "Review this week's screen time reports. 📊",
-        "Create a family digital agreement. 📝",
-        "Discuss online footprints with your teens. 👣",
-        "Practice 3 deep breaths. 🌬️"
-      ]
-    },
-    child: {
-      greeting: "Hi there, explorer! Ready to learn about the digital world? 🎨",
-      tips: [
-        "Play a quick cybersecurity quiz! 🎮",
-        "Watch a fun wellness video. 🍿",
-        "Take a 20-20-20 eye break! 👁️",
-        "Practice 3 deep breaths. 🌬️"
-      ]
-    },
-    family: {
-      greeting: "Hello! I'm here to help your family stay balanced and connected. ❤️",
-      tips: [
-        "Plan a device-free family walk. 🌳",
-        "Create a family digital agreement. 📝",
-        "Watch a wellness video together. 🍿",
-        "Practice 3 deep breaths together. 🌬️"
-      ]
-    }
-  };
-
-  useEffect(() => {
-    setMessage(modeContent[mode].greeting);
-  }, [mode]);
+useEffect(() => {
+  setMessage(modeContent[mode].greeting);
+}, [mode, modeContent]);
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed bottom-8 right-8 z-50 no-print">
       {/* Breathing Exercise Overlay */}
       <AnimatePresence>
         {isBreathing && (
