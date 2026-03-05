@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trophy, Zap, Heart, AlertCircle } from 'lucide-react';
@@ -152,32 +153,32 @@ const DigitalWellnessPop: React.FC = () => {
     });
 
     // Spawn bubbles
-    if (Math.random() < 0.035 + (score / 10000)) {
+    if (Math.random() < 0.04 + (score / 8000)) {
       const rand = Math.random();
       let type: Bubble['type'] = 'focus';
       let text = 'FOCUS';
       let color = 'rgb(74, 222, 128)';
       
-      if (rand < 0.3) {
+      if (rand < 0.25) {
         type = 'alert';
         text = 'ALERTS';
         color = 'rgb(248, 113, 113)';
-      } else if (rand > 0.95) {
+      } else if (rand > 0.96) {
         type = 'bonus';
         text = 'ZEN';
         color = 'rgb(129, 140, 248)';
-      } else if (rand > 0.9) {
+      } else if (rand > 0.92) {
         type = 'calm';
         text = 'CALM';
         color = 'rgb(45, 212, 191)';
       }
 
-      const radius = Math.random() * 20 + 25;
+      const radius = Math.random() * 20 + 30; // Slightly larger bubbles
       bubblesRef.current.push({
         x: Math.random() * (width - radius * 2) + radius,
         y: height + radius,
         radius,
-        speed: (Math.random() * 1.5 + 1.5) + (score / 1000),
+        speed: (Math.random() * 1.2 + 1.2) + (score / 1200), // Slightly slower base speed
         color,
         text,
         type,
@@ -186,9 +187,9 @@ const DigitalWellnessPop: React.FC = () => {
       });
     }
 
-    // Smoothly update stress
+    // Update stress (throttled visually but accurate for game logic)
     setStress(prev => {
-      const baseIncrease = 0.05 + (score / 5000);
+      const baseIncrease = 0.04 + (score / 6000);
       const next = prev + baseIncrease;
       if (next >= 100) {
         setGameOver(true);
@@ -218,15 +219,19 @@ const DigitalWellnessPop: React.FC = () => {
   const handlePointer = (e: React.PointerEvent) => {
     if (!gameStarted || gameOver) return;
     
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    
+    // Scale input coordinates to match internal canvas resolution
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
     let hit = false;
     bubblesRef.current.forEach((b, i) => {
       const dist = Math.sqrt((x - b.x) ** 2 + (y - b.y) ** 2);
-      if (dist < b.radius * 1.2) {
+      // Increased hit radius to 1.5x bubble radius for more forgiving pops
+      if (dist < b.radius * 1.5) {
         hit = true;
         createParticles(b.x, b.y, b.color, b.type === 'bonus' ? 25 : 12);
         
@@ -274,7 +279,7 @@ const DigitalWellnessPop: React.FC = () => {
     const handleResize = () => {
       if (canvasRef.current && containerRef.current) {
         canvasRef.current.width = containerRef.current.clientWidth;
-        canvasRef.current.height = 500;
+        canvasRef.current.height = containerRef.current.clientHeight;
       }
     };
     handleResize();
@@ -283,7 +288,7 @@ const DigitalWellnessPop: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8 p-4 md:p-0">
+    <div className="w-full max-w-5xl mx-auto space-y-8 p-4 md:p-0">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="bg-white/5 border-white/10 p-4 rounded-3xl backdrop-blur-md">
           <div className="text-muted-foreground text-[10px] uppercase font-black tracking-widest mb-1">Score</div>
@@ -313,7 +318,7 @@ const DigitalWellnessPop: React.FC = () => {
 
       <div 
         ref={containerRef}
-        className="relative aspect-video md:aspect-[21/9] bg-slate-900/50 rounded-[3rem] border-4 border-white/10 overflow-hidden backdrop-blur-xl shadow-2xl cursor-crosshair group"
+        className="relative aspect-video bg-slate-900/50 rounded-[3rem] border-4 border-white/10 overflow-hidden backdrop-blur-xl shadow-2xl cursor-crosshair group"
       >
         {!gameStarted && !gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 z-20 p-8 text-center">

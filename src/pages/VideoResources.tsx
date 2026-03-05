@@ -7,12 +7,15 @@ import { toast } from "sonner";
 
 interface Video {
   id: string;
-  ytId: string;
   title: string;
   duration: string;
-  thumbnail: string;
+  thumbnail?: string;
+  thumbnailUrl?: string;
   description: string;
   category: string;
+  provider?: "youtube" | "vimeo" | "mp4" | "external";
+  url?: string;
+  ytId?: string;
 }
 
 interface VideoCategory {
@@ -26,7 +29,7 @@ interface VideoCategory {
 const VideoResources: React.FC = () => {
   const channelId = "UCCRU5NVBA7hyl18jXAICwaA";
   
-  const [selectedVideo, setSelectedVideo] = useState<{id: string, title: string} | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<{id: string, title: string, provider?: Video["provider"], url?: string} | null>(null);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [requestTopic, setRequestTopic] = useState("");
@@ -60,10 +63,23 @@ const VideoResources: React.FC = () => {
     }
   };
 
-  const getEmbedUrl = (url: string) => {
-    const id = extractVideoId(url);
-    const base = adblockSuspected ? 'https://www.youtube.com' : 'https://www.youtube-nocookie.com';
-    return `${base}/embed/${id}?rel=0&modestbranding=1&playsinline=1`;
+  const getEmbedUrl = (url: string, provider: Video["provider"] = "youtube") => {
+    if (provider === "vimeo") {
+      // Vimeo: https://player.vimeo.com/video/{id}
+      try {
+        const u = new URL(url);
+        const id = u.pathname.split("/").filter(Boolean).pop() || "";
+        return `https://player.vimeo.com/video/${id}?dnt=1&playsinline=1`;
+      } catch {
+        return url;
+      }
+    }
+    if (provider === "youtube" || !provider) {
+      const id = extractVideoId(url);
+      const base = adblockSuspected ? 'https://www.youtube.com' : 'https://www.youtube-nocookie.com';
+      return `${base}/embed/${id}?rel=0&modestbranding=1&playsinline=1`;
+    }
+    return url;
   };
 
   const getWatchUrl = (url: string) => {
@@ -141,22 +157,39 @@ const VideoResources: React.FC = () => {
   };
 
   const VideoCard = ({ video }: { video: Video }) => {
-    const vId = extractVideoId(video.ytId);
+    const provider: Video["provider"] = video.provider || (video.ytId ? "youtube" : "external");
+    const videoUrl = video.url || (video.ytId ? `https://www.youtube.com/watch?v=${extractVideoId(video.ytId)}` : undefined);
+    const vId = provider === "youtube" ? extractVideoId(videoUrl || video.ytId || "") : "";
+    const thumb = video.thumbnailUrl 
+      ? video.thumbnailUrl 
+      : provider === "youtube" && vId 
+        ? `https://img.youtube.com/vi/${vId}/mqdefault.jpg`
+        : undefined;
     return (
       <Card 
         key={video.id} 
         className="bg-white/60 dark:bg-slate-900/60 border-border hover:border-red-500/30 transition-all duration-300 group cursor-pointer backdrop-blur-md rounded-3xl overflow-hidden shadow-lg flex flex-col h-full min-w-[300px] md:min-w-[350px] snap-start"
-        onClick={() => setSelectedVideo({id: video.ytId, title: video.title})}
+        onClick={() => {
+          if (provider === "external" && videoUrl) {
+            window.open(videoUrl, "_blank", "noopener,noreferrer");
+            return;
+          }
+          setSelectedVideo({id: (videoUrl || video.ytId || ""), title: video.title, provider, url: videoUrl});
+        }}
       >
         <div className="aspect-video bg-slate-200 dark:bg-slate-800 flex items-center justify-center relative overflow-hidden">
-          <img 
-            src={`https://img.youtube.com/vi/${vId}/mqdefault.jpg`} 
-            alt={video.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800';
-            }}
-          />
+          {thumb ? (
+            <img 
+              src={thumb}
+              alt={video.title}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800';
+              }}
+            />
+          ) : (
+            <div className="w-full h-full bg-slate-300 dark:bg-slate-700" />
+          )}
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
              <PlayCircle className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transition-all drop-shadow-2xl scale-90 group-hover:scale-100" />
           </div>
@@ -247,16 +280,39 @@ const VideoResources: React.FC = () => {
                  Open on YouTube
                </a>
              )}
-              <iframe
-                className="w-full h-full"
-                src={getEmbedUrl(selectedVideo.id)}
-                title={selectedVideo.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                onError={() => setAdblockSuspected(true)}
-              ></iframe>
+              {selectedVideo.provider === "youtube" || !selectedVideo.provider ? (
+                <iframe
+                  className="w-full h-full"
+                  src={getEmbedUrl(selectedVideo.id, "youtube")}
+                  title={selectedVideo.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                  onError={() => setAdblockSuspected(true)}
+                ></iframe>
+              ) : selectedVideo.provider === "vimeo" ? (
+                <iframe
+                  className="w-full h-full"
+                  src={getEmbedUrl(selectedVideo.id, "vimeo")}
+                  title={selectedVideo.title}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                  allowFullScreen
+                ></iframe>
+              ) : selectedVideo.provider === "mp4" ? (
+                <video className="w-full h-full" controls preload="metadata">
+                  <source src={selectedVideo.url || selectedVideo.id} />
+                  Your browser does not support HTML video. 
+                </video>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white font-bold">
+                  <a href={selectedVideo.url || selectedVideo.id} target="_blank" rel="noopener noreferrer" className="underline">
+                    Open external video
+                  </a>
+                </div>
+              )}
            </div>
         </div>
       )}
@@ -342,7 +398,7 @@ const VideoResources: React.FC = () => {
                Video playback may be blocked by an ad blocker. Whitelist youtube.com and youtube-nocookie.com or use the Open on YouTube option.
              </div>
            )}
-           <Card className="bg-white/60 dark:bg-slate-900/40 border-border overflow-hidden shadow-2xl backdrop-blur-xl rounded-[3rem] border-2 border-red-500/10">
+          <Card className="bg-white/60 dark:bg-slate-900/40 overflow-hidden shadow-2xl backdrop-blur-xl rounded-[3rem] border-2 border-red-500/10">
             <CardContent className="p-0">
               <div className="aspect-video w-full bg-slate-950">
                 <iframe

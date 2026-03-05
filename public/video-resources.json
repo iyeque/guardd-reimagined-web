@@ -5,54 +5,54 @@
       "id": "tutorials",
       "title": "Step-by-Step Tutorials",
       "icon": "ShieldCheck",
-      "description": "Technical guides to secure your family's devices.",
+      "description": "Fun and easy guides for kids to stay safe online.",
       "videos": [
-        { "id": "tut-1", "ytId": "qwUSyXCnAGs", "title": "Digital Guardian: 2025 Guide", "duration": "8:45", "thumbnail": "🛡️", "description": "Complete walkthrough of safety features.", "category": "Technical Guide" },
-        { "id": "tut-2", "ytId": "76C7tauF-oI", "title": "Email Security Mastery", "duration": "7:30", "thumbnail": "📧", "description": "Protecting your digital master key.", "category": "Security" },
-        { "id": "tut-3", "ytId": "YW4N-wdiwe8", "title": "iOS Safety Controls", "duration": "10:15", "thumbnail": "📱", "description": "Blocking content at the source.", "category": "Technical Guide" },
-        { "id": "tut-4", "ytId": "QZsqRG14UyE", "title": "Google Family Link Mastery", "duration": "6:20", "thumbnail": "🤖", "description": "Manage Android phones effectively.", "category": "Technical Guide" },
-        { "id": "tut-5", "ytId": "JhoDgE31eNQ", "title": "Router Security Setup", "duration": "5:45", "thumbnail": "🌐", "description": "Protecting your home Wi-Fi.", "category": "Security" },
-        { "id": "tut-6", "ytId": "OiIX2Jzjhko", "title": "Building Digital Trust", "duration": "9:10", "thumbnail": "🤝", "description": "Connecting with your kids.", "category": "Psychology" },
-        { "id": "tut-7", "ytId": "2ccUPADdBWk", "title": "Screen Time Configuration", "duration": "7:55", "thumbnail": "⏱️", "description": "Managing limits and habits.", "category": "Technical Guide" },
-        { "id": "tut-8", "ytId": "p9_3M_B1_pU", "title": "Gaming Privacy Settings", "duration": "4:30", "thumbnail": "🎮", "description": "Safe settings for Roblox & Discord.", "category": "Privacy" },
-        { "id": "tut-9", "ytId": "37I1CIdXmFk", "title": "Digital Footprint Guide", "duration": "6:15", "thumbnail": "👣", "description": "Protecting your online reputation.", "category": "Security" },
-        { "id": "tut-10", "ytId": "qwUSyXCnAGs", "title": "Advanced Safety Audit", "duration": "8:00", "thumbnail": "📋", "description": "Full family security checkup.", "category": "Security" }
+        { "id": "tut-1", "provider": "youtube", "ytId": "vHSbd-HHFo4", "url": "https://www.youtube.com/watch?v=vHSbd-HHFo4", "title": "5 Internet Safety Tips", "duration": "1:23", "description": "Essential rules for every digital explorer.", "category": "Safety" },
+        { "id": "tut-2", "provider": "youtube", "ytId": "X_duZ-1LApg", "url": "https://www.youtube.com/watch?v=X_duZ-1LApg", "title": "Pause & Think Online", "duration": "2:11", "description": "A catchy song about being careful online.", "category": "Safety" },
+        { "id": "tut-3", "provider": "youtube", "ytId": "HxySrSbSY7o", "url": "https://www.youtube.com/watch?v=HxySrSbSY7o", "title": "Top Safety Rules", "duration": "1:16", "description": "The most essential online rules for kids.", "category": "Safety" },
+        { "id": "tut-4", "provider": "youtube", "ytId": "GOqHCRndM_U", "url": "https://www.youtube.com/watch?v=GOqHCRndM_U", "title": "Online Privacy for Kids", "duration": "4:22", "description": "Keeping your personal info a secret.", "category": "Privacy" },
+        { "id": "tut-5", "provider": "youtube", "ytId": "yWscG7X5_X0", "url": "https://www.youtube.com/watch?v=yWscG7X5_X0", "title": "25 Easy Safety Tips", "duration": "11:46", "description": "The ultimate guide to internet safety.", "category": "Education" },
+        { "id": "tut-6", "provider": "youtube", "ytId": "KJj2U7XuHdo", "url": "https://www.youtube.com/watch?v=KJj2U7XuHdo", "title": "Interland Adventure", "duration": "1:04", "description": "Explore the world of Be Internet Awesome.", "category": "Gaming" },
+        { "id": "tut-7", "provider": "youtube", "ytId": "8pnZYI7mLnU", "url": "https://www.youtube.com/watch?v=8pnZYI7mLnU", "title": "Meet the Digital Citizens", "duration": "1:35", "description": "Friendly characters who teach media balance.", "category": "Safety" },
+        { "id": "tut-8", "provider": "youtube", "ytId": "EhBDdxCk4f1", "url": "https://www.youtube.com/watch?v=EhBDdxCk4f1", "title": "Your Digital Footprint", "duration": "1:35", "description": "Learning how to leave a positive trail.", "category": "Identity" },
+        { "id": "tut-9", "provider": "youtube", "ytId": "xvicEQSoIao", "url": "https://www.youtube.com/watch?v=xvicEQSoIao", "title": "Share with Care", "duration": "2:12", "description": "Google's guide to responsible sharing.", "category": "Safety" },
+        { "id": "tut-10", "provider": "youtube", "ytId": "XMRkD47ksBM", "url": "https://www.youtube.com/watch?v=XMRkD47ksBM", "title": "Don't Fall for Fake", "duration": "2:12", "description": "How to spot scams and phishing online.", "category": "Security" }
       ]
     },
     {
       "id": "expert-talks",
       "title": "Expert Insights",
       "icon": "GraduationCap",
-      "description": "Interviews with leading psychologists.",
+      "description": "Educational videos that explain how the internet works.",
       "videos": [
-        { "id": "talk-1", "ytId": "HjxPZ6IayNk", "title": "The Psychology of Screen Time", "duration": "14:20", "thumbnail": "🧠", "description": "Impact on development.", "category": "Professional Talk" },
-        { "id": "talk-2", "ytId": "76C7tauF-oI", "title": "Trust in the Digital Age", "duration": "12:50", "thumbnail": "🤝", "description": "Building connections.", "category": "Professional Talk" },
-        { "id": "talk-3", "ytId": "YW4N-wdiwe8", "title": "The Master Key Breaches", "duration": "15:10", "thumbnail": "🔑", "description": "Real cases of email hacks.", "category": "Psychology" },
-        { "id": "talk-4", "ytId": "qwUSyXCnAGs", "title": "Guardianship Philosophy", "duration": "18:30", "thumbnail": "🛡️", "description": "New safety paradigms.", "category": "Research" },
-        { "id": "talk-5", "ytId": "QZsqRG14UyE", "title": "Digital Resilience", "duration": "11:45", "thumbnail": "🧗", "description": "Preparing kids for challenges.", "category": "Professional Talk" },
-        { "id": "talk-6", "ytId": "JhoDgE31eNQ", "title": "Online Predation Defense", "duration": "22:00", "thumbnail": "🛡️", "description": "Critical safety measures.", "category": "Safety" },
-        { "id": "talk-7", "ytId": "OiIX2Jzjhko", "title": "AI & Child Safety", "duration": "16:20", "thumbnail": "🤖", "description": "The future of the web.", "category": "Professional Talk" },
-        { "id": "talk-8", "ytId": "2ccUPADdBWk", "title": "Social Media Anxiety", "duration": "13:40", "thumbnail": "😰", "description": "Managing mental health.", "category": "Psychology" },
-        { "id": "talk-9", "ytId": "7u0K_78zV3g", "title": "Healthy Tech Modeling", "duration": "10:50", "thumbnail": "👨‍👩‍👧‍👦", "description": "Leading by example.", "category": "Parenting" },
-        { "id": "talk-10", "ytId": "Np_HmOfZ_-Q", "title": "Digital Wellbeing Standards", "duration": "19:15", "thumbnail": "📜", "description": "Policy and regulation.", "category": "Policy" }
+        { "id": "talk-1", "provider": "youtube", "ytId": "i307esUZTSc", "url": "https://www.youtube.com/watch?v=i307esUZTSc", "title": "Be Internet Awesome", "duration": "2:09", "description": "Google's overview of digital citizenship.", "category": "Expert Insight" },
+        { "id": "talk-2", "provider": "youtube", "ytId": "kFDaG9pAA1w", "url": "https://www.youtube.com/watch?v=kFDaG9pAA1w", "title": "How the Web Works", "duration": "5:35", "description": "The science behind clicking safely.", "category": "Cybersecurity" },
+        { "id": "talk-3", "provider": "youtube", "ytId": "_6-A0Z9S2S0", "url": "https://www.youtube.com/watch?v=_6-A0Z9S2S0", "title": "Screen Time Science", "duration": "4:04", "description": "How your brain reacts to digital devices.", "category": "Wellness" },
+        { "id": "talk-4", "provider": "youtube", "ytId": "7975_I1mS7E", "url": "https://www.youtube.com/watch?v=7975_I1mS7E", "title": "The Power of Words", "duration": "2:51", "description": "Understanding the impact of online comments.", "category": "Kindness" },
+        { "id": "talk-5", "provider": "youtube", "ytId": "_n5E7v8nmoN", "url": "https://www.youtube.com/watch?v=_n5E7v8nmoN", "title": "Know the Rules", "duration": "2:24", "description": "The four fundamental safety protocols.", "category": "Safety" },
+        { "id": "talk-6", "provider": "youtube", "ytId": "KqoFMwU1R0o", "url": "https://www.youtube.com/watch?v=KqoFMwU1R0o", "title": "Secure Your Secrets", "duration": "2:12", "description": "Google's guide to strong passwords.", "category": "Security" },
+        { "id": "talk-7", "provider": "youtube", "ytId": "1S1fISh-pag", "url": "https://www.youtube.com/watch?v=1S1fISh-pag", "title": "Cyber Warfare 101", "duration": "6:15", "description": "A kid-friendly look at cybersecurity.", "category": "Security" },
+        { "id": "talk-8", "provider": "youtube", "ytId": "NeolCmP4B5I", "url": "https://www.youtube.com/watch?v=NeolCmP4B5I", "title": "Handling Tricky Situations", "duration": "4:10", "description": "What to do when things feel weird online.", "category": "Training" },
+        { "id": "talk-9", "provider": "youtube", "ytId": "2VnrdEnUMNE", "url": "https://www.youtube.com/watch?v=2VnrdEnUMNE", "title": "The Digital Pledge", "duration": "1:34", "description": "Committing to a safer internet community.", "category": "Ethics" },
+        { "id": "talk-10", "provider": "youtube", "ytId": "MkwmD6OQrWQ", "url": "https://www.youtube.com/watch?v=MkwmD6OQrWQ", "title": "Super Digital Citizen", "duration": "2:15", "description": "Becoming an online hero and upstander.", "category": "Leadership" }
       ]
     },
     {
       "id": "webinars",
       "title": "Community Webinars",
       "icon": "Users",
-      "description": "Past community workshops.",
+      "description": "Interactive workshops and stories for the whole family.",
       "videos": [
-        { "id": "web-1", "ytId": "p9_3M_B1_pU", "title": "2026 Gaming Safety Workshop", "duration": "42:00", "thumbnail": "🎮", "description": "Roblox and Discord safety.", "category": "Community Event" },
-        { "id": "web-2", "ytId": "37I1CIdXmFk", "title": "Digital Wellness Kickoff 2026", "duration": "35:45", "thumbnail": "🚀", "description": "Setting healthy boundaries.", "category": "Community Event" },
-        { "id": "web-3", "ytId": "qwUSyXCnAGs", "title": "Parent Q&A: Guardian Mode", "duration": "50:20", "thumbnail": "❓", "description": "Answering local concerns.", "category": "Q&A Session" },
-        { "id": "web-4", "ytId": "76C7tauF-oI", "title": "Back to School Digital Prep", "duration": "40:15", "thumbnail": "🎒", "description": "Safety for the school year.", "category": "Community Event" },
-        { "id": "web-5", "ytId": "YW4N-wdiwe8", "title": "Holiday Tech Gifts Guide", "duration": "38:50", "thumbnail": "🎁", "description": "Safe devices for children.", "category": "Workshop" },
-        { "id": "web-6", "ytId": "QZsqRG14UyE", "title": "Privacy Settings Mastery", "duration": "45:30", "thumbnail": "🕵️", "description": "Live walkthrough session.", "category": "Workshop" },
-        { "id": "web-7", "ytId": "JhoDgE31eNQ", "title": "Managing Discord Servers", "duration": "33:10", "thumbnail": "💬", "description": "Safety for teen gamers.", "category": "Community Event" },
-        { "id": "web-8", "ytId": "OiIX2Jzjhko", "title": "Mental Health Awareness", "duration": "55:00", "thumbnail": "💚", "description": "Supporting digital balance.", "category": "Community Event" },
-        { "id": "web-9", "ytId": "2ccUPADdBWk", "title": "Family Agreement Builder", "duration": "48:25", "thumbnail": "📝", "description": "Drafting your first contract.", "category": "Workshop" },
-        { "id": "web-10", "ytId": "Np_HmOfZ_-Q", "title": "Emerging Tech Trends 2027", "duration": "41:40", "thumbnail": "🔮", "description": "Looking into the future.", "category": "Community Event" }
+        { "id": "web-1", "provider": "youtube", "ytId": "oPHOsCnjMU4", "url": "https://www.youtube.com/watch?v=oPHOsCnjMU4", "title": "My Online Neighborhood", "duration": "3:31", "description": "A tour of how to stay safe in digital spaces.", "category": "Workshop" },
+        { "id": "web-2", "provider": "youtube", "ytId": "DE5xKaf4E9E", "url": "https://www.youtube.com/watch?v=DE5xKaf4E9E", "title": "Be Safer Online Rap", "duration": "2:12", "description": "Musical guide to digital safety rules.", "category": "Community" },
+        { "id": "web-3", "provider": "youtube", "ytId": "7bRZdUtmH8k", "url": "https://www.youtube.com/watch?v=7bRZdUtmH8k", "title": "The Digital Trail", "duration": "2:15", "description": "Interactive lesson on footprints and privacy.", "category": "Workshop" },
+        { "id": "web-4", "provider": "youtube", "ytId": "VCYuJFYJG7Y", "url": "https://www.youtube.com/watch?v=VCYuJFYJG7Y", "title": "Cool to Be Kind", "duration": "2:12", "description": "How to stand up against cyberbullying.", "category": "Kindness" },
+        { "id": "web-5", "provider": "youtube", "ytId": "Mz8_HijEakw", "url": "https://www.youtube.com/watch?v=Mz8_HijEakw", "title": "Talk It Out", "duration": "2:12", "description": "Finding trusted adults for online help.", "category": "Brave" },
+        { "id": "web-6", "provider": "youtube", "ytId": "uwY6KsipuJQ", "url": "https://www.youtube.com/watch?v=uwY6KsipuJQ", "title": "Going Places Safely", "duration": "2:12", "description": "Family guide to exploring new websites.", "category": "Parenting" },
+        { "id": "web-7", "provider": "youtube", "ytId": "fBWQTb5WLg4", "url": "https://www.youtube.com/watch?v=fBWQTb5WLg4", "title": "Friendships & Boundaries", "duration": "3:23", "description": "Real talk from teens about social media.", "category": "Social" },
+        { "id": "web-8", "provider": "youtube", "ytId": "_oX58-u7KoJ", "url": "https://www.youtube.com/watch?v=_oX58-u7KoJ", "title": "Into the Cloud: Ep 1", "duration": "4:13", "description": "Animated series on internet safety.", "category": "Safety" },
+        { "id": "web-9", "provider": "youtube", "ytId": "46FABowJUkY", "url": "https://www.youtube.com/watch?v=46FABowJUkY", "title": "Digital Wellness Overview", "duration": "3:26", "description": "Balancing your life in the digital age.", "category": "Wellness" },
+        { "id": "web-10", "provider": "youtube", "ytId": "suMza6Q8J08", "url": "https://www.youtube.com/watch?v=suMza6Q8J08", "title": "Copyright Basics", "duration": "4:40", "description": "Understanding creative rights and fair use.", "category": "Education" }
       ]
     }
   ]
