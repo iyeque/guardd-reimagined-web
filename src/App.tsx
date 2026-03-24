@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 // Global Scroll and Hash Handler
 const GlobalScrollHandler = () => {
@@ -84,6 +85,7 @@ const App = () => (
           </Routes>
         </Suspense>
       </BrowserRouter>
+      <Analytics />
     </TooltipProvider>
   </QueryClientProvider>
 );
