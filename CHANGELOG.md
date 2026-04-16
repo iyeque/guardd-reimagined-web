@@ -1,6 +1,19 @@
 # Changelog
 
-## [Unreleased] - 2026-03-03
+## [Unreleased] - 2026-04-16
+
+### Added
+- **Professional Backend Integration**: Migrated storage from in-memory to **Neon Postgres** using **Drizzle ORM**, ensuring data persistence across deployments.
+- **Admin Dashboard**: Implemented a new `/admin` route for centralized management of contact inquiries and mentor applications.
+- **Automated Community Data Sync**: Refactored community data updates into a server-side utility that periodically syncs events and discussions to the database.
+- **Vercel Web Analytics**: Integrated `@vercel/analytics` for real-time production performance and usage tracking.
+- **Contact Form Validation**: Enhanced the contact form with client-side validation and a persistent backend connection.
+
+### Improved
+- **Server Architecture**: Optimized the Express server for Vercel Serverless Functions, including lazy-syncing for community data.
+- **Windows Compatibility**: Updated server listening configuration to resolve `ENOTSUP` errors on Windows systems.
+
+## [1.1.0] - 2026-03-03
 
 ### Added
 - **Visual Academy (Video Resources)**: Significant upgrade to the video learning hub.

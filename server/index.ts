@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { syncCommunityData } from "./community-sync";
 
 interface HttpError extends Error {
   status?: number;
@@ -12,6 +13,13 @@ log("Starting server initialization...");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Initial community data sync
+syncCommunityData().then(() => log("Initial community data sync completed")).catch(err => log(`Sync error: ${err}`));
+// Periodic sync every 10 minutes
+setInterval(() => {
+  syncCommunityData().catch(err => log(`Periodic sync error: ${err}`));
+}, 10 * 60 * 1000);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -79,8 +87,7 @@ app.use((req, res, next) => {
     log(`Attempting to start server on port ${port}...`);
     server.listen({
       port,
-      host: "0.0.0.0",
-      reusePort: true,
+      host: "127.0.0.1",
     }, () => {
       log(`Server is running on port ${port}`);
     });

@@ -17,6 +17,7 @@
 *   **Live Activity Sync:** Real-time tracking of active families and online experts.
 *   **Global Event Calendar:** Deep-indexed 2026/27 schedule of international safety conferences and local workshops.
 *   **Elite Mentor Circle:** Direct access to certified digital wellness experts via a professional application system.
+*   **Admin Dashboard:** Centralized `/admin` interface for managing community data and inquiries.
 
 ### 4. Visual Academy
 *   **On-Demand Learning:** A curated library of step-by-step tutorials, expert talks, and webinar recordings.
@@ -28,10 +29,10 @@
 
 ## 🛠 Tech Stack
 
-*   **Frontend**: React 18, TypeScript, Vite, Tailwind CSS.
+*   **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Vercel Analytics.
 *   **State & Logic**: Framer Motion (Animations), React Query (Data Fetching), Context API (Theme & Mode management).
 *   **UI Foundation**: Radix UI, shadcn/ui, Lucide Icons.
-*   **Backend & Data**: Express (Node.js), PostgreSQL (Drizzle ORM), Dynamic JSON data syncing for community features.
+*   **Backend & Data**: Node.js (Express), PostgreSQL (Neon), Drizzle ORM, Automated background data synchronization.
 
 ## 📦 Getting Started
 
@@ -40,14 +41,14 @@
     npm install
     ```
 
-2.  **Run Development Server:**
+2.  **Database Setup:**
+    - Provision a Postgres database (e.g., via Neon.tech).
+    - Create a `.env` file with `DATABASE_URL=your_connection_string`.
+    - Push the schema: `npm run db:push`.
+
+3.  **Run Development Server:**
     ```bash
     npm run dev
-    ```
-
-3.  **Update Community Data (Manual Refresh):**
-    ```bash
-    npm run update-data
     ```
 
 4.  **Build for Production:**
@@ -57,7 +58,7 @@
 
 ## 📅 Maintenance & Automation
 
-The project includes a specialized script (`scripts/update-community-data.ts`) that pulls the latest 2026/27 safety events. This script is intended to be run via a daily cron job or GitHub Action to keep the Community Hub fresh.
+The project uses a database-backed storage system. Community data (events and discussions) is automatically synchronized by the server on startup and periodically (every 10 minutes) during runtime. For Vercel deployments, a lazy-sync mechanism ensures data stays fresh.
 
 ---
 *Created with focus on Family, Safety, and Balance.*

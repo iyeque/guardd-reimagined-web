@@ -1,11 +1,68 @@
 
+import { useState } from "react";
 import { Mail, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export const Contact = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validate = (data: Record<string, any>) => {
+    const newErrors: Record<string, string> = {};
+    if (!data.firstName?.trim()) newErrors.firstName = "First name is required";
+    if (!data.lastName?.trim()) newErrors.lastName = "Last name is required";
+    if (!data.email?.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      newErrors.email = "Invalid email address";
+    }
+    if (!data.message?.trim()) newErrors.message = "Message is required";
+    return newErrors;
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrors({});
+    
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    const validationErrors = validate(data);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) throw new Error("Submission failed");
+
+      toast.success("Message sent successfully!", {
+        description: "Our team will reach out to you at socialbywilma@gmail.com soon.",
+      });
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
+      toast.error("Submission failed", {
+        description: "Please try again in a moment or check your connection.",
+      });
+      console.error("Form error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-20 px-6 bg-transparent">
       <div className="container mx-auto">
@@ -26,8 +83,7 @@ export const Contact = () => {
             <p className="text-muted-foreground mb-8 font-medium italic">We typically respond within 24 hours.</p>
             
             <form 
-              action="https://formspree.io/f/mqaebrjr" 
-              method="POST"
+              onSubmit={handleSubmit}
               className="space-y-6"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -72,11 +128,13 @@ export const Contact = () => {
                   className="bg-white/50 dark:bg-white/5 border-border text-foreground rounded-2xl focus:ring-green-500/20 p-4"
                 />
               </div>
-
-              <input type="hidden" name="_subject" value="New Contact Form Submission - DigitalGuard" />
               
-              <Button type="submit" className="w-full h-16 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black text-xl rounded-2xl shadow-xl shadow-green-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                Submit Request
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full h-16 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black text-xl rounded-2xl shadow-xl shadow-green-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70"
+              >
+                {isSubmitting ? "Sending..." : "Submit Request"}
               </Button>
             </form>
           </div>

@@ -40,6 +40,7 @@ const VideoResources = lazy(() => import("./pages/VideoResources"));
 const CommunitySupport = lazy(() => import("./pages/CommunitySupport"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Layout = lazy(() => import("./components/Layout"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App = () => (
                 path="/community-support"
                 element={<CommunitySupport />}
               />
+              <Route path="/admin" element={<Admin />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Route>

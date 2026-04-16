@@ -71,9 +71,11 @@ const CommunitySupport: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', specialty: '', bio: '' });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const fetchData = async () => {
     try {
-      const res = await fetch('/community-data.json');
+      const res = await fetch('/api/community/data');
       const data = await res.json();
       setEvents(data.events || []);
       setDiscussions(data.discussions || []);
@@ -91,13 +93,33 @@ const CommunitySupport: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsApplied(true);
-    setIsModalOpen(false);
-    toast.success("Application Received!", {
-      description: `Thank you ${formData.name}! Our team will review your application for the 2026 cohort within 3-5 business days.`,
-    });
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/mentors/apply", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) throw new Error("Application failed");
+
+      setIsApplied(true);
+      setIsModalOpen(false);
+      toast.success("Application Received!", {
+        description: `Thank you ${formData.name}! Our team will review your application for the 2026 cohort within 3-5 business days.`,
+      });
+    } catch (error) {
+      toast.error("Submission failed", {
+        description: "Please try again in a moment or check your connection.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -395,8 +417,12 @@ const CommunitySupport: React.FC = () => {
                     className="rounded-xl bg-muted/50 border-border focus:ring-blue-500/20 min-h-[100px]"
                   />
                 </div>
-                <Button type="submit" className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-2xl shadow-xl transition-all hover:-translate-y-1">
-                  SUBMIT APPLICATION
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-2xl shadow-xl transition-all hover:-translate-y-1 disabled:opacity-70"
+                >
+                  {isSubmitting ? "SUBMITTING..." : "SUBMIT APPLICATION"}
                 </Button>
               </form>
             </CardContent>
