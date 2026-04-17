@@ -11,6 +11,7 @@ interface HttpError extends Error {
 log("Starting server initialization...");
 
 const app = express();
+export { app };
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -84,13 +85,15 @@ app.use((req, res, next) => {
     });
 
     const port = 5000;
-    log(`Attempting to start server on port ${port}...`);
-    server.listen({
-      port,
-      host: "127.0.0.1",
-    }, () => {
-      log(`Server is running on port ${port}`);
-    });
+    if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+      log(`Attempting to start server on port ${port}...`);
+      server.listen({
+        port,
+        host: "127.0.0.1",
+      }, () => {
+        log(`Server is running on port ${port}`);
+      });
+    }
   } catch (error) {
     log(`Failed to start server: ${error instanceof Error ? error.message : 'Unknown error'}`);
     process.exit(1);
