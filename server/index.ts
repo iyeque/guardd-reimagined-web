@@ -1,27 +1,17 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
-import { syncCommunityData } from "./community-sync";
+import { log } from "./vite";
 
 interface HttpError extends Error {
   status?: number;
   statusCode?: number;
 }
 
-log("Starting server initialization...");
-
 const app = express();
-export { app };
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Initial community data sync
-syncCommunityData().then(() => log("Initial community data sync completed")).catch(err => log(`Sync error: ${err}`));
-// Periodic sync every 10 minutes
-setInterval(() => {
-  syncCommunityData().catch(err => log(`Periodic sync error: ${err}`));
-}, 10 * 60 * 1000);
-
+// Middleware for logging /api requests
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -52,50 +42,16 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
-  try {
-    log("Registering routes...");
-    const server = await registerRoutes(app);
+// Register routes synchronously where possible, or ensure they are ready
+registerRoutes(app).catch(err => {
+  log(`Failed to register routes: ${err.message}`);
+});
 
-    app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;      const message = err.message || "Internal Server Error";
-      res.status(status).json({ message });
-      throw err;
-    });
+// Error handling middleware
+app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
+});
 
-    if (app.get("env") === "development") {
-      log("Setting up Vite for development...");
-      await setupVite(app, server);
-      log("Vite setup completed.");
-    } else {
-      log("Setting up static file serving...");
-      serveStatic(app);
-      log("Static file serving setup completed.");
-    }
-
-    // Add error handling for server startup
-    server.on('error', (error: NodeJS.ErrnoException) => {
-      if (error.code === 'EADDRINUSE') {
-        log(`Error: Port 5000 is already in use. Please ensure no other process is using this port.`);
-        process.exit(1);
-      } else {
-        log(`Server error: ${error.message}`);
-        throw error;
-      }
-    });
-
-    const port = 5000;
-    if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
-      log(`Attempting to start server on port ${port}...`);
-      server.listen({
-        port,
-        host: "127.0.0.1",
-      }, () => {
-        log(`Server is running on port ${port}`);
-      });
-    }
-  } catch (error) {
-    log(`Failed to start server: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    process.exit(1);
-  }
-})();
+export { app };

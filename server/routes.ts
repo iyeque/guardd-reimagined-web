@@ -8,7 +8,6 @@ export async function registerRoutes(app: Express) {
   // Simple Admin Middleware
   const validateAdmin = (req: any, res: any, next: any) => {
     const adminSecret = process.env.ADMIN_SECRET;
-    // If no secret is set in environment, we block admin routes for safety
     if (!adminSecret) {
       return res.status(500).json({ error: "Server Configuration Error: ADMIN_SECRET not set" });
     }
@@ -28,7 +27,11 @@ export async function registerRoutes(app: Express) {
       
       // If empty, trigger initial sync
       if (events.length === 0) {
-        await syncCommunityData();
+        try {
+          await syncCommunityData();
+        } catch (syncErr) {
+          console.error("Initial sync error:", syncErr);
+        }
         return res.json({
           events: await storage.getEvents(),
           discussions: await storage.getDiscussions(),
@@ -54,8 +57,9 @@ export async function registerRoutes(app: Express) {
     try {
       const result = await syncCommunityData();
       res.json({ message: "Sync successful", lastSync: result.lastSync });
-    } catch (error) {
-      res.status(500).json({ error: "Sync failed" });
+    } catch (error: any) {
+      console.error("Sync error:", error);
+      res.status(500).json({ error: error.message || "Sync failed" });
     }
   });
 
@@ -90,14 +94,23 @@ export async function registerRoutes(app: Express) {
 
   // Admin Endpoints (Protected)
   app.get("/api/admin/messages", validateAdmin, async (_req, res) => {
-    const messages = await storage.getMessages();
-    res.json(messages);
+    try {
+      const messages = await storage.getMessages();
+      res.json(messages);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
   });
 
   app.get("/api/admin/applications", validateAdmin, async (_req, res) => {
-    const apps = await storage.getMentorApplications();
-    res.json(apps);
+    try {
+      const apps = await storage.getMentorApplications();
+      res.json(apps);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch applications" });
+    }
   });
 
-  return createServer(app);
+  const httpServer = createServer(app);
+  return httpServer;
 }
