@@ -13,7 +13,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { toast } from "sonner";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface Message {
   id: number;
@@ -34,17 +34,34 @@ interface Application {
 }
 
 const Admin: React.FC = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const adminKey = queryParams.get('key');
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [authError, setAuthError] = useState(false);
 
   const fetchAdminData = async () => {
+    if (!adminKey) {
+      setAuthError(true);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const [msgRes, appRes] = await Promise.all([
-        fetch('/api/admin/messages'),
-        fetch('/api/admin/applications')
+        fetch(`/api/admin/messages?key=${adminKey}`),
+        fetch(`/api/admin/applications?key=${adminKey}`)
       ]);
+
+      if (msgRes.status === 401 || appRes.status === 401) {
+        setAuthError(true);
+        return;
+      }
+
       const [msgData, appData] = await Promise.all([
         msgRes.json(),
         appRes.json()
@@ -62,7 +79,7 @@ const Admin: React.FC = () => {
   const handleSync = async () => {
     setIsSyncing(true);
     try {
-      const res = await fetch('/api/community/sync', { method: 'POST' });
+      const res = await fetch(`/api/community/sync?key=${adminKey}`, { method: 'POST' });
       const data = await res.json();
       if (res.ok) {
         toast.success("Community Data Synced!", {
@@ -80,12 +97,27 @@ const Admin: React.FC = () => {
 
   useEffect(() => {
     fetchAdminData();
-  }, []);
+  }, [adminKey]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-transparent">
         <RefreshCw className="w-12 h-12 text-blue-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-transparent p-6 text-center">
+        <Shield className="w-20 h-20 text-red-500 mb-6" />
+        <h1 className="text-4xl font-black mb-4 text-foreground">Access Denied</h1>
+        <p className="text-xl text-muted-foreground max-w-md">
+          You must provide a valid admin key in the URL to access this dashboard.
+        </p>
+        <Link to="/" className="mt-8">
+          <Button variant="outline">Return to Home</Button>
+        </Link>
       </div>
     );
   }

@@ -1,7 +1,8 @@
 import { storage } from './storage';
+import axios from 'axios';
 
 // --- Real World Events (Sourced from Research) ---
-const REAL_EVENTS = [
+const CURATED_EVENTS = [
   {
     title: "FETC 2026",
     location: "Orlando, FL",
@@ -202,14 +203,15 @@ const REAL_EVENTS = [
   }
 ];
 
-const DISCUSSIONS = [
+const FALLBACK_DISCUSSIONS = [
   {
     platform: "Reddit",
     community: "r/parenting",
     title: "Community debate: At what age did you give your child their first smartphone?",
     url: "https://www.reddit.com/r/parenting/search/?q=first+smartphone+age&restrict_sr=1",
     hotness: "High",
-    postedAt: "1h ago"
+    postedAt: "1h ago",
+    replies: 842
   },
   {
     platform: "Common Sense",
@@ -217,7 +219,8 @@ const DISCUSSIONS = [
     title: "How to handle Roblox and Discord safety settings: 2026 Guide",
     url: "https://www.commonsensemedia.org/articles/privacy-and-safety",
     hotness: "Trending",
-    postedAt: "3h ago"
+    postedAt: "3h ago",
+    replies: 156
   },
   {
     platform: "Internet Matters",
@@ -225,7 +228,8 @@ const DISCUSSIONS = [
     title: "Managing the impact of AI-generated content on child safety",
     url: "https://www.internetmatters.org/hub/news-and-opinion/",
     hotness: "Critical",
-    postedAt: "5h ago"
+    postedAt: "5h ago",
+    replies: 230
   }
 ];
 
@@ -238,9 +242,9 @@ const EVENT_TYPES = ["Meetup", "Workshop", "Seminar", "Webinar"];
 
 function generateLocalEvents() {
   const localEvents = [];
-  const baseDate = new Date("2026-03-01");
+  const baseDate = new Date();
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 15; i++) {
     const city = CITIES[Math.floor(Math.random() * CITIES.length)];
     const type = EVENT_TYPES[Math.floor(Math.random() * EVENT_TYPES.length)];
     const date = new Date(baseDate);
@@ -261,11 +265,118 @@ function generateLocalEvents() {
   return localEvents;
 }
 
+// --- Reddit Integration ---
+
+async function getRedditAccessToken() {
+  const { REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } = process.env;
+  if (!REDDIT_CLIENT_ID || !REDDIT_CLIENT_SECRET) return null;
+
+  try {
+    const auth = Buffer.from(`${REDDIT_CLIENT_ID}:${REDDIT_CLIENT_SECRET}`).toString('base64');
+    const response = await axios.post(
+      'https://www.reddit.com/api/v1/access_token',
+      'grant_type=client_credentials',
+      {
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': process.env.REDDIT_USER_AGENT || 'DigitalGuardApp/1.0.0'
+        }
+      }
+    );
+    return response.data.access_token;
+  } catch (error) {
+    console.error('Failed to get Reddit access token:', error);
+    return null;
+  }
+}
+
+async function fetchRedditSubredditHot(subreddit: string, token: string) {
+  try {
+    const response = await axios.get(`https://oauth.reddit.com/r/${subreddit}/hot`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'User-Agent': process.env.REDDIT_USER_AGENT || 'DigitalGuardApp/1.0.0'
+      },
+      params: { limit: 5 }
+    });
+    
+    return response.data.data.children.map((child: any) => {
+      const post = child.data;
+      return {
+        platform: "Reddit",
+        community: `r/${subreddit}`,
+        title: post.title,
+        url: `https://reddit.com${post.permalink}`,
+        hotness: post.score > 500 ? "Critical" : post.score > 100 ? "High" : "Trending",
+        replies: post.num_comments,
+        postedAt: `${Math.floor((Date.now() / 1000 - post.created_utc) / 3600)}h ago`
+      };
+    });
+  } catch (error) {
+    console.error(`Failed to fetch r/${subreddit}:`, error);
+    return [];
+  }
+}
+
+async function getLiveRedditTrends() {
+  const token = await getRedditAccessToken();
+  if (!token) return null;
+
+  const subreddits = ['parenting', 'cybersecurity', 'privacy', 'digitalwellness'];
+  const results = await Promise.all(subreddits.map(sub => fetchRedditSubredditHot(sub, token)));
+  
+  return results.flat().sort((a, b) => (b.replies || 0) - (a.replies || 0)).slice(0, 10);
+}
+
+// --- SerpApi Event Discovery ---
+
+async function fetchLiveEventsFromSerp() {
+  const apiKey = process.env.SERP_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const queries = ['Digital Wellness events', 'Cyber Safety workshops', 'Parenting in digital age conferences'];
+    const results = await Promise.all(queries.map(q => 
+      axios.get('https://serpapi.com/search.json', {
+        params: {
+          engine: "google_events",
+          q: q,
+          api_key: apiKey
+        }
+      })
+    ));
+
+    const events = results.flatMap(r => r.data.events_results || []).map((e: any, i: number) => ({
+      title: e.title,
+      location: e.address?.join(', ') || 'Online / TBA',
+      date: e.date?.start_date || '2026-Q3',
+      time: e.date?.when || 'Check Listing',
+      type: "External Event",
+      url: e.link || "https://www.google.com/search?q=" + encodeURIComponent(e.title),
+      organizer: "Community Organizer",
+      status: "Live Discovery",
+      description: e.description || "Join this community event to learn more about digital wellness and safety."
+    }));
+
+    return events.slice(0, 20);
+  } catch (error) {
+    console.error('Failed to fetch events from SerpApi:', error);
+    return null;
+  }
+}
+
 export async function syncCommunityData() {
-  const allEvents = [...REAL_EVENTS, ...generateLocalEvents()];
+  // Fetch live events or use curated/generated fallback
+  const liveEvents = await fetchLiveEventsFromSerp();
+  const allEvents = liveEvents || [...CURATED_EVENTS, ...generateLocalEvents()];
+  
+  // Fetch live Reddit trends if possible
+  const liveTrends = await getLiveRedditTrends();
+  const discussions = liveTrends || FALLBACK_DISCUSSIONS;
   
   await storage.setEvents(allEvents);
-  await storage.setDiscussions(DISCUSSIONS);
+  await storage.setDiscussions(discussions);
   
   return { lastSync: new Date().toISOString() };
 }

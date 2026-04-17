@@ -5,7 +5,22 @@ import { insertMessageSchema, insertMentorApplicationSchema } from "@shared/sche
 import { syncCommunityData } from "./community-sync";
 
 export async function registerRoutes(app: Express) {
-  // Community Data
+  // Simple Admin Middleware
+  const validateAdmin = (req: any, res: any, next: any) => {
+    const adminSecret = process.env.ADMIN_SECRET;
+    // If no secret is set in environment, we block admin routes for safety
+    if (!adminSecret) {
+      return res.status(500).json({ error: "Server Configuration Error: ADMIN_SECRET not set" });
+    }
+
+    const providedKey = req.headers["x-admin-key"] || req.query.key;
+    if (providedKey !== adminSecret) {
+      return res.status(401).json({ error: "Unauthorized: Invalid Admin Key" });
+    }
+    next();
+  };
+
+  // Community Data (Public)
   app.get("/api/community/data", async (_req, res) => {
     try {
       const events = await storage.getEvents();
@@ -34,7 +49,8 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/community/sync", async (_req, res) => {
+  // Sync Trigger (Protected)
+  app.post("/api/community/sync", validateAdmin, async (_req, res) => {
     try {
       const result = await syncCommunityData();
       res.json({ message: "Sync successful", lastSync: result.lastSync });
@@ -43,7 +59,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Contact Form
+  // Contact Form (Public)
   app.post("/api/contact", async (req, res) => {
     try {
       const { firstName, lastName, email, message } = req.body;
@@ -61,7 +77,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Mentor Applications
+  // Mentor Applications (Public)
   app.post("/api/mentors/apply", async (req, res) => {
     try {
       const validatedApp = insertMentorApplicationSchema.parse(req.body);
@@ -72,13 +88,13 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Admin Endpoints
-  app.get("/api/admin/messages", async (_req, res) => {
+  // Admin Endpoints (Protected)
+  app.get("/api/admin/messages", validateAdmin, async (_req, res) => {
     const messages = await storage.getMessages();
     res.json(messages);
   });
 
-  app.get("/api/admin/applications", async (_req, res) => {
+  app.get("/api/admin/applications", validateAdmin, async (_req, res) => {
     const apps = await storage.getMentorApplications();
     res.json(apps);
   });
