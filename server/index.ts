@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { log } from "./vite";
+import { log } from "./log";
 
 interface HttpError extends Error {
   status?: number;
@@ -42,8 +42,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Register routes synchronously where possible, or ensure they are ready
-registerRoutes(app).catch(err => {
+// Create a promise for routes being ready
+const routesReady = registerRoutes(app).catch(err => {
   log(`Failed to register routes: ${err.message}`);
 });
 
@@ -54,4 +54,4 @@ app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
   res.status(status).json({ message });
 });
 
-export { app };
+export { app, routesReady };

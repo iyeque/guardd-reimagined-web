@@ -1,10 +1,14 @@
-import { app } from "./index";
-import { setupVite, serveStatic, log } from "./vite";
+import { app, routesReady } from "./index";
+import { setupVite, serveStatic } from "./vite";
+import { log } from "./log";
 import { syncCommunityData } from "./community-sync";
 import { createServer } from "http";
 
 (async () => {
   try {
+    // Wait for routes to be registered
+    await routesReady;
+
     const server = createServer(app);
 
     // Initial community data sync (only in dev/standalone mode)
