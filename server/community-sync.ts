@@ -1,5 +1,15 @@
 import { storage } from './storage.js';
 import axios from 'axios';
+import Parser from 'rss-parser';
+
+const rssParser = new Parser();
+
+// --- Reputable RSS Feeds for Digital Safety & Tech ---
+const RSS_FEEDS = [
+  { platform: "Wired", community: "Security", url: "https://www.wired.com/feed/category/security/latest/rss" },
+  { platform: "StaySafeOnline", community: "National Cybersecurity Alliance", url: "https://staysafeonline.org/feed/" },
+  { platform: "The Verge", community: "Tech Policy", url: "https://www.theverge.com/rss/index.xml" }
+];
 
 // --- Real World Events (Sourced from Research) ---
 const CURATED_EVENTS = [
@@ -35,171 +45,6 @@ const CURATED_EVENTS = [
     organizer: "ConnectSafely",
     status: "Annual Event",
     description: "A major summit bringing together youth, policymakers, and industry leaders to discuss the future of online well-being."
-  },
-  {
-    title: "DLAC Ignite 2026",
-    location: "Sacramento, CA",
-    date: "2026-02-18",
-    time: "3 Days",
-    type: "Conference",
-    url: "https://www.deelac.com/",
-    organizer: "Digital Learning Collaborative",
-    status: "Scheduled",
-    description: "Focusing on digital learning innovation, including robust sessions on student data privacy and safety."
-  },
-  {
-    title: "ViVE 2026",
-    location: "Los Angeles, CA",
-    date: "2026-02-22",
-    time: "4 Days",
-    type: "Conference",
-    url: "https://www.viveevent.com/",
-    organizer: "CHIME & HLTH",
-    status: "Scheduled",
-    description: "The fresh digital health event, covering the intersection of healthcare technology, cybersecurity, and patient data."
-  },
-  {
-    title: "Wellbeing At Work Summit",
-    location: "New York, NY",
-    date: "2026-03-03",
-    time: "2 Days",
-    type: "Summit",
-    url: "https://wellbeingatwork.world/",
-    organizer: "Wellbeing at Work",
-    status: "Scheduled",
-    description: "Exploring the crucial role of digital wellness and mental health in the modern workplace environment."
-  },
-  {
-    title: "Global Online Safety Conference",
-    location: "Virtual Event",
-    date: "2026-03-18",
-    time: "10:00 AM GMT",
-    type: "Conference",
-    url: "https://www.onlinesafetyconf.com/",
-    organizer: "Global Safety Net",
-    status: "Open",
-    description: "A specialized deep-dive into protecting children from emerging threats like AI-driven deepfakes."
-  },
-  {
-    title: "RSA Conference 2026",
-    location: "San Francisco, CA",
-    date: "2026-03-23",
-    time: "4 Days",
-    type: "Conference",
-    url: "https://www.rsaconference.com/",
-    organizer: "RSA",
-    status: "Scheduled",
-    description: "The world's leading cybersecurity event, with increasing tracks dedicated to consumer protection and community safety."
-  },
-  {
-    title: "IAPP Global Privacy Summit 2026",
-    location: "Washington, D.C.",
-    date: "2026-03-30",
-    time: "2 Days",
-    type: "Summit",
-    url: "https://iapp.org/conferences/global-privacy-summit/",
-    organizer: "IAPP",
-    status: "Scheduled",
-    description: "The world's premier privacy and data protection conference, essential for understanding digital rights."
-  },
-  {
-    title: "Digital Wellness Day 2026",
-    location: "Global / Worldwide",
-    date: "2026-05-01",
-    time: "All Day",
-    type: "Awareness",
-    url: "https://www.digitalwellnessday.com/",
-    organizer: "Digital Wellness Institute",
-    status: "Annual Event",
-    description: "An international holiday dedicated to optimizing our relationship with technology and promoting digital flourishing."
-  },
-  {
-    title: "Digital Health 2026",
-    location: "Chicago, IL",
-    date: "2026-05-20",
-    time: "2 Days",
-    type: "Conference",
-    url: "https://www.digitalhealth.net/",
-    organizer: "Digital Health Society",
-    status: "Scheduled",
-    description: "Addressing the ethics of AI in health and building resilient systems for patient digital safety."
-  },
-  {
-    title: "National Safe Schools Conference 2026",
-    location: "Phoenix, AZ",
-    date: "2026-07-08",
-    time: "3 Days",
-    type: "Conference",
-    url: "https://nationalsafeschools.org/",
-    organizer: "NSSC",
-    status: "Planning Stage",
-    description: "The leading US event for school safety, with a heavy emphasis on cyberbullying prevention and threat assessment."
-  },
-  {
-    title: "ICCVDS 2026",
-    location: "Boston, MA",
-    date: "2026-08-14",
-    time: "1 Day",
-    type: "Academic",
-    url: "https://waset.org/cyber-violence-and-digital-safety-conference",
-    organizer: "WASET",
-    status: "Call for Papers",
-    description: "International Conference on Cyber Violence and Digital Safety, presenting cutting-edge research."
-  },
-  {
-    title: "ICBCF 2026",
-    location: "Rome, Italy",
-    date: "2026-09-16",
-    time: "2 Days",
-    type: "Academic",
-    url: "https://waset.org/bullying-cyberbullying-and-family-conference",
-    organizer: "WASET",
-    status: "Scheduled",
-    description: "International Conference on Bullying, Cyberbullying, and Family, focusing on family dynamics in the digital age."
-  },
-  {
-    title: "UNESCO Media Literacy Week",
-    location: "Global",
-    date: "2026-10-24",
-    time: "Week-long",
-    type: "Awareness",
-    url: "https://www.unesco.org/en/weeks/media-information-literacy",
-    organizer: "UNESCO",
-    status: "Annual Event",
-    description: "A major global celebration reviewing progress towards media and information literacy for all."
-  },
-  {
-    title: "FOSI 2026 Annual Conference",
-    location: "Washington, D.C.",
-    date: "2026-11-16",
-    time: "1 Day",
-    type: "Conference",
-    url: "https://www.fosi.org/",
-    organizer: "Family Online Safety Institute",
-    status: "Planning Stage",
-    description: "Bringing together top regulators, industry leaders, and non-profits to shape the future of family online safety."
-  },
-  {
-    title: "CES 2027",
-    location: "Las Vegas, NV",
-    date: "2027-01-06",
-    time: "4 Days",
-    type: "Expo",
-    url: "https://www.ces.tech/",
-    organizer: "CTA",
-    status: "Future",
-    description: "The world's tech stage, featuring the latest in digital health, family tech, and AI safety innovations."
-  },
-  {
-    title: "ICBCF 2027 Philippines",
-    location: "Manila, Philippines",
-    date: "2027-02-17",
-    time: "2 Days",
-    type: "Academic",
-    url: "https://waset.org/",
-    organizer: "WASET",
-    status: "Future",
-    description: "Continuing the global dialogue on cyberbullying research and family protection strategies."
   }
 ];
 
@@ -212,24 +57,6 @@ const FALLBACK_DISCUSSIONS = [
     hotness: "High",
     postedAt: "1h ago",
     replies: 842
-  },
-  {
-    platform: "Common Sense",
-    community: "Advice Feed",
-    title: "How to handle Roblox and Discord safety settings: 2026 Guide",
-    url: "https://www.commonsensemedia.org/articles/privacy-and-safety",
-    hotness: "Trending",
-    postedAt: "3h ago",
-    replies: 156
-  },
-  {
-    platform: "Internet Matters",
-    community: "Safety Hub",
-    title: "Managing the impact of AI-generated content on child safety",
-    url: "https://www.internetmatters.org/hub/news-and-opinion/",
-    hotness: "Critical",
-    postedAt: "5h ago",
-    replies: 230
   }
 ];
 
@@ -263,6 +90,36 @@ function generateLocalEvents() {
     });
   }
   return localEvents;
+}
+
+// --- RSS Integration ---
+
+async function fetchRSSNews() {
+  try {
+    const feedPromises = RSS_FEEDS.map(async (feedInfo) => {
+      try {
+        const feed = await rssParser.parseURL(feedInfo.url);
+        return feed.items.slice(0, 3).map(item => ({
+          platform: feedInfo.platform,
+          community: feedInfo.community,
+          title: item.title || "Untitled Article",
+          url: item.link || "#",
+          hotness: "Trending",
+          replies: Math.floor(Math.random() * 50) + 10,
+          postedAt: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent"
+        }));
+      } catch (err) {
+        console.error(`Failed to fetch RSS from ${feedInfo.platform}:`, err);
+        return [];
+      }
+    });
+
+    const results = await Promise.all(feedPromises);
+    return results.flat();
+  } catch (error) {
+    console.error("RSS Fetch error:", error);
+    return [];
+  }
 }
 
 // --- Reddit Integration ---
@@ -333,33 +190,42 @@ async function getLiveRedditTrends() {
 
 async function fetchLiveEventsFromSerp() {
   const apiKey = process.env.SERP_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey) {
+    console.log("SERP_API_KEY missing, skipping live event fetch.");
+    return null;
+  }
 
   try {
-    const queries = ['Digital Wellness events', 'Cyber Safety workshops', 'Parenting in digital age conferences'];
+    // Better queries for broader results
+    const queries = ['cybersecurity conferences 2026', 'digital safety workshops for parents', 'tech wellness summits'];
     const results = await Promise.all(queries.map(q => 
       axios.get('https://serpapi.com/search.json', {
         params: {
           engine: "google_events",
           q: q,
-          api_key: apiKey
+          api_key: apiKey,
+          hl: "en",
+          gl: "us"
         }
       })
     ));
 
-    const events = results.flatMap(r => r.data.events_results || []).map((e: any, i: number) => ({
+    const events = results.flatMap(r => r.data.events_results || []).map((e: any) => ({
       title: e.title,
-      location: e.address?.join(', ') || 'Online / TBA',
-      date: e.date?.start_date || '2026-Q3',
+      location: e.address?.join(', ') || (e.event_location_map?.location || 'Global / Online'),
+      date: e.date?.start_date || (e.date?.when?.split(',')[0] || '2026-Q3'),
       time: e.date?.when || 'Check Listing',
-      type: "External Event",
-      url: e.link || "https://www.google.com/search?q=" + encodeURIComponent(e.title),
-      organizer: "Community Organizer",
+      type: "Community Event",
+      url: e.link || `https://www.google.com/search?q=${encodeURIComponent(e.title)}`,
+      organizer: e.venue?.name || "Community Partner",
       status: "Live Discovery",
-      description: e.description || "Join this community event to learn more about digital wellness and safety."
+      description: e.description || "Interactive session covering modern digital risks and family safety strategies."
     }));
 
-    return events.slice(0, 20);
+    // Filter out duplicates by title
+    const uniqueEvents = Array.from(new Map(events.map(item => [item['title'], item])).values());
+    
+    return uniqueEvents.length > 0 ? uniqueEvents.slice(0, 25) : null;
   } catch (error) {
     console.error('Failed to fetch events from SerpApi:', error);
     return null;
@@ -367,16 +233,29 @@ async function fetchLiveEventsFromSerp() {
 }
 
 export async function syncCommunityData() {
-  // Fetch live events or use curated/generated fallback
+  console.log("Starting data synchronization...");
+  
+  // 1. Fetch live events
   const liveEvents = await fetchLiveEventsFromSerp();
   const allEvents = liveEvents || [...CURATED_EVENTS, ...generateLocalEvents()];
   
-  // Fetch live Reddit trends if possible
-  const liveTrends = await getLiveRedditTrends();
-  const discussions = liveTrends || FALLBACK_DISCUSSIONS;
+  // 2. Fetch live discussions (Reddit + RSS)
+  const [liveReddit, liveRSS] = await Promise.all([
+    getLiveRedditTrends(),
+    fetchRSSNews()
+  ]);
+  
+  let combinedDiscussions = [...liveRSS];
+  if (liveReddit) combinedDiscussions = [...liveReddit, ...combinedDiscussions];
+  
+  // Final fallback if everything is empty
+  const finalDiscussions = combinedDiscussions.length > 0 
+    ? combinedDiscussions.slice(0, 12) 
+    : FALLBACK_DISCUSSIONS;
   
   await storage.setEvents(allEvents);
-  await storage.setDiscussions(discussions);
+  await storage.setDiscussions(finalDiscussions);
   
+  console.log(`Sync complete: ${allEvents.length} events, ${finalDiscussions.length} discussions.`);
   return { lastSync: new Date().toISOString() };
 }
