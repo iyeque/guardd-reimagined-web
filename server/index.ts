@@ -42,10 +42,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Create a promise for routes being ready
-const routesReady = registerRoutes(app).catch(err => {
-  log(`Failed to register routes: ${err.message}`);
-});
+// Register routes synchronously immediately
+registerRoutes(app);
 
 // Error handling middleware
 app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
@@ -54,4 +52,4 @@ app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
   res.status(status).json({ message });
 });
 
-export { app, routesReady };
+export { app };

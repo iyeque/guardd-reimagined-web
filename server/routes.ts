@@ -1,20 +1,25 @@
 import type { Express } from "express";
-import { createServer } from "http";
 import { storage } from "./storage";
 import { insertMessageSchema, insertMentorApplicationSchema } from "@shared/schema";
 import { syncCommunityData } from "./community-sync";
 
-export async function registerRoutes(app: Express) {
+export function registerRoutes(app: Express) {
+  // Health check for Vercel (Synchronous route)
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", time: new Date().toISOString(), env: process.env.NODE_ENV });
+  });
+
   // Simple Admin Middleware
   const validateAdmin = (req: any, res: any, next: any) => {
     const adminSecret = process.env.ADMIN_SECRET;
     if (!adminSecret) {
-      return res.status(500).json({ error: "Server Configuration Error: ADMIN_SECRET not set" });
+      console.error("ADMIN_SECRET not set in environment");
+      return res.status(500).json({ error: "Server Configuration Error" });
     }
 
     const providedKey = req.headers["x-admin-key"] || req.query.key;
     if (providedKey !== adminSecret) {
-      return res.status(401).json({ error: "Unauthorized: Invalid Admin Key" });
+      return res.status(401).json({ error: "Unauthorized" });
     }
     next();
   };
@@ -22,33 +27,29 @@ export async function registerRoutes(app: Express) {
   // Community Data (Public)
   app.get("/api/community/data", async (_req, res) => {
     try {
-      const events = await storage.getEvents();
-      const discussions = await storage.getDiscussions();
+      let events = await storage.getEvents();
+      let discussions = await storage.getDiscussions();
       
       // If empty, trigger initial sync
       if (events.length === 0) {
         try {
           await syncCommunityData();
+          events = await storage.getEvents();
+          discussions = await storage.getDiscussions();
         } catch (syncErr) {
-          console.error("Initial sync error:", syncErr);
+          console.error("Sync failed:", syncErr);
         }
-        return res.json({
-          events: await storage.getEvents(),
-          discussions: await storage.getDiscussions(),
-          activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
-          lastSync: new Date().toISOString()
-        });
       }
 
       res.json({
-        events,
-        discussions,
+        events: events || [],
+        discussions: discussions || [],
         activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
         lastSync: new Date().toISOString()
       });
     } catch (error) {
-      console.error("Fetch community data error:", error);
-      res.status(500).json({ error: "Failed to fetch community data" });
+      console.error("Fatal API error:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
   });
 
@@ -58,12 +59,11 @@ export async function registerRoutes(app: Express) {
       const result = await syncCommunityData();
       res.json({ message: "Sync successful", lastSync: result.lastSync });
     } catch (error: any) {
-      console.error("Sync error:", error);
       res.status(500).json({ error: error.message || "Sync failed" });
     }
   });
 
-  // Contact Form (Public)
+  // Contact Form
   app.post("/api/contact", async (req, res) => {
     try {
       const { firstName, lastName, email, message } = req.body;
@@ -72,7 +72,6 @@ export async function registerRoutes(app: Express) {
         email,
         message
       };
-      
       const validatedMessage = insertMessageSchema.parse(data);
       const result = await storage.createMessage(validatedMessage);
       res.json(result);
@@ -81,7 +80,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Mentor Applications (Public)
+  // Mentor Applications
   app.post("/api/mentors/apply", async (req, res) => {
     try {
       const validatedApp = insertMentorApplicationSchema.parse(req.body);
@@ -92,7 +91,7 @@ export async function registerRoutes(app: Express) {
     }
   });
 
-  // Admin Endpoints (Protected)
+  // Admin Endpoints
   app.get("/api/admin/messages", validateAdmin, async (_req, res) => {
     try {
       const messages = await storage.getMessages();
@@ -110,7 +109,4 @@ export async function registerRoutes(app: Express) {
       res.status(500).json({ error: "Failed to fetch applications" });
     }
   });
-
-  const httpServer = createServer(app);
-  return httpServer;
 }

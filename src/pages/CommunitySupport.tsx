@@ -76,6 +76,13 @@ const CommunitySupport: React.FC = () => {
   const fetchData = async () => {
     try {
       const res = await fetch('/api/community/data');
+      if (!res.ok) {
+        throw new Error(`API returned ${res.status}`);
+      }
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("API returned non-JSON response (possibly a 404 page)");
+      }
       const data = await res.json();
       setEvents(data.events || []);
       setDiscussions(data.discussions || []);
@@ -84,7 +91,9 @@ const CommunitySupport: React.FC = () => {
       setLastSync(new Date(data.lastSync).toLocaleTimeString());
       setIsLoading(false);
     } catch (error) {
-      console.error("Failed to fetch community data", error);
+      console.error("Failed to fetch community data:", error);
+      // Don't keep loading forever if it fails
+      setIsLoading(false);
     }
   };
 
