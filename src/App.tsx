@@ -42,6 +42,9 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Layout = lazy(() => import("./components/Layout"));
 const Admin = lazy(() => import("./pages/Admin"));
 
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -81,6 +84,8 @@ const App = () => (
                 element={<CommunitySupport />}
               />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Route>
