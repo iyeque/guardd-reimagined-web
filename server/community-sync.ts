@@ -7,8 +7,9 @@ const rssParser = new Parser();
 // --- Reputable RSS Feeds for Digital Safety & Tech ---
 const RSS_FEEDS = [
   { platform: "Wired", community: "Security", url: "https://www.wired.com/feed/category/security/latest/rss" },
-  { platform: "StaySafeOnline", community: "National Cybersecurity Alliance", url: "https://staysafeonline.org/feed/" },
-  { platform: "The Verge", community: "Tech Policy", url: "https://www.theverge.com/rss/index.xml" }
+  { platform: "Cybersecurity Insiders", community: "Daily News", url: "https://www.cybersecurity-insiders.com/feed/" },
+  { platform: "The Verge", community: "Tech Policy", url: "https://www.theverge.com/rss/index.xml" },
+  { platform: "Mashable", community: "Tech", url: "https://mashable.com/feeds/rss/tech" }
 ];
 
 // --- Real World Events (Sourced from Research) ---
