@@ -1,10 +1,10 @@
 import type { Express } from "express";
-import { storage } from "./storage";
-import { insertMessageSchema, insertMentorApplicationSchema } from "@shared/schema";
-import { syncCommunityData } from "./community-sync";
+import { storage } from "./storage.ts";
+import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/schema.ts";
+import { syncCommunityData } from "./community-sync.ts";
 
 export function registerRoutes(app: Express) {
-  // Health check for Vercel (Synchronous route)
+  // Health check for Vercel
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", time: new Date().toISOString(), env: process.env.NODE_ENV });
   });
@@ -30,7 +30,6 @@ export function registerRoutes(app: Express) {
       let events = await storage.getEvents();
       let discussions = await storage.getDiscussions();
       
-      // If empty, trigger initial sync
       if (events.length === 0) {
         try {
           await syncCommunityData();
@@ -59,6 +58,7 @@ export function registerRoutes(app: Express) {
       const result = await syncCommunityData();
       res.json({ message: "Sync successful", lastSync: result.lastSync });
     } catch (error: any) {
+      console.error("Manual sync error:", error);
       res.status(500).json({ error: error.message || "Sync failed" });
     }
   });

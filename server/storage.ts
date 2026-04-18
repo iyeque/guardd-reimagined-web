@@ -3,8 +3,8 @@ import {
   mentorApplications, type MentorApplication, type InsertMentorApplication,
   communityEvents, type CommunityEvent, type InsertEvent,
   trendingDiscussions, type TrendingDiscussion, type InsertDiscussion
-} from "@shared/schema";
-import { db } from "./db";
+} from "../shared/schema.ts";
+import { db } from "./db.ts";
 import { desc } from "drizzle-orm";
 
 export interface IStorage {
@@ -44,7 +44,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setEvents(events: InsertEvent[]): Promise<void> {
-    // Basic implementation: clear and re-insert for sync
     await db.delete(communityEvents);
     if (events.length > 0) {
       await db.insert(communityEvents).values(events);

@@ -1,6 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { log } from "./log";
+import { registerRoutes } from "./routes.ts";
+import { log } from "./log.ts";
 
 interface HttpError extends Error {
   status?: number;
