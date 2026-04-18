@@ -107,7 +107,8 @@ const CommunitySupport: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/mentors/apply", {
+      // Send to Database
+      const dbResponse = await fetch("/api/mentors/apply", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
@@ -115,12 +116,29 @@ const CommunitySupport: React.FC = () => {
         }
       });
 
-      if (!response.ok) throw new Error("Application failed");
+      if (!dbResponse.ok) throw new Error("Application failed");
+
+      // Send Email Notification via Google Apps Script
+      // Re-using the same URL as the contact form for simplicity
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeoMBlLV_L2aPmNHvILJ0czzPCDszuTgLGKCOfvFyhSOWjNAOywvL7RHqwClZ-x2Po9A/exec";
+      
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: new URLSearchParams({
+          ...formData,
+          message: `Specialty: ${formData.specialty}\nBio: ${formData.bio}`
+        } as any),
+      });
 
       setIsApplied(true);
       setIsModalOpen(false);
-      toast.success("Application Received!", {
-        description: `Thank you ${formData.name}! Our team will review your application for the 2026 cohort within 3-5 business days.`,
+      
+      setFormData({ name: '', email: '', specialty: '', bio: '' });
+
+      toast.success("Application Received! Review Pending.", {
+        description: `Thank you ${formData.name}! Your mentor application for the 2026 cohort is now under review. We will contact you via email once a decision is made.`,
+        duration: 8000,
       });
     } catch (error) {
       toast.error("Submission failed", {

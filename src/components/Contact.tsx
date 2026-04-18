@@ -39,25 +39,23 @@ export const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/contact", {
+      // Use the actual Google Apps Script Web App URL
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeoMBlLV_L2aPmNHvILJ0czzPCDszuTgLGKCOfvFyhSOWjNAOywvL7RHqwClZ-x2Po9A/exec";
+
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        mode: "no-cors",
+        body: new URLSearchParams(data as any),
       });
 
-      if (!response.ok) throw new Error("Submission failed");
-
       toast.success("Message sent successfully!", {
-        description: "Our team will reach out to you at socialbywilma@gmail.com soon.",
+        description: "We have received your message and will be in touch shortly.",
       });
       (e.target as HTMLFormElement).reset();
     } catch (error) {
       toast.error("Submission failed", {
-        description: "Please try again in a moment or check your connection.",
+        description: "Please try again later.",
       });
-      console.error("Form error:", error);
     } finally {
       setIsSubmitting(false);
     }
