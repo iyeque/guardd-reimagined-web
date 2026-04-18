@@ -1,4 +1,4 @@
-import { storage } from './storage.ts';
+import { storage } from './storage.js';
 import axios from 'axios';
 
 // --- Real World Events (Sourced from Research) ---

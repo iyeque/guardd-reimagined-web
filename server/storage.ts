@@ -3,8 +3,8 @@ import {
   mentorApplications, type MentorApplication, type InsertMentorApplication,
   communityEvents, type CommunityEvent, type InsertEvent,
   trendingDiscussions, type TrendingDiscussion, type InsertDiscussion
-} from "../shared/schema.ts";
-import { db } from "./db.ts";
+} from "../shared/schema.js";
+import { db } from "./db.js";
 import { desc } from "drizzle-orm";
 
 export interface IStorage {

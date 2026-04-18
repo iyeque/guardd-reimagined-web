@@ -1,7 +1,7 @@
 import type { Express } from "express";
-import { storage } from "./storage.ts";
-import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/schema.ts";
-import { syncCommunityData } from "./community-sync.ts";
+import { storage } from "./storage.js";
+import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/schema.js";
+import { syncCommunityData } from "./community-sync.js";
 
 export function registerRoutes(app: Express) {
   // Health check for Vercel
