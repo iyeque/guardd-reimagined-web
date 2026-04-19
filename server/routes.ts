@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { storage } from "./storage.js";
 import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/schema.js";
-import { syncCommunityData } from "./community-sync.js";
+import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 
 export function registerRoutes(app: Express) {
   // Health check for Vercel
@@ -30,19 +30,28 @@ export function registerRoutes(app: Express) {
       let events = await storage.getEvents();
       let discussions = await storage.getDiscussions();
       
-      if (events.length === 0) {
-        try {
-          await syncCommunityData();
-          events = await storage.getEvents();
-          discussions = await storage.getDiscussions();
-        } catch (syncErr) {
-          console.error("Sync failed:", syncErr);
-        }
+      // If database is empty, return static data immediately and trigger sync in background
+      if (events.length === 0 || discussions.length === 0) {
+        console.log("Database empty, returning initial static data...");
+        
+        // Return a mix of curated and generated data for immediate display
+        const initialEvents = [...CURATED_EVENTS, ...generateLocalEvents()].map((e, i) => ({ id: i + 1, ...e }));
+        const initialDiscussions = FALLBACK_DISCUSSIONS.map((d, i) => ({ id: i + 1, ...d }));
+
+        // Trigger sync in background (fire and forget)
+        syncCommunityData().catch(err => console.error("Background sync failed:", err));
+
+        return res.json({
+          events: initialEvents,
+          discussions: initialDiscussions,
+          activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
+          lastSync: new Date().toISOString()
+        });
       }
 
       res.json({
-        events: events || [],
-        discussions: discussions || [],
+        events,
+        discussions,
         activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
         lastSync: new Date().toISOString()
       });
@@ -55,6 +64,7 @@ export function registerRoutes(app: Express) {
   // Sync Trigger (Protected)
   app.post("/api/community/sync", validateAdmin, async (_req, res) => {
     try {
+      // For manual sync, we DO await it so the admin knows if it worked
       const result = await syncCommunityData();
       res.json({ message: "Sync successful", lastSync: result.lastSync });
     } catch (error: any) {

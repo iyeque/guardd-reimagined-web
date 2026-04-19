@@ -6,14 +6,14 @@ const rssParser = new Parser();
 
 // --- Reputable RSS Feeds for Digital Safety & Tech ---
 const RSS_FEEDS = [
-  { platform: "Wired", community: "Security", url: "https://www.wired.com/feed/category/security/latest/rss" },
-  { platform: "Cybersecurity Insiders", community: "Daily News", url: "https://www.cybersecurity-insiders.com/feed/" },
-  { platform: "The Verge", community: "Tech Policy", url: "https://www.theverge.com/rss/index.xml" },
-  { platform: "Mashable", community: "Tech", url: "https://mashable.com/feeds/rss/tech" }
+  { platform: "Digital Wellness", community: "News", url: "https://digitalwellnessinstitute.com/feed/" },
+  { platform: "ConnectSafely", community: "Online Safety", url: "https://staysafeonline.org/feed/" },
+  { platform: "Common Sense", community: "Family Media", url: "https://www.commonsensemedia.org/rss/articles.xml" },
+  { platform: "ChildNet", community: "Youth Safety", url: "https://www.childnet.com/feed/" }
 ];
 
 // --- Real World Events (Sourced from Research) ---
-const CURATED_EVENTS = [
+export const CURATED_EVENTS = [
   {
     title: "FETC 2026",
     location: "Orlando, FL",
@@ -49,7 +49,7 @@ const CURATED_EVENTS = [
   }
 ];
 
-const FALLBACK_DISCUSSIONS = [
+export const FALLBACK_DISCUSSIONS = [
   {
     platform: "Reddit",
     community: "r/parenting",
@@ -68,7 +68,7 @@ const CITIES = [
 
 const EVENT_TYPES = ["Meetup", "Workshop", "Seminar", "Webinar"];
 
-function generateLocalEvents() {
+export function generateLocalEvents() {
   const localEvents = [];
   const baseDate = new Date();
 

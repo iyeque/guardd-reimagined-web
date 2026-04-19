@@ -44,10 +44,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setEvents(events: InsertEvent[]): Promise<void> {
-    await db.delete(communityEvents);
-    if (events.length > 0) {
-      await db.insert(communityEvents).values(events);
-    }
+    await db.transaction(async (tx) => {
+      await tx.delete(communityEvents);
+      if (events.length > 0) {
+        // Break into smaller chunks to avoid payload limits
+        for (let i = 0; i < events.length; i += 10) {
+          await tx.insert(communityEvents).values(events.slice(i, i + 10));
+        }
+      }
+    });
   }
 
   async getDiscussions(): Promise<TrendingDiscussion[]> {
@@ -55,10 +60,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setDiscussions(discussions: InsertDiscussion[]): Promise<void> {
-    await db.delete(trendingDiscussions);
-    if (discussions.length > 0) {
-      await db.insert(trendingDiscussions).values(discussions);
-    }
+    await db.transaction(async (tx) => {
+      await tx.delete(trendingDiscussions);
+      if (discussions.length > 0) {
+        await tx.insert(trendingDiscussions).values(discussions);
+      }
+    });
   }
 }
 
