@@ -58,7 +58,14 @@
 
 ## 📅 Maintenance & Automation
 
-The project uses a database-backed storage system. Community data (events and discussions) is automatically synchronized by the server on startup and periodically (every 10 minutes) during runtime. For Vercel deployments, a lazy-sync mechanism ensures data stays fresh.
+The project uses a database-backed storage system (Neon Postgres). Community data is automatically synchronized using a multi-source engine:
+*   **RSS Feeds:** Real-time news from Wired, The Verge, and digital safety organizations.
+*   **SerpApi:** Automated discovery of global events via Google Events.
+*   **Lazy-Sync:** A non-blocking mechanism optimized for Vercel Serverless Functions that ensures fresh data without performance bottlenecks.
+
+## ⚖️ Legal & Compliance
+
+Legal documents (Terms of Service, Privacy Policy) are integrated via a robust **Modal Architecture**, ensuring instant availability without triggering SPA routing issues in production environments.
 
 ---
 *Created with focus on Family, Safety, and Balance.*
