@@ -42,9 +42,6 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Layout = lazy(() => import("./components/Layout"));
 const Admin = lazy(() => import("./pages/Admin"));
 
-const Terms = lazy(() => import("./pages/Terms"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -54,7 +51,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <GlobalScrollHandler />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-black uppercase tracking-tighter text-2xl animate-pulse">Loading Platform...</div>}>
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />
@@ -84,8 +81,6 @@ const App = () => (
                 element={<CommunitySupport />}
               />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Route>

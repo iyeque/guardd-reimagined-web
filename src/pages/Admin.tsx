@@ -85,11 +85,16 @@ const Admin: React.FC = () => {
         toast.success("Community Data Synced!", {
           description: `Last sync: ${new Date(data.lastSync).toLocaleTimeString()}`
         });
+        // Refresh the view
+        fetchAdminData();
       } else {
-        throw new Error(data.error);
+        throw new Error(data.error || "Sync failed with unknown error");
       }
-    } catch (error) {
-      toast.error("Sync failed");
+    } catch (error: any) {
+      toast.error("Sync failed", {
+        description: error.message || "Please check server logs for details."
+      });
+      console.error("Manual sync failed:", error);
     } finally {
       setIsSyncing(false);
     }
