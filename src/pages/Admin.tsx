@@ -90,9 +90,9 @@ const Admin: React.FC = () => {
       } else {
         throw new Error(data.error || "Sync failed with unknown error");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error("Sync failed", {
-        description: error.message || "Please check server logs for details."
+        description: error instanceof Error ? error.message : "Please check server logs for details."
       });
       console.error("Manual sync failed:", error);
     } finally {

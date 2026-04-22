@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +25,14 @@ import {
 } from 'lucide-react';
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    };
+  }
+}
 
 interface GlobalEvent {
   id: number;
@@ -72,6 +80,25 @@ const CommunitySupport: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', specialty: '', bio: '' });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const recaptchaRef = useRef<HTMLInputElement>(null);
+
+  // Function to load reCAPTCHA script and execute it
+  const getRecaptchaToken = async () => {
+    if (window.grecaptcha && window.grecaptcha.execute) {
+      try {
+        const token = await window.grecaptcha.execute('6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm', { action: 'submit_mentor_application' });
+        if (recaptchaRef.current) {
+          recaptchaRef.current.value = token;
+        }
+        return token;
+      } catch (error) {
+        console.error("reCAPTCHA execution failed:", error);
+        toast.error("reCAPTCHA failed to generate. Please try again.");
+        return null;
+      }
+    }
+    return null;
+  };
 
   const fetchData = async () => {
     try {
@@ -92,7 +119,6 @@ const CommunitySupport: React.FC = () => {
       setIsLoading(false);
     } catch (error) {
       console.error("Failed to fetch community data:", error);
-      // Don't keep loading forever if it fails
       setIsLoading(false);
     }
   };
@@ -106,11 +132,17 @@ const CommunitySupport: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const token = await getRecaptchaToken();
+    if (!token) {
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       // Send to Database
       const dbResponse = await fetch("/api/mentors/apply", {
         method: "POST",
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, "g-recaptcha-response": token }),
         headers: {
           'Content-Type': 'application/json'
         }
@@ -119,16 +151,16 @@ const CommunitySupport: React.FC = () => {
       if (!dbResponse.ok) throw new Error("Application failed");
 
       // Send Email Notification via Google Apps Script
-      // Re-using the same URL as the contact form for simplicity
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeoMBlLV_L2aPmNHvILJ0czzPCDszuTgLGKCOfvFyhSOWjNAOywvL7RHqwClZ-x2Po9A/exec";
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Jk69RuNGXNLd7muFwHaUwJCNOKY1UODwBQQ1X9goIzUNlA7Lky5MM-fO-g0If9tW/exec";
       
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         body: new URLSearchParams({
           ...formData,
+          "g-recaptcha-response": token,
           message: `Specialty: ${formData.specialty}\nBio: ${formData.bio}`
-        } as any),
+        } as unknown as Record<string, string>),
       });
 
       setIsApplied(true);
@@ -152,10 +184,7 @@ const CommunitySupport: React.FC = () => {
   useEffect(() => {
     fetchData();
     
-    // Periodic refresh every 30 seconds to simulate real-time updates
     const refreshInterval = setInterval(fetchData, 30000);
-
-    // Simulate real-time user fluctuation every 3 seconds
     const fluctuationInterval = setInterval(() => {
       setLiveUsers(prev => prev + Math.floor(Math.random() * 7 - 3));
     }, 3000);
@@ -444,6 +473,10 @@ const CommunitySupport: React.FC = () => {
                     className="rounded-xl bg-muted/50 border-border focus:ring-blue-500/20 min-h-[100px]"
                   />
                 </div>
+                
+                {/* Hidden input for reCAPTCHA token */}
+                <input type="hidden" name="g-recaptcha-response" ref={recaptchaRef} />
+                
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}

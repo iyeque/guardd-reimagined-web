@@ -253,7 +253,7 @@ const VideoResources: React.FC = () => {
   };
 
   const channelThumbnails = [
-    { url: 'https://youtu.be/76C7tauF-oI', title: 'Digital Guardian Guide' },
+    { url: 'https://youtu.be/76C7tauF-oI', title: 'DigitalGuard Guide' },
     { url: 'https://youtu.be/YW4N-wdiwe8', title: 'Email Security' },
     { url: 'https://youtu.be/QZsqRG14UyE', title: 'YourSixOS Demo' },
     { url: 'https://youtu.be/JhoDgE31eNQ', title: 'Google Family Link' },
@@ -390,7 +390,7 @@ const VideoResources: React.FC = () => {
               </div>
               <div>
                  <h2 className="text-3xl font-black text-foreground italic uppercase">Featured Video</h2>
-                 <p className="text-muted-foreground font-medium">Direct training from our Digital Guardian library.</p>
+                 <p className="text-muted-foreground font-medium">Direct training from our DigitalGuard library.</p>
               </div>
            </div>
            {adblockSuspected && (

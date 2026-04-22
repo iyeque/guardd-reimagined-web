@@ -18,11 +18,11 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type })
       sections: [
         {
           h: "1. Agreement to Terms",
-          p: "By accessing the Digital Guardd platform (\"the Service\"), you agree to these Terms of Service. If you disagree with any part of these terms, you may not access the Service."
+          p: "By accessing the DigitalGuard platform (\"the Service\"), you agree to these Terms of Service. If you disagree with any part of these terms, you may not access the Service."
         },
         {
           h: "2. Use of the Service",
-          p: "Digital Guardd is an educational platform focused on digital wellness. You agree to use the platform in accordance with applicable laws and respect the safety and privacy of others within our community."
+          p: "DigitalGuard is an educational platform focused on digital wellness. You agree to use the platform in accordance with applicable laws and respect the safety and privacy of others within our community."
         },
         {
           h: "3. User Conduct",
@@ -48,7 +48,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, type })
         },
         {
           h: "3. Copyright & Intellectual Property",
-          p: "All content, designs, and materials on Digital Guardd are the intellectual property of the Digital Guardian Wellness Initiative. Unauthorized reproduction is strictly prohibited."
+          p: "All content, designs, and materials on DigitalGuard are the intellectual property of the DigitalGuard Wellness Initiative. Unauthorized reproduction is strictly prohibited."
         },
         {
           h: "4. Analytics",

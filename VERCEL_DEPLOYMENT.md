@@ -1,4 +1,4 @@
-# Vercel Deployment Guide for Digital Guardian
+# Vercel Deployment Guide for DigitalGuard
 
 ## Project Structure Analysis
 

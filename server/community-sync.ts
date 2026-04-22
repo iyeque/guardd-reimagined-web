@@ -9,8 +9,37 @@ const RSS_FEEDS = [
   { platform: "Digital Wellness", community: "News", url: "https://digitalwellnessinstitute.com/feed/" },
   { platform: "ConnectSafely", community: "Online Safety", url: "https://staysafeonline.org/feed/" },
   { platform: "Common Sense", community: "Family Media", url: "https://www.commonsensemedia.org/rss/articles.xml" },
-  { platform: "ChildNet", community: "Youth Safety", url: "https://www.childnet.com/feed/" }
+  { platform: "ChildNet", community: "Youth Safety", url: "https://www.childnet.com/feed/" },
+  { platform: "Psychology Today", community: "Tech Habits", url: "https://www.psychologytoday.com/intl/taxonomy/term/1057/feed" }
 ];
+
+// --- Type Definitions for API Responses ---
+interface RedditChild {
+  data: {
+    title: string;
+    permalink: string;
+    score: number;
+    num_comments: number;
+    created_utc: number;
+  };
+}
+
+interface SerpEventResult {
+  title: string;
+  address?: string[];
+  event_location_map?: {
+    location: string;
+  };
+  date?: {
+    start_date?: string;
+    when?: string;
+  };
+  link?: string;
+  venue?: {
+    name: string;
+  };
+  description?: string;
+}
 
 // --- Real World Events (Sourced from Research) ---
 export const CURATED_EVENTS = [
@@ -159,7 +188,7 @@ async function fetchRedditSubredditHot(subreddit: string, token: string) {
       params: { limit: 5 }
     });
     
-    return response.data.data.children.map((child: any) => {
+    return response.data.data.children.map((child: RedditChild) => {
       const post = child.data;
       return {
         platform: "Reddit",
@@ -181,7 +210,7 @@ async function getLiveRedditTrends() {
   const token = await getRedditAccessToken();
   if (!token) return null;
 
-  const subreddits = ['parenting', 'cybersecurity', 'privacy', 'digitalwellness'];
+  const subreddits = ['parenting', 'cybersecurity', 'privacy', 'digitalwellness', 'ScreenTime'];
   const results = await Promise.all(subreddits.map(sub => fetchRedditSubredditHot(sub, token)));
   
   return results.flat().sort((a, b) => (b.replies || 0) - (a.replies || 0)).slice(0, 10);
@@ -197,8 +226,14 @@ async function fetchLiveEventsFromSerp() {
   }
 
   try {
-    // Better queries for broader results
-    const queries = ['cybersecurity conferences 2026', 'digital safety workshops for parents', 'tech wellness summits'];
+    // Highly targeted queries for DigitalGuard's audience
+    const queries = [
+      'digital wellness conferences 2026',
+      'digital parenting workshops 2026',
+      'online safety for families events',
+      'mindful technology seminars',
+      'digital citizenship education summits'
+    ];
     const results = await Promise.all(queries.map(q => 
       axios.get('https://serpapi.com/search.json', {
         params: {
@@ -211,7 +246,7 @@ async function fetchLiveEventsFromSerp() {
       })
     ));
 
-    const events = results.flatMap(r => r.data.events_results || []).map((e: any) => ({
+    const events = results.flatMap(r => (r.data.events_results as SerpEventResult[]) || []).map((e: SerpEventResult) => ({
       title: e.title,
       location: e.address?.join(', ') || (e.event_location_map?.location || 'Global / Online'),
       date: e.date?.start_date || (e.date?.when?.split(',')[0] || '2026-Q3'),

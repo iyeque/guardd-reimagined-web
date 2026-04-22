@@ -57,7 +57,7 @@ const GAMES: Game[] = [
   {
     id: 'cyber-quiz',
     title: 'Cyber Defense Mission',
-    description: 'A multi-level strategic mission to test your cyber intelligence. Earn your "Digital Guardian" badge through 3 elite levels.',
+    description: 'A multi-level strategic mission to test your cyber intelligence. Earn your "DigitalGuard" badge through 3 elite levels.',
     category: ['kids', 'teens'],
     icon: ShieldCheck,
     color: 'from-blue-500 to-indigo-600',
@@ -475,7 +475,7 @@ const EducationalGames: React.FC = () => {
           <div className="flex-1 text-center md:text-left space-y-6">
             <h2 className="text-4xl font-black text-foreground uppercase italic tracking-tighter">The Guardian Trophy</h2>
             <p className="text-muted-foreground text-xl leading-relaxed font-medium">
-              Complete all missions in the Arcade Academy to unlock the ultimate Digital Guardian Achievement. 
+              Complete all missions in the Arcade Academy to unlock the ultimate DigitalGuard Achievement. 
               Over 1,200 families have already leveled up!
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">

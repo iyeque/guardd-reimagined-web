@@ -44,7 +44,7 @@ export const Navigation = () => {
         <div className="flex items-center justify-between">
           <button onClick={() => handleNavClick('#home')} className="flex items-center space-x-2 group">
             <Heart className="h-8 w-8 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300" />
-            <span className="text-2xl font-black text-foreground tracking-tight uppercase">Digital Guardian</span>
+            <span className="text-2xl font-black text-foreground tracking-tight uppercase">DigitalGuard</span>
           </button>
           
           {/* Desktop Navigation */}

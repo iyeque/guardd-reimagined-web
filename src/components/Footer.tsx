@@ -10,9 +10,9 @@ export const Footer = () => {
       <footer className="w-full bg-slate-50 dark:bg-slate-950 border-t border-border py-12 px-6 mt-20">
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
           <div className="space-y-4">
-            <h3 className="text-xl font-black tracking-tighter">Digital Guardd</h3>
+            <h3 className="text-xl font-black tracking-tighter">DigitalGuard</h3>
             <p className="text-sm text-muted-foreground font-medium">
-              © 2026 Digital Guardd. All rights reserved.
+              © 2026 DigitalGuard. All rights reserved.
             </p>
           </div>
 

@@ -1,25 +1,58 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Mail, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
+declare global {
+  interface Window {
+    grecaptcha: {
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    };
+  }
+}
+
 export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const formRef = useRef<HTMLFormElement>(null); // Ref for the form element
+  const recaptchaRef = useRef<HTMLInputElement>(null); // Ref for the hidden reCAPTCHA token input
 
-  const validate = (data: Record<string, any>) => {
+  // Function to load reCAPTCHA script and execute it
+  const getRecaptchaToken = async () => {
+    if (window.grecaptcha && window.grecaptcha.execute) {
+      try {
+        const token = await window.grecaptcha.execute('6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm', { action: 'submit_contact_form' });
+        if (recaptchaRef.current) {
+          recaptchaRef.current.value = token;
+        }
+        return token;
+      } catch (error) {
+        console.error("reCAPTCHA execution failed:", error);
+        toast.error("reCAPTCHA failed to generate. Please try again.");
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const validate = (data: Record<string, FormDataEntryValue>) => {
     const newErrors: Record<string, string> = {};
-    if (!data.firstName?.trim()) newErrors.firstName = "First name is required";
-    if (!data.lastName?.trim()) newErrors.lastName = "Last name is required";
-    if (!data.email?.trim()) {
+    const firstName = data.firstName as string;
+    const lastName = data.lastName as string;
+    const email = data.email as string;
+    const message = data.message as string;
+
+    if (!firstName?.trim()) newErrors.firstName = "First name is required";
+    if (!lastName?.trim()) newErrors.lastName = "Last name is required";
+    if (!email?.trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "Invalid email address";
     }
-    if (!data.message?.trim()) newErrors.message = "Message is required";
+    if (!message?.trim()) newErrors.message = "Message is required";
     return newErrors;
   };
 
@@ -27,7 +60,17 @@ export const Contact = () => {
     e.preventDefault();
     setErrors({});
     
+    const token = await getRecaptchaToken();
+    if (!token) {
+      // reCAPTCHA token generation failed, prevent submission
+      toast.error("reCAPTCHA verification is required.");
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
+    // Ensure the token is included in the data sent to the server
+    formData.append('g-recaptcha-response', token);
+
     const data = Object.fromEntries(formData.entries());
 
     const validationErrors = validate(data);
@@ -40,26 +83,41 @@ export const Contact = () => {
 
     try {
       // Use the actual Google Apps Script Web App URL
-      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzeoMBlLV_L2aPmNHvILJ0czzPCDszuTgLGKCOfvFyhSOWjNAOywvL7RHqwClZ-x2Po9A/exec";
+      const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Jk69RuNGXNLd7muFwHaUwJCNOKY1UODwBQQ1X9goIzUNlA7Lky5MM-fO-g0If9tW/exec";
 
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
-        body: new URLSearchParams(data as any),
+        mode: "no-cors", 
+        body: new URLSearchParams(data as unknown as Record<string, string>),
       });
 
       toast.success("Message sent successfully!", {
         description: "We have received your message and will be in touch shortly.",
       });
       (e.target as HTMLFormElement).reset();
+      // Clear the reCAPTCHA token input as well
+      if (recaptchaRef.current) {
+        recaptchaRef.current.value = '';
+      }
     } catch (error) {
+      console.error("Form submission error:", error);
       toast.error("Submission failed", {
-        description: "Please try again later.",
+        description: "There was an issue sending your message. Please try again later.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // It's good practice to ensure grecaptcha is loaded, though the script tag in index.html should handle it.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (window.grecaptcha) {
+        clearInterval(interval);
+      }
+    }, 100);
+    return () => clearInterval(interval); 
+  }, []);
 
   return (
     <section id="contact" className="py-20 px-6 bg-transparent">
@@ -81,6 +139,7 @@ export const Contact = () => {
             <p className="text-muted-foreground mb-8 font-medium italic">We typically respond within 24 hours.</p>
             
             <form 
+              ref={formRef} // Assign ref to the form
               onSubmit={handleSubmit}
               className="space-y-6"
             >
@@ -93,6 +152,7 @@ export const Contact = () => {
                     placeholder="Enter first name" 
                     className="bg-white/50 dark:bg-white/5 border-border text-foreground h-14 rounded-xl focus:ring-green-500/20"
                   />
+                  {errors.firstName && <p className="text-xs text-red-500 mt-1">{errors.firstName}</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Last Name</label>
@@ -102,6 +162,7 @@ export const Contact = () => {
                     placeholder="Enter last name" 
                     className="bg-white/50 dark:bg-white/5 border-border text-foreground h-14 rounded-xl focus:ring-green-500/20"
                   />
+                  {errors.lastName && <p className="text-xs text-red-500 mt-1">{errors.lastName}</p>}
                 </div>
               </div>
               
@@ -114,6 +175,7 @@ export const Contact = () => {
                   type="email"
                   className="bg-white/50 dark:bg-white/5 border-border text-foreground h-14 rounded-xl focus:ring-green-500/20"
                 />
+                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -125,7 +187,11 @@ export const Contact = () => {
                   rows={5}
                   className="bg-white/50 dark:bg-white/5 border-border text-foreground rounded-2xl focus:ring-green-500/20 p-4"
                 />
+                {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
               </div>
+              
+              {/* Hidden input for reCAPTCHA token */}
+              <input type="hidden" name="g-recaptcha-response" ref={recaptchaRef} />
               
               <Button 
                 type="submit" 

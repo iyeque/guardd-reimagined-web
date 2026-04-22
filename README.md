@@ -1,6 +1,6 @@
-# GUARDD: Family Digital Wellness Reimagined
+# DigitalGuard: Family Digital Wellness Reimagined
 
-**GUARDD** is a next-generation platform designed to help modern families navigate the digital world safely. It combines high-fidelity interactive elements, educational gaming, and expert-vetted resources into a unified, immersive experience.
+**DigitalGuard** is a next-generation platform designed to help modern families navigate the digital world safely. It combines high-fidelity interactive elements, educational gaming, and expert-vetted resources into a unified, immersive experience.
 
 ## 🚀 Key Features
 

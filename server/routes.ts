@@ -1,7 +1,27 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage.js";
 import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
+import axios from "axios";
+
+// Helper function to verify reCAPTCHA
+async function verifyRecaptcha(token: string) {
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret) {
+    console.warn("RECAPTCHA_SECRET_KEY not set, skipping verification");
+    return true; // Don't block in dev if not configured
+  }
+
+  try {
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`
+    );
+    return response.data.success;
+  } catch (error) {
+    console.error("reCAPTCHA verification error:", error);
+    return false;
+  }
+}
 
 export function registerRoutes(app: Express) {
   // Health check for Vercel
@@ -10,7 +30,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Simple Admin Middleware
-  const validateAdmin = (req: any, res: any, next: any) => {
+  const validateAdmin = (req: Request, res: Response, next: NextFunction) => {
     const adminSecret = process.env.ADMIN_SECRET;
     if (!adminSecret) {
       console.error("ADMIN_SECRET not set in environment");
@@ -27,8 +47,8 @@ export function registerRoutes(app: Express) {
   // Community Data (Public)
   app.get("/api/community/data", async (_req, res) => {
     try {
-      let events = await storage.getEvents();
-      let discussions = await storage.getDiscussions();
+      const events = await storage.getEvents();
+      const discussions = await storage.getDiscussions();
       
       // If database is empty, return static data immediately and trigger sync in background
       if (events.length === 0 || discussions.length === 0) {
@@ -67,9 +87,9 @@ export function registerRoutes(app: Express) {
       // For manual sync, we DO await it so the admin knows if it worked
       const result = await syncCommunityData();
       res.json({ message: "Sync successful", lastSync: result.lastSync });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Manual sync error:", error);
-      res.status(500).json({ error: error.message || "Sync failed" });
+      res.status(500).json({ error: error instanceof Error ? error.message : "Sync failed" });
     }
   });
 
@@ -93,10 +113,20 @@ export function registerRoutes(app: Express) {
   // Mentor Applications
   app.post("/api/mentors/apply", async (req, res) => {
     try {
-      const validatedApp = insertMentorApplicationSchema.parse(req.body);
+      const { "g-recaptcha-response": recaptchaToken, ...formData } = req.body;
+
+      if (process.env.RECAPTCHA_SECRET_KEY) {
+        const isValid = await verifyRecaptcha(recaptchaToken);
+        if (!isValid) {
+          return res.status(400).json({ error: "reCAPTCHA verification failed" });
+        }
+      }
+
+      const validatedApp = insertMentorApplicationSchema.parse(formData);
       const result = await storage.createMentorApplication(validatedApp);
       res.json(result);
     } catch (error) {
+      console.error("Mentor application error:", error);
       res.status(400).json({ error: "Invalid application data" });
     }
   });
