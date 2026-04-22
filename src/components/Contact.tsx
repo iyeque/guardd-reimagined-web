@@ -17,25 +17,30 @@ declare global {
 export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const formRef = useRef<HTMLFormElement>(null); // Ref for the form element
-  const recaptchaRef = useRef<HTMLInputElement>(null); // Ref for the hidden reCAPTCHA token input
+  const formRef = useRef<HTMLFormElement>(null); 
+  const recaptchaRef = useRef<HTMLInputElement>(null);
 
   // Function to load reCAPTCHA script and execute it
   const getRecaptchaToken = async () => {
+    console.log("Contact Form: Requesting reCAPTCHA token...");
     if (window.grecaptcha && window.grecaptcha.execute) {
       try {
         const token = await window.grecaptcha.execute('6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm', { action: 'submit_contact_form' });
+        console.log("Contact Form: reCAPTCHA token obtained.");
         if (recaptchaRef.current) {
           recaptchaRef.current.value = token;
         }
         return token;
       } catch (error) {
-        console.error("reCAPTCHA execution failed:", error);
-        toast.error("reCAPTCHA failed to generate. Please try again.");
+        console.error("Contact Form: reCAPTCHA execution failed:", error);
+        toast.error("Security check failed. Please refresh the page and try again.");
         return null;
       }
+    } else {
+      console.error("Contact Form: grecaptcha not found. Script may have failed to load or domain is not authorized.");
+      toast.error("Security script is still loading. Please wait a few seconds.");
+      return null;
     }
-    return null;
   };
 
   const validate = (data: Record<string, FormDataEntryValue>) => {
@@ -60,15 +65,15 @@ export const Contact = () => {
     e.preventDefault();
     setErrors({});
     
+    setIsSubmitting(true);
+
     const token = await getRecaptchaToken();
     if (!token) {
-      // reCAPTCHA token generation failed, prevent submission
-      toast.error("reCAPTCHA verification is required.");
+      setIsSubmitting(false);
       return;
     }
 
     const formData = new FormData(e.currentTarget);
-    // Ensure the token is included in the data sent to the server
     formData.append('g-recaptcha-response', token);
 
     const data = Object.fromEntries(formData.entries());
@@ -76,46 +81,48 @@ export const Contact = () => {
     const validationErrors = validate(data);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setIsSubmitting(false);
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      // Use the actual Google Apps Script Web App URL
+      console.log("Contact Form: Submitting to Google Apps Script...");
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Jk69RuNGXNLd7muFwHaUwJCNOKY1UODwBQQ1X9goIzUNlA7Lky5MM-fO-g0If9tW/exec";
 
-      await fetch(GOOGLE_SCRIPT_URL, {
+      // Note: Google Apps Script redirection sometimes fails with fetch + no-cors.
+      // We'll use URLSearchParams for better compatibility with GAS
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors", 
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: new URLSearchParams(data as unknown as Record<string, string>),
       });
 
+      console.log("Contact Form: Submission complete (no-cors).");
       toast.success("Message sent successfully!", {
         description: "We have received your message and will be in touch shortly.",
       });
-      (e.target as HTMLFormElement).reset();
-      // Clear the reCAPTCHA token input as well
-      if (recaptchaRef.current) {
-        recaptchaRef.current.value = '';
-      }
+      
+      if (formRef.current) formRef.current.reset();
+      if (recaptchaRef.current) recaptchaRef.current.value = '';
+      
     } catch (error) {
-      console.error("Form submission error:", error);
-      toast.error("Submission failed", {
-        description: "There was an issue sending your message. Please try again later.",
-      });
+      console.error("Contact Form: Submission error:", error);
+      toast.error("Submission failed. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // It's good practice to ensure grecaptcha is loaded, though the script tag in index.html should handle it.
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.grecaptcha) {
+        console.log("Contact Form: reCAPTCHA initialized successfully.");
         clearInterval(interval);
       }
-    }, 100);
+    }, 500);
     return () => clearInterval(interval); 
   }, []);
 
@@ -139,7 +146,7 @@ export const Contact = () => {
             <p className="text-muted-foreground mb-8 font-medium italic">We typically respond within 24 hours.</p>
             
             <form 
-              ref={formRef} // Assign ref to the form
+              ref={formRef}
               onSubmit={handleSubmit}
               className="space-y-6"
             >
@@ -152,7 +159,7 @@ export const Contact = () => {
                     placeholder="Enter first name" 
                     className="bg-white/50 dark:bg-white/5 border-border text-foreground h-14 rounded-xl focus:ring-green-500/20"
                   />
-                  {errors.firstName && <p className="text-xs text-red-500 mt-1">{errors.firstName}</p>}
+                  {errors.firstName && <p className="text-xs text-red-500 mt-1 ml-1">{errors.firstName}</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Last Name</label>
@@ -162,7 +169,7 @@ export const Contact = () => {
                     placeholder="Enter last name" 
                     className="bg-white/50 dark:bg-white/5 border-border text-foreground h-14 rounded-xl focus:ring-green-500/20"
                   />
-                  {errors.lastName && <p className="text-xs text-red-500 mt-1">{errors.lastName}</p>}
+                  {errors.lastName && <p className="text-xs text-red-500 mt-1 ml-1">{errors.lastName}</p>}
                 </div>
               </div>
               
@@ -175,7 +182,7 @@ export const Contact = () => {
                   type="email"
                   className="bg-white/50 dark:bg-white/5 border-border text-foreground h-14 rounded-xl focus:ring-green-500/20"
                 />
-                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                {errors.email && <p className="text-xs text-red-500 mt-1 ml-1">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -187,10 +194,9 @@ export const Contact = () => {
                   rows={5}
                   className="bg-white/50 dark:bg-white/5 border-border text-foreground rounded-2xl focus:ring-green-500/20 p-4"
                 />
-                {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
+                {errors.message && <p className="text-xs text-red-500 mt-1 ml-1">{errors.message}</p>}
               </div>
               
-              {/* Hidden input for reCAPTCHA token */}
               <input type="hidden" name="g-recaptcha-response" ref={recaptchaRef} />
               
               <Button 
@@ -198,8 +204,11 @@ export const Contact = () => {
                 disabled={isSubmitting}
                 className="w-full h-16 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black text-xl rounded-2xl shadow-xl shadow-green-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70"
               >
-                {isSubmitting ? "Sending..." : "Submit Request"}
+                {isSubmitting ? "Processing Securely..." : "Submit Request"}
               </Button>
+              <p className="text-[10px] text-center text-muted-foreground mt-4">
+                This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" className="underline">Privacy Policy</a> and <a href="https://policies.google.com/terms" className="underline">Terms of Service</a> apply.
+              </p>
             </form>
           </div>
           

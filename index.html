@@ -17,6 +17,18 @@
     <meta name="twitter:description" content="Take control of your digital life with DigitalGuard. Advanced tools for screen time management, digital wellness, and online safety." />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     <script src="https://www.google.com/recaptcha/api.js?render=6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm"></script>
+    <style>
+      .grecaptcha-badge { 
+        visibility: visible !important; 
+        display: block !important; 
+        z-index: 9999 !important;
+      }
+    </style>
+    <script>
+      window.onload = function() {
+        console.log("reCAPTCHA script state:", typeof grecaptcha !== 'undefined' ? "Loaded" : "Not Loaded");
+      };
+    </script>
   </head>
 
   <body>

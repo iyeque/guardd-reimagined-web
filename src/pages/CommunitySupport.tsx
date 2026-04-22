@@ -84,20 +84,25 @@ const CommunitySupport: React.FC = () => {
 
   // Function to load reCAPTCHA script and execute it
   const getRecaptchaToken = async () => {
+    console.log("Mentorship Form: Requesting reCAPTCHA token...");
     if (window.grecaptcha && window.grecaptcha.execute) {
       try {
         const token = await window.grecaptcha.execute('6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm', { action: 'submit_mentor_application' });
+        console.log("Mentorship Form: reCAPTCHA token obtained.");
         if (recaptchaRef.current) {
           recaptchaRef.current.value = token;
         }
         return token;
       } catch (error) {
-        console.error("reCAPTCHA execution failed:", error);
-        toast.error("reCAPTCHA failed to generate. Please try again.");
+        console.error("Mentorship Form: reCAPTCHA execution failed:", error);
+        toast.error("Security check failed. Please refresh and try again.");
         return null;
       }
+    } else {
+      console.error("Mentorship Form: grecaptcha not found. Script error or domain issue.");
+      toast.error("Security check is still loading...");
+      return null;
     }
-    return null;
   };
 
   const fetchData = async () => {
@@ -108,7 +113,7 @@ const CommunitySupport: React.FC = () => {
       }
       const contentType = res.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("API returned non-JSON response (possibly a 404 page)");
+        throw new Error("API returned non-JSON response");
       }
       const data = await res.json();
       setEvents(data.events || []);
@@ -139,6 +144,7 @@ const CommunitySupport: React.FC = () => {
     }
 
     try {
+      console.log("Mentorship Form: Submitting to local API...");
       // Send to Database
       const dbResponse = await fetch("/api/mentors/apply", {
         method: "POST",
@@ -148,14 +154,18 @@ const CommunitySupport: React.FC = () => {
         }
       });
 
-      if (!dbResponse.ok) throw new Error("Application failed");
+      if (!dbResponse.ok) throw new Error("Database storage failed");
 
+      console.log("Mentorship Form: Submitting to Google Apps Script...");
       // Send Email Notification via Google Apps Script
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Jk69RuNGXNLd7muFwHaUwJCNOKY1UODwBQQ1X9goIzUNlA7Lky5MM-fO-g0If9tW/exec";
       
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
         body: new URLSearchParams({
           ...formData,
           "g-recaptcha-response": token,
@@ -165,17 +175,15 @@ const CommunitySupport: React.FC = () => {
 
       setIsApplied(true);
       setIsModalOpen(false);
-      
       setFormData({ name: '', email: '', specialty: '', bio: '' });
 
       toast.success("Application Received! Review Pending.", {
-        description: `Thank you ${formData.name}! Your mentor application for the 2026 cohort is now under review. We will contact you via email once a decision is made.`,
+        description: `Thank you ${formData.name}! Your mentor application for the 2026 cohort is now under review.`,
         duration: 8000,
       });
     } catch (error) {
-      toast.error("Submission failed", {
-        description: "Please try again in a moment or check your connection.",
-      });
+      console.error("Mentorship Form: Submission error:", error);
+      toast.error("Submission failed. Please check your connection or try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -183,12 +191,10 @@ const CommunitySupport: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    
     const refreshInterval = setInterval(fetchData, 30000);
     const fluctuationInterval = setInterval(() => {
       setLiveUsers(prev => prev + Math.floor(Math.random() * 7 - 3));
     }, 3000);
-
     return () => {
       clearInterval(refreshInterval);
       clearInterval(fluctuationInterval);
@@ -474,7 +480,6 @@ const CommunitySupport: React.FC = () => {
                   />
                 </div>
                 
-                {/* Hidden input for reCAPTCHA token */}
                 <input type="hidden" name="g-recaptcha-response" ref={recaptchaRef} />
                 
                 <Button 
@@ -482,8 +487,11 @@ const CommunitySupport: React.FC = () => {
                   disabled={isSubmitting}
                   className="w-full h-16 bg-blue-600 hover:bg-blue-700 text-white font-black text-lg rounded-2xl shadow-xl transition-all hover:-translate-y-1 disabled:opacity-70"
                 >
-                  {isSubmitting ? "SUBMITTING..." : "SUBMIT APPLICATION"}
+                  {isSubmitting ? "Processing Securely..." : "SUBMIT APPLICATION"}
                 </Button>
+                <p className="text-[10px] text-center text-muted-foreground mt-4">
+                  This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" className="underline">Privacy Policy</a> and <a href="https://policies.google.com/terms" className="underline">Terms of Service</a> apply.
+                </p>
               </form>
             </CardContent>
           </Card>
