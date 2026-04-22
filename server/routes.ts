@@ -118,8 +118,11 @@ export function registerRoutes(app: Express) {
       if (process.env.RECAPTCHA_SECRET_KEY) {
         const isValid = await verifyRecaptcha(recaptchaToken);
         if (!isValid) {
-          return res.status(400).json({ error: "reCAPTCHA verification failed" });
+          console.error("Mentor Application: reCAPTCHA verification failed");
+          return res.status(400).json({ error: "reCAPTCHA verification failed. Please try again." });
         }
+      } else {
+        console.warn("Mentor Application: Skipping reCAPTCHA check (RECAPTCHA_SECRET_KEY not set)");
       }
 
       const validatedApp = insertMentorApplicationSchema.parse(formData);
@@ -127,7 +130,11 @@ export function registerRoutes(app: Express) {
       res.json(result);
     } catch (error) {
       console.error("Mentor application error:", error);
-      res.status(400).json({ error: "Invalid application data" });
+      if (error instanceof Error) {
+        // Log detailed Zod or Database errors to the server console
+        console.error("Error details:", error.message);
+      }
+      res.status(400).json({ error: "Invalid application data. Please check all fields." });
     }
   });
 

@@ -65,6 +65,8 @@ export const Contact = () => {
     e.preventDefault();
     setErrors({});
     
+    // CRITICAL: Capture form element immediately before await to avoid React pooling issues
+    const formElement = e.currentTarget;
     setIsSubmitting(true);
 
     const token = await getRecaptchaToken();
@@ -73,7 +75,7 @@ export const Contact = () => {
       return;
     }
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(formElement);
     formData.append('g-recaptcha-response', token);
 
     const data = Object.fromEntries(formData.entries());
@@ -89,8 +91,6 @@ export const Contact = () => {
       console.log("Contact Form: Submitting to Google Apps Script...");
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Jk69RuNGXNLd7muFwHaUwJCNOKY1UODwBQQ1X9goIzUNlA7Lky5MM-fO-g0If9tW/exec";
 
-      // Note: Google Apps Script redirection sometimes fails with fetch + no-cors.
-      // We'll use URLSearchParams for better compatibility with GAS
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors", 
