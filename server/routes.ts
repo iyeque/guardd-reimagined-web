@@ -28,15 +28,20 @@ async function verifyRecaptcha(token: string) {
       }
     );
     
+    // Log details if verification fails
     if (!response.data.success) {
-      console.error("reCAPTCHA Fail Details:", response.data["error-codes"]);
+      console.error("reCAPTCHA Verification Failed:");
+      console.error("  Secret Key (starts with):", secret.substring(0, 10) + "..."); // Log truncated secret
+      console.error("  Token (starts with):", token.substring(0, 10) + "..."); // Log truncated token
+      console.error("  Google API Response:", response.data); // Log the full response from Google
+      console.error("  Error Codes:", response.data["error-codes"]); // Log specific error codes if available
     }
     return { 
       success: response.data.success, 
       errorCodes: response.data["error-codes"] 
     };
   } catch (error) {
-    console.error("reCAPTCHA verification error:", error);
+    console.error("reCAPTCHA network error:", error);
     return { success: false, errorCodes: ["network-error"] };
   }
 }
