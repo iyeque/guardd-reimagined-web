@@ -3,6 +3,7 @@ import { storage } from "./storage.js";
 import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import axios from "axios";
+import { z } from "zod";
 
 // Helper function to verify reCAPTCHA
 async function verifyRecaptcha(token: string) {
@@ -130,11 +131,10 @@ export function registerRoutes(app: Express) {
       res.json(result);
     } catch (error) {
       console.error("Mentor application error:", error);
-      if (error instanceof Error) {
-        // Log detailed Zod or Database errors to the server console
-        console.error("Error details:", error.message);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid application data. Please check all fields." });
       }
-      res.status(400).json({ error: "Invalid application data. Please check all fields." });
+      res.status(500).json({ error: "Internal server error. Database storage failed." });
     }
   });
 
@@ -154,6 +154,21 @@ export function registerRoutes(app: Express) {
       res.json(apps);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch applications" });
+    }
+  });
+
+  app.patch("/api/admin/applications/:id", validateAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      if (!status) {
+        return res.status(400).json({ error: "Status is required" });
+      }
+      const app = await storage.updateMentorApplicationStatus(id, status);
+      res.json(app);
+    } catch (error) {
+      console.error("Failed to update application:", error);
+      res.status(500).json({ error: "Failed to update application" });
     }
   });
 }

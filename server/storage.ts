@@ -5,13 +5,14 @@ import {
   trendingDiscussions, type TrendingDiscussion, type InsertDiscussion
 } from "../shared/schema.js";
 import { db } from "./db.js";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 export interface IStorage {
   createMessage(message: InsertMessage): Promise<Message>;
   getMessages(): Promise<Message[]>;
   createMentorApplication(app: InsertMentorApplication): Promise<MentorApplication>;
   getMentorApplications(): Promise<MentorApplication[]>;
+  updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication>;
   
   // Community Data
   getEvents(): Promise<CommunityEvent[]>;
@@ -37,6 +38,15 @@ export class DatabaseStorage implements IStorage {
 
   async getMentorApplications(): Promise<MentorApplication[]> {
     return await db.select().from(mentorApplications).orderBy(desc(mentorApplications.createdAt));
+  }
+
+  async updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication> {
+    const [app] = await db
+      .update(mentorApplications)
+      .set({ status })
+      .where(eq(mentorApplications.id, id))
+      .returning();
+    return app;
   }
 
   async getEvents(): Promise<CommunityEvent[]> {

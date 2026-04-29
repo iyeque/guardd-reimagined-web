@@ -154,7 +154,10 @@ const CommunitySupport: React.FC = () => {
         }
       });
 
-      if (!dbResponse.ok) throw new Error("Database storage failed");
+      if (!dbResponse.ok) {
+        const errorData = await dbResponse.json();
+        throw new Error(errorData.error || "Database storage failed");
+      }
 
       console.log("Mentorship Form: Submitting to Google Apps Script...");
       // Send Email Notification via Google Apps Script

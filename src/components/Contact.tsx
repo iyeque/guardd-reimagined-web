@@ -88,6 +88,21 @@ export const Contact = () => {
     }
 
     try {
+      console.log("Contact Form: Submitting to local API...");
+      const dbResponse = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!dbResponse.ok) {
+        console.warn("Contact Form: Database storage failed, but continuing with Google Script submission.");
+      } else {
+        console.log("Contact Form: Local API submission successful.");
+      }
+
       console.log("Contact Form: Submitting to Google Apps Script...");
       const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Jk69RuNGXNLd7muFwHaUwJCNOKY1UODwBQQ1X9goIzUNlA7Lky5MM-fO-g0If9tW/exec";
 

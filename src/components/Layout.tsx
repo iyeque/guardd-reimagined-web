@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
-import { Footer } from "./Footer";
 import UnifiedBackground from "./wellness/UnifiedBackground";
 import WellnessParticles from "./wellness/WellnessParticles";
 import GentleTrail from "./wellness/GentleTrail";
@@ -35,8 +34,6 @@ const Layout = () => {
       <main className="relative">
         <Outlet />
       </main>
-
-      <Footer />
       
       {/* AI Wellness Companion */}
       <WellnessCompanion />

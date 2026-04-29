@@ -42,6 +42,7 @@ const Admin: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState<number | null>(null);
   const [authError, setAuthError] = useState(false);
 
   const fetchAdminData = async () => {
@@ -73,6 +74,33 @@ const Admin: React.FC = () => {
       toast.error("Failed to load admin data");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleUpdateStatus = async (id: number, status: string) => {
+    setIsUpdating(id);
+    try {
+      const res = await fetch(`/api/admin/applications/${id}?key=${adminKey}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+
+      if (res.ok) {
+        toast.success(`Application ${status === 'approved' ? 'Approved' : 'Rejected'}`);
+        // Update local state
+        setApplications(prev => prev.map(app => 
+          app.id === id ? { ...app, status } : app
+        ));
+      } else {
+        const data = await res.json();
+        throw new Error(data.error || "Update failed");
+      }
+    } catch (error) {
+      toast.error("Failed to update status");
+      console.error(error);
+    } finally {
+      setIsUpdating(null);
     }
   };
 
@@ -226,11 +254,22 @@ const Admin: React.FC = () => {
                       {app.bio}
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-1 font-bold">
-                        <CheckCircle className="w-4 h-4" /> Approve
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleUpdateStatus(app.id, 'approved')}
+                        disabled={isUpdating === app.id || app.status === 'approved'}
+                        className="bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-1 font-bold"
+                      >
+                        <CheckCircle className="w-4 h-4" /> {app.status === 'approved' ? 'Approved' : 'Approve'}
                       </Button>
-                      <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 rounded-lg flex items-center gap-1 font-bold">
-                        <Trash2 className="w-4 h-4" /> Reject
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleUpdateStatus(app.id, 'rejected')}
+                        disabled={isUpdating === app.id || app.status === 'rejected'}
+                        className="text-red-600 border-red-200 hover:bg-red-50 rounded-lg flex items-center gap-1 font-bold"
+                      >
+                        <Trash2 className="w-4 h-4" /> {app.status === 'rejected' ? 'Rejected' : 'Reject'}
                       </Button>
                     </div>
                   </CardContent>
