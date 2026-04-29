@@ -25,8 +25,8 @@ export const Contact = () => {
     console.log("Contact Form: Requesting reCAPTCHA token...");
     if (window.grecaptcha && window.grecaptcha.execute) {
       try {
-        const token = await window.grecaptcha.execute('6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm', { action: 'submit_contact_form' });
-        console.log("Contact Form: reCAPTCHA token obtained.");
+        const token = await window.grecaptcha.execute('6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm', { action: 'submit' });
+        console.log("Contact Form: reCAPTCHA token obtained (starts with:", token.substring(0, 10), ")");
         if (recaptchaRef.current) {
           recaptchaRef.current.value = token;
         }

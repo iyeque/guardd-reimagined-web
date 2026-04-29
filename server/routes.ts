@@ -10,20 +10,34 @@ async function verifyRecaptcha(token: string) {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
   if (!secret) {
     console.warn("RECAPTCHA_SECRET_KEY not set, skipping verification");
-    return true; // Don't block in dev if not configured
+    return { success: true }; 
   }
 
   try {
+    const params = new URLSearchParams();
+    params.append('secret', secret);
+    params.append('response', token);
+
     const response = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`
+      'https://www.google.com/recaptcha/api/siteverify',
+      params.toString(),
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
     );
+    
     if (!response.data.success) {
       console.error("reCAPTCHA Fail Details:", response.data["error-codes"]);
     }
-    return response.data.success;
+    return { 
+      success: response.data.success, 
+      errorCodes: response.data["error-codes"] 
+    };
   } catch (error) {
     console.error("reCAPTCHA verification error:", error);
-    return false;
+    return { success: false, errorCodes: ["network-error"] };
   }
 }
 
@@ -103,10 +117,10 @@ export function registerRoutes(app: Express) {
       const { firstName, lastName, email, message, "g-recaptcha-response": recaptchaToken } = req.body;
       
       if (process.env.RECAPTCHA_SECRET_KEY) {
-        const isValid = await verifyRecaptcha(recaptchaToken);
-        if (!isValid) {
-          console.error("Contact Form: reCAPTCHA verification failed");
-          return res.status(400).json({ error: "reCAPTCHA verification failed. Please try again." });
+        const result = await verifyRecaptcha(recaptchaToken);
+        if (!result.success) {
+          console.error("Contact Form: reCAPTCHA verification failed", result.errorCodes);
+          return res.status(400).json({ error: "reCAPTCHA verification failed", details: result.errorCodes });
         }
       }
 
@@ -130,10 +144,10 @@ export function registerRoutes(app: Express) {
       const { "g-recaptcha-response": recaptchaToken, ...formData } = req.body;
 
       if (process.env.RECAPTCHA_SECRET_KEY) {
-        const isValid = await verifyRecaptcha(recaptchaToken);
-        if (!isValid) {
-          console.error("Mentor Application: reCAPTCHA verification failed");
-          return res.status(400).json({ error: "reCAPTCHA verification failed. Please try again." });
+        const result = await verifyRecaptcha(recaptchaToken);
+        if (!result.success) {
+          console.error("Mentor Application: reCAPTCHA verification failed", result.errorCodes);
+          return res.status(400).json({ error: "reCAPTCHA verification failed", details: result.errorCodes });
         }
       } else {
         console.warn("Mentor Application: Skipping reCAPTCHA check (RECAPTCHA_SECRET_KEY not set)");
