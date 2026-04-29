@@ -156,7 +156,8 @@ const CommunitySupport: React.FC = () => {
 
       if (!dbResponse.ok) {
         const errorData = await dbResponse.json();
-        throw new Error(errorData.error || "Database storage failed");
+        const detailMsg = errorData.details ? ` (${errorData.details.join(", ")})` : "";
+        throw new Error((errorData.error || "Database storage failed") + detailMsg);
       }
 
       console.log("Mentorship Form: Submitting to Google Apps Script...");
