@@ -186,7 +186,10 @@ const CommunitySupport: React.FC = () => {
       });
     } catch (error) {
       console.error("Mentorship Form: Submission error:", error);
-      toast.error("Submission failed. Please check your connection or try again later.");
+      const errorMessage = error instanceof Error ? error.message : "Please check your connection or try again later.";
+      toast.error("Submission failed", {
+        description: errorMessage
+      });
     } finally {
       setIsSubmitting(false);
     }
