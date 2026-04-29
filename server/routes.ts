@@ -17,6 +17,9 @@ async function verifyRecaptcha(token: string) {
     const response = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`
     );
+    if (!response.data.success) {
+      console.error("reCAPTCHA Fail Details:", response.data["error-codes"]);
+    }
     return response.data.success;
   } catch (error) {
     console.error("reCAPTCHA verification error:", error);
@@ -97,7 +100,16 @@ export function registerRoutes(app: Express) {
   // Contact Form
   app.post("/api/contact", async (req, res) => {
     try {
-      const { firstName, lastName, email, message } = req.body;
+      const { firstName, lastName, email, message, "g-recaptcha-response": recaptchaToken } = req.body;
+      
+      if (process.env.RECAPTCHA_SECRET_KEY) {
+        const isValid = await verifyRecaptcha(recaptchaToken);
+        if (!isValid) {
+          console.error("Contact Form: reCAPTCHA verification failed");
+          return res.status(400).json({ error: "reCAPTCHA verification failed. Please try again." });
+        }
+      }
+
       const data = {
         name: `${firstName || ""} ${lastName || ""}`.trim() || req.body.name,
         email,
@@ -107,6 +119,7 @@ export function registerRoutes(app: Express) {
       const result = await storage.createMessage(validatedMessage);
       res.json(result);
     } catch (error) {
+      console.error("Contact form error:", error);
       res.status(400).json({ error: "Invalid message data" });
     }
   });
