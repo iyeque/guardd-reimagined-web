@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { RuleCard } from '@/components/agreements/RuleCard';
 import { AgreementJourney } from '@/components/agreements/AgreementJourney';
 import { FamilySignature } from '@/components/agreements/FamilySignature';
-// @ts-expect-error - html2pdf doesn't have official types in some environments
+// html2pdf.js types are incomplete; import is safe at runtime
 import html2pdf from 'html2pdf.js';
 
 type AgeGroup = 'toddler' | 'child' | 'teen';
@@ -136,10 +136,11 @@ const FamilyDigitalAgreements: React.FC = () => {
     if (!agreementRef.current) return;
     
     const element = agreementRef.current;
+    const margin: [number, number, number, number] = [10, 10, 10, 10];
     const opt = {
-      margin: [10, 10, 10, 10],
+      margin,
       filename: `${familyName || 'Family'}_Media_Agreement.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
+      image: { type: 'jpeg' as const, quality: 0.98 },
       html2canvas: { 
         scale: 2, 
         useCORS: true,
@@ -147,7 +148,7 @@ const FamilyDigitalAgreements: React.FC = () => {
         scrollX: 0,
         scrollY: 0
       },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
     };
 
     toast.promise(html2pdf().from(element).set(opt).save(), {

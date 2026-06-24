@@ -27,7 +27,7 @@ import { createServer } from "http";
       log("Static file serving setup completed.");
     }
 
-    const port = 5000;
+    const port = process.env.PORT ? Number(process.env.PORT) : 5000;
     log(`Attempting to start server on port ${port}...`);
     server.listen({
       port,

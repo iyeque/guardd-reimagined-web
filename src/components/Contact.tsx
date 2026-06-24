@@ -25,7 +25,13 @@ export const Contact = () => {
     console.log("Contact Form: Requesting reCAPTCHA token...");
     if (window.grecaptcha && window.grecaptcha.execute) {
       try {
-        const token = await window.grecaptcha.execute('6Lfvy8MsAAAAAGqPjuGQp0-JzsRPFCVBWRjrzQAm', { action: 'submit' });
+        const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+        if (!siteKey) {
+          console.error("Contact Form: VITE_RECAPTCHA_SITE_KEY is not configured.");
+          toast.error("Security configuration error. Please contact support.");
+          return null;
+        }
+        const token = await window.grecaptcha.execute(siteKey, { action: 'submit' });
         console.log("Contact Form: reCAPTCHA token obtained (starts with:", token.substring(0, 10), ")");
         if (recaptchaRef.current) {
           recaptchaRef.current.value = token;
