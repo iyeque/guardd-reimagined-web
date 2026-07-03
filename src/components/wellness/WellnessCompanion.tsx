@@ -11,6 +11,30 @@ export const WellnessCompanion: FC = () => {
   const [isBreathing, setIsBreathing] = useState(false);
   const [isEyeBreak, setIsEyeBreak] = useState(false);
   const [eyeBreakTimer, setEyeBreakTimer] = useState(20);
+  const [faqMode, setFaqMode] = useState(false);
+  const [faqInput, setFaqInput] = useState("");
+  const [faqHistory, setFaqHistory] = useState<{q: string; a: string}[]>([]);
+  const [faqLoading, setFaqLoading] = useState(false);
+
+  const askFaq = async () => {
+    const question = faqInput.trim();
+    if (!question) return;
+    setFaqLoading(true);
+    try {
+      const res = await fetch("/api/faq/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+      const data = await res.json();
+      setFaqHistory((h) => [...h, { q: question, a: data.answer || data.error || "No answer." }]);
+    } catch {
+      setFaqHistory((h) => [...h, { q: question, a: "Sorry, I could not reach the advisor right now." }]);
+    } finally {
+      setFaqLoading(false);
+      setFaqInput("");
+    }
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -168,7 +192,7 @@ useEffect(() => {
               </div>
               <p className="text-sm text-slate-800 dark:text-slate-200 mb-6 leading-relaxed font-bold">{message}</p>
               <div className="space-y-2">
-                {modeContent[mode].tips.map((tip, i) => (
+                {!faqMode && modeContent[mode].tips.map((tip, i) => (
                   <motion.button
                     key={i}
                     className="w-full text-left p-3 text-xs rounded-xl bg-white dark:bg-[#4FD1C5]/10 hover:bg-slate-50 dark:hover:bg-[#4FD1C5]/20 text-slate-900 dark:text-[#4FD1C5] transition-all font-black border border-slate-200 dark:border-[#4FD1C5]/20 shadow-sm"
@@ -178,6 +202,42 @@ useEffect(() => {
                     {tip}
                   </motion.button>
                 ))}
+                {faqMode && (
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {faqHistory.map((item, i) => (
+                      <div key={i} className="text-xs">
+                        <div className="font-black text-slate-900 dark:text-white">You: {item.q}</div>
+                        <div className="text-slate-600 dark:text-[#4FD1C5] mt-1 leading-relaxed">{item.a}</div>
+                      </div>
+                    ))}
+                    {faqLoading && <div className="text-xs text-slate-500">Thinking...</div>}
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={faqInput}
+                    onChange={(e) => setFaqInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && askFaq()}
+                    placeholder={faqMode ? 'Ask a question...' : 'Ask me anything...'}
+                    className="flex-1 text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:outline-none focus:border-[#4FD1C5]"
+                  />
+                  <button
+                    onClick={askFaq}
+                    disabled={faqLoading}
+                    className="px-3 py-1 text-xs font-black bg-gradient-to-r from-[#FF9A8B] to-[#4FD1C5] text-white rounded-lg shadow-sm disabled:opacity-50"
+                  >
+                    {faqLoading ? '...' : 'Ask'}
+                  </button>
+                </div>
+                <button
+                  onClick={() => setFaqMode(!faqMode)}
+                  className="mt-2 text-[10px] font-black text-slate-500 hover:text-[#4FD1C5] transition-colors"
+                >
+                  {faqMode ? '← Back to tips' : '💬 Try AI assistant'}
+                </button>
               </div>
             </motion.div>
           )}

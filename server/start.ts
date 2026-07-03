@@ -4,6 +4,14 @@ import { log } from "./log.js";
 import { syncCommunityData } from "./community-sync.js";
 import { createServer } from "http";
 
+// Load environment variables from .env so DATABASE_URL and friends are available
+try {
+  const dotenv = await import("dotenv");
+  dotenv.config();
+} catch {
+  // dotenv optional
+}
+
 (async () => {
   try {
     const server = createServer(app);

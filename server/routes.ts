@@ -4,6 +4,9 @@ import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/sc
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import axios from "axios";
 import { z } from "zod";
+import { searchFaqChunks, generateCerebrasAnswer } from "./faq.js";
+import { db } from "./db.js";
+import { faqChunks } from "../shared/schema.js";
 
 // Helper function to verify reCAPTCHA
 async function verifyRecaptcha(token: string) {
@@ -207,6 +210,59 @@ export function registerRoutes(app: Express) {
     } catch (error) {
       console.error("Failed to update application:", error);
       res.status(500).json({ error: "Failed to update application" });
+    }
+  });
+
+  // FAQ: Ask a question (RAG-style retrieval)
+  app.post("/api/faq/ask", async (req, res) => {
+    try {
+      const { question } = z.object({ question: z.string().min(3) }).parse(req.body);
+      const chunks = await searchFaqChunks(question, 3);
+
+      if (chunks.length === 0) {
+        return res.json({
+          answer:
+            "I don't have a specific answer for that yet. Try asking about digital safety, screen-time agreements, breathing exercises, or the Cyber-Safe Quiz.",
+          sources: [],
+        });
+      }
+
+      const context = chunks.map((c) => `[${c.category}] ${c.title}: ${c.content}`).join("\n\n");
+      const answer = await generateCerebrasAnswer(question, context);
+
+      res.json({
+        answer,
+        sources: chunks.map((c) => ({ title: c.title, category: c.category })),
+      });
+    } catch (err) {
+      console.error("/api/faq/ask failed:", err);
+      res.status(400).json({ error: "Invalid request. Please send a question with at least 3 characters." });
+    }
+  });
+
+  // FAQ: Seed chunks (admin)
+  app.post("/api/faq/seed", async (req, res) => {
+    try {
+      const { title, content, category } = z
+        .object({ title: z.string(), content: z.string(), category: z.string() })
+        .parse(req.body);
+
+      const chunk = await db.insert(faqChunks).values({ title, content, category }).returning();
+      res.json(chunk[0]);
+    } catch (err) {
+      console.error("/api/faq/seed failed:", err);
+      res.status(400).json({ error: "Invalid chunk data. Required: title, content, category." });
+    }
+  });
+
+  // FAQ: List chunks (admin)
+  app.get("/api/faq/chunks", async (_req, res) => {
+    try {
+      const chunks = await db.select().from(faqChunks).orderBy(faqChunks.category);
+      res.json(chunks);
+    } catch (err) {
+      console.error("/api/faq/chunks failed:", err);
+      res.status(500).json({ error: "Failed to fetch chunks" });
     }
   });
 }
