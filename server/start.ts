@@ -1,16 +1,16 @@
+// Ensure env vars are loaded before anything else imports process.env-dependent modules.
+try {
+  const dotenv = await import("dotenv");
+  dotenv.config();
+} catch {
+  // dotenv optional; Vercel/injected envs still work
+}
+
 import { app } from "./index.js";
 import { setupVite, serveStatic } from "./vite.js";
 import { log } from "./log.js";
 import { syncCommunityData } from "./community-sync.js";
 import { createServer } from "http";
-
-// Load environment variables from .env so DATABASE_URL and friends are available
-try {
-  const dotenv = await import("dotenv");
-  dotenv.config();
-} catch {
-  // dotenv optional
-}
 
 (async () => {
   try {
