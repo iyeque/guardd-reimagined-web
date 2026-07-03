@@ -46,6 +46,12 @@ export const trendingDiscussions = pgTable("trending_discussions", {
   createdAt: timestamp("created_at").defaultNow()
 });
 
+export const syncMetadata = pgTable("sync_metadata", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
 export const insertMessageSchema = createInsertSchema(contactMessages).pick({
   name: true,
   email: true,

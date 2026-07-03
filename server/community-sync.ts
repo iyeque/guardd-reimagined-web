@@ -44,37 +44,37 @@ interface SerpEventResult {
 // --- Real World Events (Sourced from Research) ---
 export const CURATED_EVENTS = [
   {
-    title: "FETC 2026",
-    location: "Orlando, FL",
-    date: "2026-01-11",
-    time: "4 Days",
-    type: "Conference",
-    url: "https://www.fetc.org/",
-    organizer: "Future of Education Technology",
-    status: "Registration Open",
-    description: "The premier event for education technology, with a major focus on AI safety and digital citizenship in schools."
-  },
-  {
-    title: "BETT UK 2026",
-    location: "London, UK",
-    date: "2026-01-21",
+    title: "ISTE 2026",
+    location: "San Antonio, TX",
+    date: "2026-07-01",
     time: "3 Days",
     type: "Conference",
-    url: "https://uk.bettshow.com/",
-    organizer: "Hyve Group",
-    status: "Upcoming",
-    description: "The global community for education technology, featuring dedicated streams for online safety and safeguarding."
+    url: "https://www.iste.org/conference",
+    organizer: "International Society for Technology in Education",
+    status: "Registration Open",
+    description: "The premier edtech event with major focus on AI safety, digital citizenship, and responsible tech integration in schools."
   },
   {
-    title: "Safer Internet Day Summit 2026",
-    location: "Sacramento, CA / Hybrid",
-    date: "2026-02-10",
-    time: "9:00 AM PST",
+    title: "Digital Citizenship Summit 2026",
+    location: "Chicago, IL / Hybrid",
+    date: "2026-08-15",
+    time: "9:00 AM CST",
+    type: "Summit",
+    url: "https://www.digitalcitizenshipsummit.org/",
+    organizer: "Digital Citizenship Institute",
+    status: "Upcoming",
+    description: "Annual gathering of educators, parents, and policymakers tackling online safety, media literacy, and ethical tech use."
+  },
+  {
+    title: "Family Tech Safety Week 2026",
+    location: "Online / Global",
+    date: "2026-09-10",
+    time: "Week-Long",
     type: "Global Action",
-    url: "https://saferinternetday.us/",
-    organizer: "ConnectSafely",
+    url: "https://www.staysafeonline.org/",
+    organizer: "National Cybersecurity Alliance",
     status: "Annual Event",
-    description: "A major summit bringing together youth, policymakers, and industry leaders to discuss the future of online well-being."
+    description: "A global week of workshops, webinars, and family challenges focused on building healthier digital habits at home."
   }
 ];
 
@@ -291,7 +291,10 @@ export async function syncCommunityData() {
   
   await storage.setEvents(allEvents);
   await storage.setDiscussions(finalDiscussions);
+
+  const lastSync = new Date().toISOString();
+  await storage.setSyncMetadata("last_sync", lastSync);
   
   console.log(`Sync complete: ${allEvents.length} events, ${finalDiscussions.length} discussions.`);
-  return { lastSync: new Date().toISOString() };
+  return { lastSync };
 }

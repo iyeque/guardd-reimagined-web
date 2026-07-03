@@ -2,7 +2,8 @@ import {
   contactMessages, type Message, type InsertMessage,
   mentorApplications, type MentorApplication, type InsertMentorApplication,
   communityEvents, type CommunityEvent, type InsertEvent,
-  trendingDiscussions, type TrendingDiscussion, type InsertDiscussion
+  trendingDiscussions, type TrendingDiscussion, type InsertDiscussion,
+  syncMetadata
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { desc, eq } from "drizzle-orm";
@@ -19,6 +20,10 @@ export interface IStorage {
   setEvents(events: InsertEvent[]): Promise<void>;
   getDiscussions(): Promise<TrendingDiscussion[]>;
   setDiscussions(discussions: InsertDiscussion[]): Promise<void>;
+
+  // Sync metadata
+  getSyncMetadata(key: string): Promise<string | null>;
+  setSyncMetadata(key: string, value: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -73,6 +78,19 @@ export class DatabaseStorage implements IStorage {
     if (discussions.length > 0) {
       await db.insert(trendingDiscussions).values(discussions);
     }
+  }
+
+  async getSyncMetadata(key: string): Promise<string | null> {
+    const [row] = await db.select({ value: syncMetadata.value }).from(syncMetadata).where(eq(syncMetadata.key, key)).limit(1);
+    return row?.value ?? null;
+  }
+
+  async setSyncMetadata(key: string, value: string): Promise<void> {
+    const now = new Date().toISOString();
+    await db.insert(syncMetadata).values({ key, value, updatedAt: now }).onConflictDoUpdate({
+      target: syncMetadata.key,
+      set: { value, updatedAt: now }
+    });
   }
 }
 

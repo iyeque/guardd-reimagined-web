@@ -58,6 +58,11 @@ export function registerRoutes(app: Express) {
       return res.status(500).json({ error: "Server Configuration Error" });
     }
 
+    // Bypass auth for Vercel Cron requests
+    if (req.headers["x-vercel-cron"] === "true") {
+      return next();
+    }
+
     const providedKey = req.headers["x-admin-key"] || req.query.key;
     if (providedKey !== adminSecret) {
       return res.status(401).json({ error: "Unauthorized" });
@@ -68,8 +73,11 @@ export function registerRoutes(app: Express) {
   // Community Data (Public)
   app.get("/api/community/data", async (_req, res) => {
     try {
-      const events = await storage.getEvents();
-      const discussions = await storage.getDiscussions();
+      const [events, discussions, lastSync] = await Promise.all([
+        storage.getEvents(),
+        storage.getDiscussions(),
+        storage.getSyncMetadata("last_sync")
+      ]);
       
       // If database is empty, return static data immediately and trigger sync in background
       if (events.length === 0 || discussions.length === 0) {
@@ -86,7 +94,7 @@ export function registerRoutes(app: Express) {
           events: initialEvents,
           discussions: initialDiscussions,
           activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
-          lastSync: new Date().toISOString()
+          lastSync: lastSync || new Date().toISOString()
         });
       }
 
@@ -94,7 +102,7 @@ export function registerRoutes(app: Express) {
         events,
         discussions,
         activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
-        lastSync: new Date().toISOString()
+        lastSync: lastSync || new Date().toISOString()
       });
     } catch (error) {
       console.error("Fatal API error:", error);
