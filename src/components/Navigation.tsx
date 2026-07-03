@@ -35,6 +35,7 @@ export const Navigation = () => {
     { label: "Resources", href: "#resources" },
     { label: "Support", href: "#support" },
     { label: "Blog", href: "/educational-blog" },
+    { label: "Commitments", href: "/family-commitments" },
     { label: "Contact", href: "#contact" },
   ];
 

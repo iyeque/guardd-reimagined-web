@@ -34,6 +34,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Workshop = lazy(() => import("./pages/Workshop"));
 const ScreenTimeManagement = lazy(() => import("./pages/ScreenTimeManagement"));
 const FamilyDigitalAgreements = lazy(() => import("./pages/FamilyDigitalAgreements"));
+const FamilyCommitments = lazy(() => import("./pages/FamilyCommitments"));
 const EducationalGames = lazy(() => import("./pages/EducationalGames"));
 const EducationalBlog = lazy(() => import("./pages/EducationalBlog"));
 const VideoResources = lazy(() => import("./pages/VideoResources"));
@@ -63,6 +64,10 @@ const App = () => (
               <Route
                 path="/family-digital-agreements"
                 element={<FamilyDigitalAgreements />}
+              />
+              <Route
+                path="/family-commitments"
+                element={<FamilyCommitments />}
               />
               <Route
                 path="/educational-games"
