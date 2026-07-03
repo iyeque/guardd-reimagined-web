@@ -59,6 +59,27 @@ export const faqChunks = pgTable("faq_chunks", {
   category: text("category").notNull(),
 });
 
+export const familyCommitments = pgTable("family_commitments", {
+  id: serial("id").primaryKey(),
+  familyId: text("family_id").notNull(),
+  title: text("title").notNull(),
+  terms: text("terms").notNull(),
+  members: text("members").notNull(),
+  status: text("status").notNull().default("pending"),
+  ledgerHash: text("ledger_hash"),
+  metadataCid: text("metadata_cid"),
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const familyCommitmentMilestones = pgTable("family_commitment_milestones", {
+  id: serial("id").primaryKey(),
+  commitmentId: serial("commitment_id").references(() => familyCommitments.id),
+  label: text("label").notNull(),
+  targetDate: text("target_date"),
+  completedAt: timestamp("completed_at"),
+});
+
 export const insertMessageSchema = createInsertSchema(contactMessages);
 export const insertMentorApplicationSchema = createInsertSchema(mentorApplications);
 export const insertEventSchema = createInsertSchema(communityEvents);
@@ -75,3 +96,11 @@ export type TrendingDiscussion = typeof trendingDiscussions.$inferSelect;
 export type InsertDiscussion = z.infer<typeof insertDiscussionSchema>;
 export type FaqChunk = typeof faqChunks.$inferSelect;
 export type InsertFaqChunk = z.infer<typeof insertFaqChunkSchema>;
+
+export const insertFamilyCommitmentSchema = createInsertSchema(familyCommitments);
+export const insertFamilyMilestoneSchema = createInsertSchema(familyCommitmentMilestones);
+
+export type FamilyCommitment = typeof familyCommitments.$inferSelect;
+export type InsertFamilyCommitment = z.infer<typeof insertFamilyCommitmentSchema>;
+export type FamilyCommitmentMilestone = typeof familyCommitmentMilestones.$inferSelect;
+export type InsertFamilyCommitmentMilestone = z.infer<typeof insertFamilyMilestoneSchema>;

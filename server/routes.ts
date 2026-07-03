@@ -6,7 +6,7 @@ import axios from "axios";
 import { z } from "zod";
 import { searchFaqChunks, generateCerebrasAnswer } from "./faq.js";
 import { db } from "./db.js";
-import { faqChunks } from "../shared/schema.js";
+import { faqChunks, familyCommitments, familyCommitmentMilestones } from "../shared/schema.js";
 
 // Helper function to verify reCAPTCHA
 async function verifyRecaptcha(token: string) {
@@ -263,6 +263,86 @@ export function registerRoutes(app: Express) {
     } catch (err) {
       console.error("/api/faq/chunks failed:", err);
       res.status(500).json({ error: "Failed to fetch chunks" });
+    }
+  });
+
+  // Family commitments: list by family
+  app.get("/api/family/commitments", async (req, res) => {
+    try {
+      const familyId = String(req.query.familyId || "default-family");
+      const items = await storage.listFamilyCommitments(familyId);
+      res.json(items);
+    } catch (err) {
+      console.error("/api/family/commitments failed:", err);
+      res.status(500).json({ error: "Failed to fetch commitments" });
+    }
+  });
+
+  app.get("/api/family/commitments/:id", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const item = await storage.getFamilyCommitment(id);
+      if (!item) return res.status(404).json({ error: "Not found" });
+      const milestones = await storage.listFamilyCommitmentMilestones(id);
+      res.json({ ...item, milestones });
+    } catch (err) {
+      console.error("/api/family/commitments/:id failed:", err);
+      res.status(500).json({ error: "Failed to fetch commitment" });
+    }
+  });
+
+  app.post("/api/family/commitments", async (req, res) => {
+    try {
+      const body = z
+        .object({ familyId: z.string(), title: z.string(), terms: z.string(), members: z.string() })
+        .safeParse(req.body);
+      if (!body.success) return res.status(400).json({ error: body.error.message });
+
+      const created = await storage.createFamilyCommitment({
+        familyId: body.data.familyId,
+        title: body.data.title,
+        terms: body.data.terms,
+        members: body.data.members,
+        status: "pending",
+      });
+
+      const { writeLedger, pinCommitmentMetadata } = await import("./blockchain.js");
+      const ledger = await writeLedger(created);
+      const pin = await pinCommitmentMetadata(created);
+
+      const updated = await storage.updateFamilyCommitment(created.id, {
+        ledgerHash: ledger.txHash ? `ledger:${ledger.network || "local"}:${ledger.txHash}` : null,
+        metadataCid: pin.cid || null,
+      });
+
+      res.status(201).json(updated ?? created);
+    } catch (err) {
+      console.error("/api/family/commitments failed:", err);
+      res.status(500).json({ error: "Failed to create commitment" });
+    }
+  });
+
+  app.post("/api/family/commitments/:id/complete", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const updated = await storage.updateFamilyCommitment(id, { status: "completed", completedAt: new Date().toISOString() });
+      if (!updated) return res.status(404).json({ error: "Not found" });
+      res.json(updated);
+    } catch (err) {
+      console.error("/api/family/commitments/:id/complete failed:", err);
+      res.status(500).json({ error: "Failed to complete commitment" });
+    }
+  });
+
+  app.post("/api/family/commitments/:id/milestones", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const body = z.object({ label: z.string(), targetDate: z.string().optional() }).parse(req.body);
+      const [ms] = await db.insert(familyCommitmentMilestones).values({ commitmentId: id, ...body }).returning();
+      res.status(201).json(ms);
+    } catch (err) {
+      console.error("/api/family/commitments/:id/milestones failed:", err);
+      res.status(500).json({ error: "Failed to create milestone" });
     }
   });
 }

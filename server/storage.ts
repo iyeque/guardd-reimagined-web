@@ -3,7 +3,9 @@ import {
   mentorApplications, type MentorApplication, type InsertMentorApplication,
   communityEvents, type CommunityEvent, type InsertEvent,
   trendingDiscussions, type TrendingDiscussion, type InsertDiscussion,
-  syncMetadata
+  syncMetadata,
+  familyCommitments, type FamilyCommitment, type InsertFamilyCommitment,
+  familyCommitmentMilestones, type InsertFamilyCommitmentMilestone
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { desc, eq } from "drizzle-orm";
@@ -24,6 +26,13 @@ export interface IStorage {
   // Sync metadata
   getSyncMetadata(key: string): Promise<string | null>;
   setSyncMetadata(key: string, value: string): Promise<void>;
+
+  // Family commitments (ORCA-style inventory bridge adapted for family wellness)
+  listFamilyCommitments(familyId: string): Promise<FamilyCommitment[]>;
+  getFamilyCommitment(id: number): Promise<FamilyCommitment | null>;
+  createFamilyCommitment(commitment: InsertFamilyCommitment): Promise<FamilyCommitment>;
+  updateFamilyCommitment(id: number, patch: Partial<InsertFamilyCommitment>): Promise<FamilyCommitment | null>;
+  listFamilyCommitmentMilestones(commitmentId: number): Promise<FamilyCommitmentMilestone[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -91,6 +100,33 @@ export class DatabaseStorage implements IStorage {
       target: syncMetadata.key,
       set: { value, updatedAt: now }
     });
+  }
+
+  async listFamilyCommitments(familyId: string): Promise<FamilyCommitment[]> {
+    return await db.select().from(familyCommitments).where(eq(familyCommitments.familyId, familyId));
+  }
+
+  async getFamilyCommitment(id: number): Promise<FamilyCommitment | null> {
+    const [row] = await db.select().from(familyCommitments).where(eq(familyCommitments.id, id)).limit(1);
+    return row ?? null;
+  }
+
+  async createFamilyCommitment(insert: InsertFamilyCommitment): Promise<FamilyCommitment> {
+    const [row] = await db.insert(familyCommitments).values(insert).returning();
+    return row;
+  }
+
+  async updateFamilyCommitment(id: number, patch: Partial<InsertFamilyCommitment>): Promise<FamilyCommitment | null> {
+    const [row] = await db
+      .update(familyCommitments)
+      .set(patch)
+      .where(eq(familyCommitments.id, id))
+      .returning();
+    return row ?? null;
+  }
+
+  async listFamilyCommitmentMilestones(commitmentId: number): Promise<FamilyCommitmentMilestone[]> {
+    return await db.select().from(familyCommitmentMilestones).where(eq(familyCommitmentMilestones.commitmentId, commitmentId));
   }
 }
 
