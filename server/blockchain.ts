@@ -73,7 +73,7 @@ export async function writeLedger(commitment: FamilyCommitment): Promise<LedgerR
   // In a future phase, replace this with real testnet/mainnet txs.
   if (process.env.LEDGER_NETWORK === "simulated") {
     const hash = await sha256(`${commitment.familyId}-${commitment.id}-${Date.now()}`);
-    return { txHash: hash, network: "simulated" };
+    return { txHash: hash, network: "local-ledger" };
   }
   return {};
 }

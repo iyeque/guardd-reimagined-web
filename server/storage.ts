@@ -32,7 +32,7 @@ export interface IStorage {
   getFamilyCommitment(id: number): Promise<FamilyCommitment | null>;
   createFamilyCommitment(commitment: InsertFamilyCommitment): Promise<FamilyCommitment>;
   updateFamilyCommitment(id: number, patch: Partial<InsertFamilyCommitment>): Promise<FamilyCommitment | null>;
-  listFamilyCommitmentMilestones(commitmentId: number): Promise<FamilyCommitmentMilestone[]>;
+  listFamilyCommitmentMilestones(commitmentId: number): Promise<InsertFamilyCommitmentMilestone[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -125,7 +125,7 @@ export class DatabaseStorage implements IStorage {
     return row ?? null;
   }
 
-  async listFamilyCommitmentMilestones(commitmentId: number): Promise<FamilyCommitmentMilestone[]> {
+  async listFamilyCommitmentMilestones(commitmentId: number): Promise<InsertFamilyCommitmentMilestone[]> {
     return await db.select().from(familyCommitmentMilestones).where(eq(familyCommitmentMilestones.commitmentId, commitmentId));
   }
 }

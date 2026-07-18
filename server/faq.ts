@@ -1,3 +1,4 @@
+import axios from "axios";
 import { db } from "./db.js";
 import { faqChunks } from "../shared/schema.js";
 import { eq } from "drizzle-orm";
