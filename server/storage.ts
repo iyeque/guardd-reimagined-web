@@ -95,7 +95,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setSyncMetadata(key: string, value: string): Promise<void> {
-    const now = new Date().toISOString();
+    const now = new Date();
     await db.insert(syncMetadata).values({ key, value, updatedAt: now }).onConflictDoUpdate({
       target: syncMetadata.key,
       set: { value, updatedAt: now }

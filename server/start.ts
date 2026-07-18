@@ -1,10 +1,6 @@
 // Ensure env vars are loaded before anything else imports process.env-dependent modules.
-try {
-  const dotenv = await import("dotenv");
-  dotenv.config();
-} catch {
-  // dotenv optional; Vercel/injected envs still work
-}
+// @ts-ignore
+Promise.resolve(import("dotenv") as any).then((m: any) => m.config?.()).catch(() => {});
 
 import { app } from "./index.js";
 import { setupVite, serveStatic } from "./vite.js";

@@ -69,7 +69,7 @@ export async function generateCerebrasAnswer(question: string, context: string):
     const text = data?.choices?.[0]?.message?.content;
     if (typeof text === "string" && text.trim()) return text.trim();
   } catch (err) {
-    console.error("Cerebras FAQ generation failed:", err.message);
+    console.error("Cerebras FAQ generation failed:", err instanceof Error ? err.message : String(err));
   }
 
   return context.split("\n\n")[0]?.replace(/\[.*?\]\s*/g, "") || "I don't have enough information to answer that. Try asking about digital safety, screen-time agreements, breathing exercises, or the Cyber-Safe Quiz.";

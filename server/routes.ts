@@ -312,9 +312,14 @@ export function registerRoutes(app: Express) {
       const ledger = await writeLedger(created);
       const pin = await pinCommitmentMetadata(created);
 
+      let metadataCid: string | null = null;
+      if (pin && typeof pin === 'object' && 'cid' in pin) {
+        metadataCid = (pin as any).cid || null;
+      }
+
       const updated = await storage.updateFamilyCommitment(created.id, {
         ledgerHash: ledger.txHash ? `ledger:${ledger.network || "local"}:${ledger.txHash}` : null,
-        metadataCid: pin.cid || null,
+        metadataCid,
       });
 
       res.status(201).json(updated ?? created);
@@ -327,7 +332,7 @@ export function registerRoutes(app: Express) {
   app.post("/api/family/commitments/:id/complete", async (req, res) => {
     try {
       const id = Number(req.params.id);
-      const updated = await storage.updateFamilyCommitment(id, { status: "completed", completedAt: new Date().toISOString() });
+      const updated = await storage.updateFamilyCommitment(id, { status: "completed", completedAt: new Date() });
       if (!updated) return res.status(404).json({ error: "Not found" });
       res.json(updated);
     } catch (err) {

@@ -1,6 +1,7 @@
 import { storage } from './storage.js';
 import axios from 'axios';
 import Parser from 'rss-parser';
+function toText(v: number | string | undefined): string { return typeof v === 'number' ? String(v) : String(v ?? ''); }
 
 const rssParser = new Parser();
 
@@ -86,7 +87,7 @@ export const FALLBACK_DISCUSSIONS = [
     url: "https://www.reddit.com/r/parenting/search/?q=first+smartphone+age&restrict_sr=1",
     hotness: "High",
     postedAt: "1h ago",
-    replies: 842
+    replies: toText(842)
   }
 ];
 
@@ -135,7 +136,7 @@ async function fetchRSSNews() {
           title: item.title || "Untitled Article",
           url: item.link || "#",
           hotness: "Trending",
-          replies: Math.floor(Math.random() * 50) + 10,
+          replies: toText(Math.floor(Math.random() * 50) + 10),
           postedAt: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent"
         }));
       } catch (err) {
