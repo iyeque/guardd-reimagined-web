@@ -49,3 +49,17 @@
 - **Port Conflict**: Updated Vite configuration to default to port `5173` to avoid `EACCES` errors on port `8080`.
 
 ... (previous entries) ...
+
+## [1.3.0] - 2026-07-18
+
+### Added
+- **Backend Claim Store**: New `site_claims` table and `/api/claims` public/admin routes for managing marketing claims.
+- **Admin Seed Route**: `/api/admin/seed-claims` to populate default claims.
+- **Migration Stub**: Added `scripts/migrate.ts` and `db:migrate` script entrypoint for future schema migrations.
+
+### Improved
+- **Claim Hygiene**: Replaced hardcoded marketing numbers in `Stats.tsx`, `ScreenTimeManagement.tsx`, `EducationalGames.tsx`, and `Contact.tsx` with backend-backed claims and safe fallbacks.
+- **Resilience**: Made `useWellness` fallback-safe to prevent entire-app render crashes when context is momentarily unavailable.
+
+### Database
+- Messages and mentor applications are persisted in Postgres and reviewable in `/admin`.

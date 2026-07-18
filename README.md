@@ -27,6 +27,11 @@
 *   **Agreement Builder:** Interactive workshop to create and "sign" custom family digital contracts.
 *   **Screen Time Management:** Comprehensive strategies and visualization tools for balanced tech usage.
 
+## 📝 Data Retention & Admin Review
+
+- Contact form messages and mentor applications are stored in Postgres.
+- Admins can review and update statuses from the `/admin` dashboard.
+
 ## 🛠 Tech Stack
 
 *   **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Vercel Analytics.
