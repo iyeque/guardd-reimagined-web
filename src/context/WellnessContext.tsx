@@ -20,8 +20,5 @@ export const WellnessProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 export const useWellness = () => {
   const context = useContext(WellnessContext);
-  if (context === undefined) {
-    throw new Error('useWellness must be used within a WellnessProvider');
-  }
-  return context;
+  return context ?? { mode: 'family', setMode: () => {} };
 };
