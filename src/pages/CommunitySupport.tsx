@@ -151,14 +151,23 @@ const CommunitySupport: React.FC = () => {
 
     try {
       console.log("Mentorship Form: Submitting to local API...");
-      // Send to Database
-      const dbResponse = await fetch("/api/mentors/apply", {
-        method: "POST",
-        body: JSON.stringify({ ...formData, "g-recaptcha-response": token }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      let dbResponse;
+      try {
+        dbResponse = await fetch("/api/mentors/apply", {
+          method: "POST",
+          body: JSON.stringify({ ...formData, "g-recaptcha-response": token }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (networkError) {
+        console.error("Mentorship Form: Local API unreachable:", networkError);
+        toast.error("Cannot reach server", {
+          description: "The backend API looks unreachable. Make sure `npm run dev` is running and try again.",
+          duration: 6000,
+        });
+        throw networkError;
+      }
 
       if (!dbResponse.ok) {
         const errorData = await dbResponse.json();

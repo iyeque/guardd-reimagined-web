@@ -202,17 +202,15 @@ useEffect(() => {
                     {tip}
                   </motion.button>
                 ))}
-                {faqMode && (
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    {faqHistory.map((item, i) => (
-                      <div key={i} className="text-xs">
-                        <div className="font-black text-slate-900 dark:text-white">You: {item.q}</div>
-                        <div className="text-slate-600 dark:text-[#4FD1C5] mt-1 leading-relaxed">{item.a}</div>
-                      </div>
-                    ))}
-                    {faqLoading && <div className="text-xs text-slate-500">Thinking...</div>}
-                  </div>
-                )}
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  {faqHistory.map((item, i) => (
+                    <div key={i} className="text-xs">
+                      <div className="font-black text-slate-900 dark:text-white">You: {item.q}</div>
+                      <div className="text-slate-600 dark:text-[#4FD1C5] mt-1 leading-relaxed">{item.a}</div>
+                    </div>
+                  ))}
+                  {faqLoading && <div className="text-xs text-slate-500">Thinking...</div>}
+                </div>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700">
                 <div className="flex gap-2">
