@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import DigitalWellnessGame from '@/components/DigitalWellnessGame';
 import CyberSafeQuiz from '@/components/CyberSafeQuiz';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -130,6 +130,11 @@ const GAMES: Game[] = [
 
 const PrivacyArchitect = () => {
   const [step, setLevel] = useState(0);
+  const [claims, setClaims] = useState<{slug:string;value:string;label:string;context:string}[]>([]);
+  useEffect(() => {
+    fetch("/api/claims").then(r => r.ok ? r.json() : []).then(data => setClaims(Array.isArray(data) ? data : [])).catch(() => {});
+  }, []);
+
   const [score, setScore] = useState(0);
   const [isDone, setIsDone] = useState(false);
 
@@ -338,6 +343,10 @@ const TechSavvyQuiz = () => {
 const EducationalGames: React.FC = () => {
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [filter, setFilter] = useState<GameCategory>('all');
+  const [claims, setClaims] = useState<{slug:string;value:string;label:string;context:string}[]>([]);
+  useEffect(() => {
+    fetch("/api/claims").then(r => r.ok ? r.json() : []).then(data => setClaims(Array.isArray(data) ? data : [])).catch(() => {});
+  }, []);
 
   const filteredGames = useMemo(() => {
     if (filter === 'all') return GAMES;
@@ -476,7 +485,7 @@ const EducationalGames: React.FC = () => {
             <h2 className="text-4xl font-black text-foreground uppercase italic tracking-tighter">The Guardian Trophy</h2>
             <p className="text-muted-foreground text-xl leading-relaxed font-medium">
               Complete all missions in the Arcade Academy to unlock the ultimate DigitalGuard Achievement. 
-              Over 1,200 families have already leveled up!
+              {claims.find(c => c.slug === "families_leveled_up")?.value || "Over 1,200 families"} have already leveled up!
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
               <div className="flex items-center gap-3 bg-white/60 dark:bg-white/5 px-6 py-3 rounded-2xl border border-border shadow-sm">

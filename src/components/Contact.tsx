@@ -16,6 +16,11 @@ declare global {
 
 export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [claims, setClaims] = useState<{slug:string;value:string;label:string;context:string}[]>([]);
+  useEffect(() => {
+    fetch("/api/claims").then(r => r.ok ? r.json() : []).then(data => setClaims(Array.isArray(data) ? data : [])).catch(() => {});
+  }, []);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null); 
   const recaptchaRef = useRef<HTMLInputElement>(null);
@@ -164,7 +169,7 @@ export const Contact = () => {
           <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-[2.5rem] p-10 border border-border shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -mr-16 -mt-16 blur-2xl" />
             <h3 className="text-3xl font-black text-foreground mb-2 tracking-tight">Send a Message</h3>
-            <p className="text-muted-foreground mb-8 font-medium italic">We typically respond within 24 hours.</p>
+            <p className="text-muted-foreground mb-8 font-medium italic">{claims.find(c => c.slug === "response_time")?.value || "We typically respond within 24 hours."}</p>
             
             <form 
               ref={formRef}

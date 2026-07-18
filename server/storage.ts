@@ -1,9 +1,10 @@
-import { 
+import {
   contactMessages, type Message, type InsertMessage,
   mentorApplications, type MentorApplication, type InsertMentorApplication,
   communityEvents, type CommunityEvent, type InsertEvent,
   trendingDiscussions, type TrendingDiscussion, type InsertDiscussion,
   syncMetadata,
+  siteClaims, type SiteClaim, type InsertSiteClaim,
   familyCommitments, type FamilyCommitment, type InsertFamilyCommitment,
   familyCommitmentMilestones, type InsertFamilyCommitmentMilestone
 } from "../shared/schema.js";
@@ -26,6 +27,11 @@ export interface IStorage {
   // Sync metadata
   getSyncMetadata(key: string): Promise<string | null>;
   setSyncMetadata(key: string, value: string): Promise<void>;
+
+  // Site claims
+  listClaims(): Promise<SiteClaim[]>;
+  upsertClaim(claim: InsertSiteClaim): Promise<SiteClaim>;
+  deleteClaim(id: number): Promise<void>;
 
   // Family commitments (ORCA-style inventory bridge adapted for family wellness)
   listFamilyCommitments(familyId: string): Promise<FamilyCommitment[]>;
@@ -68,10 +74,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setEvents(events: InsertEvent[]): Promise<void> {
-    // Neon HTTP doesn't support transactions, so we use sequential execution
     await db.delete(communityEvents);
     if (events.length > 0) {
-      // Chunking to stay within Neon/Vercel request limits
       for (let i = 0; i < events.length; i += 10) {
         await db.insert(communityEvents).values(events.slice(i, i + 10));
       }
@@ -100,6 +104,23 @@ export class DatabaseStorage implements IStorage {
       target: syncMetadata.key,
       set: { value, updatedAt: now }
     });
+  }
+
+  async listClaims(): Promise<SiteClaim[]> {
+    return await db.select().from(siteClaims).orderBy(siteClaims.slug);
+  }
+
+  async upsertClaim(insert: InsertSiteClaim): Promise<SiteClaim> {
+    const [row] = await db
+      .insert(siteClaims)
+      .values(insert)
+      .onConflictDoUpdate({ target: siteClaims.slug, set: insert })
+      .returning();
+    return row;
+  }
+
+  async deleteClaim(id: number): Promise<void> {
+    await db.delete(siteClaims).where(eq(siteClaims.id, id));
   }
 
   async listFamilyCommitments(familyId: string): Promise<FamilyCommitment[]> {

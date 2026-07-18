@@ -12,7 +12,8 @@
     "start": "NODE_ENV=production node dist/start.js",
     "update-data": "tsx scripts/update-community-data.ts",
     "check": "tsc",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "db:migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

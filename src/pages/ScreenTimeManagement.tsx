@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, Shield, Smartphone, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const ScreenTimeManagement: React.FC = () => {
+  const [claims, setClaims] = useState<{slug:string;value:string;label:string;context:string}[]>([]);
+  useEffect(() => {
+    fetch('/api/claims').then(r => r.ok ? r.json() : []).then(data => setClaims(Array.isArray(data) ? data : [])).catch(() => {});
+  }, []);
   return (
     <div className="container mx-auto px-6 py-32">
       <div className="text-center mb-16">
@@ -41,16 +45,16 @@ const ScreenTimeManagement: React.FC = () => {
            <h3 className="text-2xl font-black text-foreground mb-8">Quick Stats</h3>
            <div className="space-y-8">
              <div>
-               <div className="text-5xl font-black text-green-600 dark:text-green-400 mb-1 tracking-tighter">7+ Hours</div>
-               <div className="text-muted-foreground font-bold uppercase text-xs tracking-widest">Average daily screen time for teens</div>
+               <div className="text-5xl font-black text-green-600 dark:text-green-400 mb-1 tracking-tighter">{claims.find(c => c.slug === "avg_screen_teens")?.value || "7+ Hours"}</div>
+               <div className="text-muted-foreground font-bold uppercase text-xs tracking-widest">{claims.find(c => c.slug === "avg_screen_teens")?.label || "Average daily screen time for teens"}</div>
              </div>
              <div>
-               <div className="text-5xl font-black text-blue-600 dark:text-blue-400 mb-1 tracking-tighter">60%</div>
-               <div className="text-muted-foreground font-bold uppercase text-xs tracking-widest">Parents worry about their kids' screen use</div>
+               <div className="text-5xl font-black text-blue-600 dark:text-blue-400 mb-1 tracking-tighter">{claims.find(c => c.slug === "parents_worry")?.value || "60%"}</div>
+               <div className="text-muted-foreground font-bold uppercase text-xs tracking-widest">{claims.find(c => c.slug === "parents_worry")?.label || "Parents worry about their kids' screen use"}</div>
              </div>
              <div>
-               <div className="text-5xl font-black text-purple-600 dark:text-purple-400 mb-1 tracking-tighter">2x</div>
-               <div className="text-muted-foreground font-bold uppercase text-xs tracking-widest">Risk of depression with high social media use</div>
+               <div className="text-5xl font-black text-purple-600 dark:text-purple-400 mb-1 tracking-tighter">{claims.find(c => c.slug === "depression_risk")?.value || "2x"}</div>
+               <div className="text-muted-foreground font-bold uppercase text-xs tracking-widest">{claims.find(c => c.slug === "depression_risk")?.label || "Risk of depression with high social media use"}</div>
              </div>
            </div>
         </div>

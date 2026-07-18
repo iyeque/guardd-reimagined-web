@@ -52,6 +52,19 @@ export const syncMetadata = pgTable("sync_metadata", {
   updatedAt: timestamp("updated_at").notNull(),
 });
 
+export const siteClaims = pgTable("site_claims", {
+  id: serial("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  value: text("value").notNull(),
+  label: text("label").notNull(),
+  context: text("context").notNull().default(""),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertSiteClaimSchema = createInsertSchema(siteClaims).omit({ id: true, updatedAt: true });
+export type SiteClaim = typeof siteClaims.$inferSelect;
+export type InsertSiteClaim = z.infer<typeof insertSiteClaimSchema>;
+
 export const faqChunks = pgTable("faq_chunks", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),

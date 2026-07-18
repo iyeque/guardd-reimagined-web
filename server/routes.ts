@@ -1,6 +1,6 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage.js";
-import { insertMessageSchema, insertMentorApplicationSchema } from "../shared/schema.js";
+import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema } from "../shared/schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import axios from "axios";
 import { z } from "zod";
@@ -74,6 +74,65 @@ export function registerRoutes(app: Express) {
     }
     next();
   };
+
+  // Claims: public read, admin write/delete
+  app.get("/api/claims", async (_req, res) => {
+    try {
+      const claims = await storage.listClaims();
+      res.json(claims);
+    } catch (err) {
+      console.error("/api/claims failed:", err);
+      res.status(500).json({ error: "Failed to load claims" });
+    }
+  });
+
+  app.post("/api/claims", validateAdmin, async (req, res) => {
+    try {
+      const parsed = insertSiteClaimSchema.parse(req.body);
+      const claim = await storage.upsertClaim(parsed);
+      res.json(claim);
+    } catch (err) {
+      console.error("/api/claims upsert failed:", err);
+      res.status(400).json({ error: "Invalid claim data" });
+    }
+  });
+
+  app.delete("/api/claims/:id", validateAdmin, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      await storage.deleteClaim(id);
+      res.json({ ok: true });
+    } catch (err) {
+      console.error("/api/claims delete failed:", err);
+      res.status(500).json({ error: "Failed to delete claim" });
+    }
+  });
+
+  // Seed default claims
+  app.post("/api/admin/seed-claims", validateAdmin, async (_req, res) => {
+    try {
+      const defaults = [
+        { slug: "families_helped", value: "50+", label: "Families Helped", context: "Supported families on their digital wellness journey." },
+        { slug: "parents_success", value: "95%", label: "Parents Report Success", context: "Percentage of families reporting improved digital habits." },
+        { slug: "resources", value: "1,000+", label: "Educational Resources", context: "Articles, guides, and tools available through the hub." },
+        { slug: "quality_time_claim", value: "Families report more quality time", label: "After reducing digital distractions", context: "Outcome observed after families apply consistent boundaries." },
+        { slug: "avg_screen_teens", value: "7+ Hours", label: "Average daily screen time for teens", context: "Common baseline from public usage studies; exact value varies by study and region." },
+        { slug: "parents_worry", value: "60%", label: "Parents worry about their kids' screen use", context: "Survey-based finding on parental concerns." },
+        { slug: "depression_risk", value: "2x", label: "Risk of depression with high social media use", context: "Observed risk elevation in some research cohorts; not deterministic." },
+        { slug: "families_leveled_up", value: "Over 1,200 families", label: "Families leveled up", context: "Participant count milestone for gamified missions." },
+        { slug: "response_time", value: "We typically respond within 24 hours.", label: "Contact reply time", context: "Current support response target during business hours." }
+      ];
+      const out = [];
+      for (const row of defaults) {
+        const created = await storage.upsertClaim(row);
+        out.push(created);
+      }
+      res.json({ ok: true, claims: out });
+    } catch (err) {
+      console.error("/api/admin/seed-claims failed:", err);
+      res.status(500).json({ error: "Failed to seed claims" });
+    }
+  });
 
   // Community Data (Public)
   app.get("/api/community/data", async (_req, res) => {
