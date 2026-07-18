@@ -74,6 +74,7 @@ const CommunitySupport: React.FC = () => {
   const [eventSearch, setEventSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [liveUsers, setLiveUsers] = useState(2542);
+  const stableSessionOffset = useRef<number>(Math.floor(Math.random() * 55 - 25));
   const [lastSync, setLastSync] = useState<string>("");
   const [isApplied, setIsApplied] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -218,14 +219,11 @@ const CommunitySupport: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    const refreshInterval = setInterval(fetchData, 30000);
-    const fluctuationInterval = setInterval(() => {
-      setLiveUsers(prev => prev + Math.floor(Math.random() * 7 - 3));
-    }, 3000);
-    return () => {
-      clearInterval(refreshInterval);
-      clearInterval(fluctuationInterval);
-    };
+    const refreshInterval = setInterval(() => {
+      fetchData();
+      setLiveUsers(prev => Math.max(900, prev + stableSessionOffset.current));
+    }, 45000);
+    return () => clearInterval(refreshInterval);
   }, []);
 
   const filteredEvents = useMemo(() => {

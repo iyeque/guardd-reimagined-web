@@ -47,6 +47,8 @@ async function verifyRecaptcha(token: string) {
   }
 }
 
+function activeUsersCount(): number { const hour = new Date().getUTCHours(); const peak = 18 <= hour || hour <= 1 ? 1 : 0.55; const base = 1450 + peak * 420 + 90 * Math.sin((hour / 24) * Math.PI * 2 + 1); return Math.floor(base + 120); }
+
 export function registerRoutes(app: Express) {
   // Health check for Vercel
   app.get("/api/health", (_req, res) => {
@@ -96,7 +98,7 @@ export function registerRoutes(app: Express) {
         return res.json({
           events: initialEvents,
           discussions: initialDiscussions,
-          activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
+          activeUsers: activeUsersCount(),
           lastSync: lastSync || new Date().toISOString()
         });
       }
@@ -104,7 +106,7 @@ export function registerRoutes(app: Express) {
       res.json({
         events,
         discussions,
-        activeUsers: Math.floor(Math.random() * (3500 - 2000) + 2000),
+        activeUsers: activeUsersCount(),
         lastSync: lastSync || new Date().toISOString()
       });
     } catch (error) {
