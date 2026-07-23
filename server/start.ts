@@ -6,11 +6,15 @@ import { app } from "./index.js";
 import { setupVite, serveStatic } from "./vite.js";
 import { log } from "./log.js";
 import { syncCommunityData } from "./community-sync.js";
+import { ensureFaqChunks } from "./faq-seed.js";
 import { createServer } from "http";
 
 (async () => {
   try {
     const server = createServer(app);
+
+    log("Ensuring FAQ knowledge base...");
+    await ensureFaqChunks().catch(err => log(`FAQ seed error: ${err}`));
 
     // Initial community data sync (only in dev/standalone mode)
     log("Starting initial community data sync...");
