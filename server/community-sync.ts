@@ -5,7 +5,7 @@ function toText(v: number | string | undefined): string { return typeof v === 'n
 
 const rssParser = new Parser();
 
-// --- Reputable RSS Feeds for Digital Safety & Tech ---
+// Default reputable RSS feeds
 const RSS_FEEDS = [
   { platform: "Digital Wellness", community: "News", url: "https://digitalwellnessinstitute.com/feed/" },
   { platform: "ConnectSafely", community: "Online Safety", url: "https://staysafeonline.org/feed/" },
@@ -13,6 +13,15 @@ const RSS_FEEDS = [
   { platform: "ChildNet", community: "Youth Safety", url: "https://www.childnet.com/feed/" },
   { platform: "Psychology Today", community: "Tech Habits", url: "https://www.psychologytoday.com/intl/taxonomy/term/1057/feed" }
 ];
+
+// Optional custom RSS from env: "platform|community|url,platform|community|url"
+const EXTRA_RSS_RAW = String(process.env.COMM_RSS_FEEDS || "").trim();
+const EXTRA_RSS_FEEDS = EXTRA_RSS_RAW.split(",").map(s => s.trim()).filter(Boolean).map(part => {
+  const [platform, community, url] = part.split("|");
+  return { platform: platform || "Custom", community: community || "General", url: url || "" };
+}).filter(f => f.url);
+
+const ALL_RSS_FEEDS = [...RSS_FEEDS, ...EXTRA_RSS_FEEDS];
 
 // --- Type Definitions for API Responses ---
 interface RedditChild {
@@ -127,7 +136,7 @@ export function generateLocalEvents() {
 
 async function fetchRSSNews() {
   try {
-    const feedPromises = RSS_FEEDS.map(async (feedInfo) => {
+    const feedPromises = ALL_RSS_FEEDS.map(async (feedInfo) => {
       try {
         const feed = await rssParser.parseURL(feedInfo.url);
         return feed.items.slice(0, 3).map(item => ({
@@ -218,7 +227,6 @@ async function getLiveRedditTrends() {
 }
 
 // --- SerpApi Event Discovery ---
-
 async function fetchLiveEventsFromSerp() {
   const apiKey = process.env.SERP_API_KEY;
   if (!apiKey) {
@@ -235,7 +243,7 @@ async function fetchLiveEventsFromSerp() {
       'mindful technology seminars',
       'digital citizenship education summits'
     ];
-    const results = await Promise.all(queries.map(q => 
+    const results = await Promise.all(queries.map(q =>
       axios.get('https://serpapi.com/search.json', {
         params: {
           engine: "google_events",

@@ -20,10 +20,12 @@ import { createServer } from "http";
     log("Starting initial community data sync...");
     await syncCommunityData().catch(err => log(`Sync error: ${err}`));
 
-    // Periodic sync every 10 minutes
+    // Periodic sync every N minutes
+    const intervalMinutes = Number(process.env.COMM_SYNC_INTERVAL_MINUTES || 10);
+    const intervalMs = Math.max(1, intervalMinutes) * 60 * 1000;
     setInterval(() => {
       syncCommunityData().catch(err => log(`Periodic sync error: ${err}`));
-    }, 10 * 60 * 1000);
+    }, intervalMs);
 
     if (process.env.NODE_ENV !== "production") {
       log("Setting up Vite for development...");
