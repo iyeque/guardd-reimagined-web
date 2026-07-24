@@ -73,8 +73,8 @@ const CommunitySupport: React.FC = () => {
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [eventSearch, setEventSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [liveUsers, setLiveUsers] = useState(2542);
-  const stableSessionOffset = useRef<number>(Math.floor(Math.random() * 55 - 25));
+  const [liveUsers, setLiveUsers] = useState(720);
+  const stableSessionOffset = useRef<number>(Math.floor(Math.random() * 20) - 10);
   const [lastSync, setLastSync] = useState<string>("");
   const [isApplied, setIsApplied] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -126,7 +126,7 @@ const CommunitySupport: React.FC = () => {
       setEvents(data.events || []);
       setDiscussions(data.discussions || []);
       setMentors(data.mentors || []);
-      setLiveUsers(data.activeUsers || 2542);
+      setLiveUsers(data.activeUsers || 720);
       setLastSync(new Date(data.lastSync).toLocaleTimeString());
       setIsLoading(false);
     } catch (error) {
