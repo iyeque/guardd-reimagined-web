@@ -112,7 +112,7 @@ export function registerRoutes(app: Express) {
   app.post("/api/admin/seed-claims", validateAdmin, async (_req, res) => {
     try {
       const defaults = [
-        { slug: "families_helped", value: "50+", label: "Families Helped", context: "Supported families on their digital wellness journey." },
+        { slug: "families_helped", value: "750+", label: "Families Helped", context: "Supported families on their digital wellness journey." },
         { slug: "parents_success", value: "95%", label: "Parents Report Success", context: "Percentage of families reporting improved digital habits." },
         { slug: "resources", value: "1,000+", label: "Educational Resources", context: "Articles, guides, and tools available through the hub." },
         { slug: "quality_time_claim", value: "Families report more quality time", label: "After reducing digital distractions", context: "Outcome observed after families apply consistent boundaries." },
