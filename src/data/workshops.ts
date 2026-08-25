@@ -47,7 +47,7 @@ export const workshops: Workshop[] = [
     icon: "📱",
     color: "#FF9A8B",
     lightColor: "#FFF5F5",
-    duration: "25 min",
+    duration: "35 min",
     ageGroup: "Ages 10+",
     modules: [
       {
@@ -55,7 +55,7 @@ export const workshops: Workshop[] = [
         title: "Understanding Your Digital Footprint",
         type: "lesson",
         content:
-          "Everything you post online creates a digital footprint that can last forever. Think before you share!"
+          "Everything you post online creates a digital footprint that can last forever. Think before you share."
       },
       {
         id: "sm-quiz",
@@ -110,7 +110,27 @@ export const workshops: Workshop[] = [
         title: "How Does Social Media Make You Feel?",
         type: "reflection",
         content:
-          "Take a moment to reflect on your social media habits and how they affect your mood."
+          "Take a moment to reflect on your social media habits and how they affect your mood.",
+        items: [
+          {
+            title: "Mood Check",
+            description:
+              "Notice whether you feel more connected or more anxious after scrolling.",
+            action: "Write 1 sentence"
+          },
+          {
+            title: "Role Model Check",
+            description:
+              "Think about what younger siblings or friends might learn from your posts.",
+            action: "List 2 examples"
+          },
+          {
+            title: "Boundary Idea",
+            description:
+              "Pick one small rule that would improve your social media experience.",
+            action: "Share with family"
+          }
+        ]
       },
       {
         id: "sm-activity",
@@ -148,7 +168,7 @@ export const workshops: Workshop[] = [
     icon: "🔐",
     color: "#4FD1C5",
     lightColor: "#E6FFFA",
-    duration: "30 min",
+    duration: "40 min",
     ageGroup: "All Ages",
     modules: [
       {
@@ -206,6 +226,33 @@ export const workshops: Workshop[] = [
         ]
       },
       {
+        id: "cs-reflection",
+        title: "Where Could We Be Safer?",
+        type: "reflection",
+        content:
+          "Identify one place your family might be vulnerable online and one small habit that could reduce risk.",
+        items: [
+          {
+            title: "Risk Spot",
+            description:
+              "Choose one app, account, or routine that might need stronger safety.",
+            action: "Name the risk"
+          },
+          {
+            title: "Small Habit",
+            description:
+              "Pick one 5-minute habit that improves security without slowing life down.",
+            action: "Write the habit"
+          },
+          {
+            title: "Support Plan",
+            description:
+              "Decide how family members will remind each other safely without shaming.",
+            action: "Agree on tone"
+          }
+        ]
+      },
+      {
         id: "cs-activity",
         title: "Build Your Family Password Policy",
         type: "activity",
@@ -240,7 +287,7 @@ export const workshops: Workshop[] = [
     icon: "⏱️",
     color: "#B794F4",
     lightColor: "#FAF5FF",
-    duration: "20 min",
+    duration: "30 min",
     ageGroup: "All Ages",
     modules: [
       {
@@ -301,7 +348,27 @@ export const workshops: Workshop[] = [
         title: "Your Screen Time Story",
         type: "reflection",
         content:
-          "Think about your average day. When do you feel best? When do screens help vs. when do they drain you?"
+          "Think about your average day. When do you feel best? When do screens help vs. when do they drain you?",
+        items: [
+          {
+            title: "Energy Audit",
+            description:
+              "Notice whether screen use raises or lowers your energy.",
+            action: "Note 1 example"
+          },
+          {
+            title: "Connection Check",
+            description:
+              "Think about whether screens help or hurt family connection.",
+            action: "Name 1 change"
+          },
+          {
+            title: "Recovery Rule",
+            description:
+              "Pick one reset activity after heavy screen use.",
+            action: "Schedule it weekly"
+          }
+        ]
       },
       {
         id: "st-activity",
@@ -325,6 +392,129 @@ export const workshops: Workshop[] = [
             title: "Weekend Activities",
             description: "Plan offline fun for weekends",
             action: "List activities"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "online-safety",
+    title: "Staying Safe Online",
+    subtitle: "Respect, Boundaries, and Reporting",
+    description:
+      "Learn how to treat others kindly online, recognize risky situations, and know when and how to tell a trusted adult.",
+    icon: "🛡️",
+    color: "#38BDF8",
+    lightColor: "#F0F9FF",
+    duration: "30 min",
+    ageGroup: "Ages 8+",
+    modules: [
+      {
+        id: "os-intro",
+        title: "Digital Kindness",
+        type: "lesson",
+        content:
+          "Being online doesn't change how we should treat people. Kind comments, respectful disagreements, and honest sharing create a better internet for everyone."
+      },
+      {
+        id: "os-quiz",
+        title: "Safety Knowledge Check",
+        type: "quiz",
+        content: "See how well you understand online boundaries and safety.",
+        items: [
+          {
+            question:
+              "Someone asks you to keep an online interaction secret. You should:",
+            options: [
+              "Keep it secret to be loyal",
+              "Tell a trusted adult",
+              "Block them quietly",
+              "Share it publicly"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Requests for secrecy can be a warning sign. Trusted adults can help you decide what to do next."
+          },
+          {
+            question:
+              "You see a friend being treated badly in a chat. A good next step is:",
+            options: [
+              "Ignore it",
+              "Join in",
+              "Support your friend and report it",
+              "Tell everyone their secrets"
+            ],
+            correctIndex: 2,
+            explanation:
+              "Support and reporting are safer and more helpful than retaliation or silence."
+          }
+        ]
+      },
+      {
+        id: "os-checklist",
+        title: "Safety Checklist",
+        type: "checklist",
+        content:
+          "Use this checklist to help keep your family safer online.",
+        items: [
+          { text: "Use privacy settings together", icon: "🔒" },
+          { text: "Name 3 trusted adults to contact", icon: "🧑‍🏫" },
+          { text: "Save evidence of risky messages", icon: "📁" },
+          { text: "Agree on a no-blame reporting rule", icon: "🤝" },
+          { text: "Review apps and permissions", icon: "📱" }
+        ]
+      },
+      {
+        id: "os-reflection",
+        title: "Respect and Boundaries",
+        type: "reflection",
+        content:
+          "Consider what respectful online behavior looks like for your family and where boundaries should be stronger.",
+        items: [
+          {
+            title: "Respect Rule",
+            description:
+              "Name one rule for respectful messaging and commenting.",
+            action: "Write the rule"
+          },
+          {
+            title: "Boundary Review",
+            description:
+              "Identify one app or space that needs clearer boundaries.",
+            action: "Adjust settings"
+          },
+          {
+            title: "Help-Seeking Plan",
+            description:
+              "Agree on how to ask for help without embarrassment.",
+            action: "Share the plan"
+          }
+        ]
+      },
+      {
+        id: "os-activity",
+        title: "Family Online Safety Plan",
+        type: "activity",
+        content:
+          "Create a short plan your family can actually use when something feels off online.",
+        items: [
+          {
+            title: "Warning Signs",
+            description:
+              "List 4 signs that a conversation or request may be risky.",
+            action: "Write list"
+          },
+          {
+            title: "Response Steps",
+            description:
+              "Agree on 3 steps to take if someone feels uncomfortable.",
+            action: "Practice the steps"
+          },
+          {
+            title: "Support Script",
+            description:
+              "Create a simple script for reporting without shame.",
+            action: "Post it nearby"
           }
         ]
       }
