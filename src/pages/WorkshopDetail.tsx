@@ -211,10 +211,12 @@ export const WorkshopDetail = () => {
               <motion.button
                 key={module.id}
                 onClick={() => setCurrentModuleIndex(idx)}
-                className={`h-2.5 rounded-full transition-colors ${
+                className={`w-3 h-3 rounded-full transition-colors ${
                   idx === currentModuleIndex
                     ? "w-8 bg-slate-800 dark:bg-white"
-                    : "w-2.5 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400"
+                    : idx < currentModuleIndex
+                    ? "bg-slate-400"
+                    : "bg-slate-300 dark:bg-slate-600"
                 }`}
                 whileTap={{ scale: 0.9 }}
                 aria-label={`Go to module ${idx + 1}: ${module.title}`}
