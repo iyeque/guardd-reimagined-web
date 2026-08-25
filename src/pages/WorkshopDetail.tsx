@@ -172,7 +172,7 @@ export const WorkshopDetail = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-8 p-6 rounded-3xl bg-white/60 dark:bg-slate-800/60 backdrop-blur border border-white/20 shadow-lg"
         >
           <div className="flex items-center gap-4 mb-4">
             <motion.div
@@ -187,7 +187,7 @@ export const WorkshopDetail = () => {
               <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
                 {workshop.title}
               </h1>
-              <p className="text-sm" style={{ color: workshop.color }}>
+              <p className="text-slate-500 dark:text-slate-400">
                 {workshop.subtitle}
               </p>
             </div>
