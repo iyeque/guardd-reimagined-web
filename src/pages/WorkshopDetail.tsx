@@ -196,6 +196,9 @@ export const WorkshopDetail = () => {
                 {workshop.title}
               </h1>
               <p className="text-slate-500 dark:text-slate-400">{workshop.subtitle}</p>
+              <span className="text-slate-500 dark:text-slate-400">
+                Module {currentModuleIndex + 1} of {workshop.modules.length}
+              </span>
             </div>
           </div>
 

@@ -8,7 +8,7 @@ interface Props {
 export const WorkshopProgress = ({ progress, color }: Props) => {
   return (
     <div className="w-full">
-      <div className="flex justify-between text-xs mb-1">
+      <div className="flex justify-between text-sm mb-2">
         <span className="text-slate-500 dark:text-slate-400">Progress</span>
         <span className="font-medium" style={{ color }}>
           {Math.round(progress)}%
