@@ -212,12 +212,18 @@ export const WorkshopDetail = () => {
                 key={module.id}
                 onClick={() => setCurrentModuleIndex(idx)}
                 className={`w-3 h-3 rounded-full transition-colors ${
-                  idx === currentModuleIndex
-                    ? "w-8 bg-slate-800 dark:bg-white"
-                    : idx < currentModuleIndex
-                    ? "bg-slate-400"
-                    : "bg-slate-300 dark:bg-slate-600"
+                  idx < currentModuleIndex
+                    ? "bg-green-400"
+                    : idx === currentModuleIndex
+                    ? ""
+                    : "bg-slate-200 dark:bg-slate-700"
                 }`}
+                style={
+                  idx === currentModuleIndex
+                    ? { backgroundColor: workshop.color }
+                    : {}
+                }
+                animate={{ scale: idx === currentModuleIndex ? 1.2 : 1 }}
                 whileTap={{ scale: 0.9 }}
                 aria-label={`Go to module ${idx + 1}: ${module.title}`}
               />
@@ -235,10 +241,11 @@ export const WorkshopDetail = () => {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentModule.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
+            className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/20"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3 }}
           >
             {renderModuleContent()}
           </motion.div>
