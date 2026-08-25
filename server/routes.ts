@@ -4,7 +4,7 @@ import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSche
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import axios from "axios";
 import { z } from "zod";
-import { searchFaqChunks, generateCerebrasAnswer } from "./faq.js";
+import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { faqChunks, familyCommitments, familyCommitmentMilestones } from "../shared/schema.js";
 
@@ -289,7 +289,7 @@ export function registerRoutes(app: Express) {
       }
 
       const context = chunks.map((c) => `[${c.category}] ${c.title}: ${c.content}`).join("\n\n");
-      const answer = await generateCerebrasAnswer(question, context);
+      const answer = await generateOpenRouterAnswer(question, context);
 
       res.json({
         answer,
@@ -373,7 +373,10 @@ export function registerRoutes(app: Express) {
 
       let metadataCid: string | null = null;
       if (pin && typeof pin === 'object' && 'cid' in pin) {
-        metadataCid = (pin as any).cid || null;
+        const candidate = (pin as { cid?: unknown }).cid;
+        metadataCid = typeof candidate === 'string' ? candidate : null;
+      } else {
+        metadataCid = null;
       }
 
       const updated = await storage.updateFamilyCommitment(created.id, {

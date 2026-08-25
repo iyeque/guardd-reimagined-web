@@ -37,22 +37,27 @@ export async function getFaqChunk(id: number) {
   return row ?? null;
 }
 
-export async function generateCerebrasAnswer(question: string, context: string): Promise<string> {
-  const apiKey = process.env.CEREBRAS_API_KEY;
+export async function generateOpenRouterAnswer(question: string, context: string): Promise<string> {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  const endpoint =
+    process.env.OPENROUTER_ENDPOINT ||
+    "https://openrouter.ai/api/v1/chat/completions";
+  const model = process.env.OPENROUTER_MODEL || "google/gemma-4-26b-a4b-it:free";
+
   if (!apiKey) {
     return context.split("\n\n")[0]?.replace(/\[.*?\]\s*/g, "") || "I couldn't find a specific answer.";
   }
 
   try {
     const response = await axios.post(
-      "https://api.cerebras.ai/v1/chat/completions",
+      endpoint,
       {
-        model: "gpt-oss-120b",
+        model,
         messages: [
           {
             role: "system",
             content:
-              "You are a family digital wellness advisor. Answer the parent's question using ONLY the provided context. If the context doesn't contain the answer, say so honestly. Keep answers under 120 words. Be warm, practical, and never make up statistics.",
+              "You are a family digital wellness advisor. Prefer the provided context when relevant. If the question is about digital wellness, screen time, online safety, parenting with technology, mental health and device use, or closely related topics, answer helpfully from general digital wellness knowledge. If it is unrelated, decline politely and suggest a related topic like digital safety, screen-time agreements, breathing exercises, or the Cyber-Safe Quiz. Keep answers under 120 words, practical, warm, and never invent statistics.",
           },
           {
             role: "user",
@@ -65,11 +70,13 @@ export async function generateCerebrasAnswer(question: string, context: string):
       { headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" } }
     );
 
-    const data = response.data as any;
+    const data = response.data as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
     const text = data?.choices?.[0]?.message?.content;
     if (typeof text === "string" && text.trim()) return text.trim();
   } catch (err) {
-    console.error("Cerebras FAQ generation failed:", err instanceof Error ? err.message : String(err));
+    console.error("OpenRouter FAQ generation failed:", err instanceof Error ? err.message : String(err));
   }
 
   return context.split("\n\n")[0]?.replace(/\[.*?\]\s*/g, "") || "I don't have enough information to answer that. Try asking about digital safety, screen-time agreements, breathing exercises, or the Cyber-Safe Quiz.";
