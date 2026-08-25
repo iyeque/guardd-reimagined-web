@@ -12,17 +12,18 @@ import { CompletionBadge } from "@/components/workshops/shared/CompletionBadge";
 export const WorkshopDetail = () => {
   const { workshopId } = useParams<{ workshopId: string }>();
   const navigate = useNavigate();
-  const { completeModule } = useWorkshopProgress();
+  const { completeModule, rawProgress } = useWorkshopProgress();
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
 
   const workshop = workshops.find((w) => w.id === workshopId);
 
   if (!workshop) {
-    return <div>Workshop not found</div>;
+    return <div className="min-h-screen pt-24 px-4">Workshop not found</div>;
   }
 
   const currentModule = workshop.modules[currentModuleIndex];
-  const progress = ((currentModuleIndex) / workshop.modules.length) * 100;
+  const completedCount = Object.values(rawProgress[workshop.id] || {}).filter(Boolean).length;
+  const progress = workshop.modules.length > 0 ? (completedCount / workshop.modules.length) * 100 : 0;
   const isWorkshopComplete = currentModuleIndex >= workshop.modules.length;
 
   const handleModuleComplete = (moduleId: string) => {
@@ -38,6 +39,8 @@ export const WorkshopDetail = () => {
   };
 
   const renderModuleContent = () => {
+    if (!currentModule) return null;
+
     switch (currentModule.type) {
       case "lesson":
         return (
@@ -62,6 +65,7 @@ export const WorkshopDetail = () => {
             </motion.button>
           </motion.div>
         );
+
       case "quiz":
         return (
           <div className="space-y-6">
@@ -79,6 +83,7 @@ export const WorkshopDetail = () => {
             ))}
           </div>
         );
+
       case "checklist":
         return (
           <div className="space-y-4">
@@ -92,6 +97,7 @@ export const WorkshopDetail = () => {
             />
           </div>
         );
+
       case "reflection":
         return (
           <div className="space-y-6">
@@ -103,6 +109,7 @@ export const WorkshopDetail = () => {
             />
           </div>
         );
+
       case "activity":
         return (
           <div className="space-y-6">
@@ -144,6 +151,7 @@ export const WorkshopDetail = () => {
             </motion.button>
           </div>
         );
+
       default:
         return null;
     }
@@ -187,11 +195,11 @@ export const WorkshopDetail = () => {
               <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
                 {workshop.title}
               </h1>
-              <p className="text-slate-500 dark:text-slate-400">
-                {workshop.subtitle}
-              </p>
+              <p className="text-slate-500 dark:text-slate-400">{workshop.subtitle}</p>
             </div>
           </div>
+
+          {/* Progress Bar */}
           <WorkshopProgress progress={progress} color={workshop.color} />
         </motion.div>
 
@@ -202,7 +210,17 @@ export const WorkshopDetail = () => {
           <p className="text-slate-600 dark:text-slate-400">{currentModule.content}</p>
         </div>
 
-        {renderModuleContent()}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentModule.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+          >
+            {renderModuleContent()}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
