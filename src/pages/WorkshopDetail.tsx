@@ -204,6 +204,23 @@ export const WorkshopDetail = () => {
 
           {/* Progress Bar */}
           <WorkshopProgress progress={progress} color={workshop.color} />
+
+          {/* Module Navigation Dots */}
+          <div className="flex gap-2 justify-center mt-6">
+            {workshop.modules.map((module, idx) => (
+              <motion.button
+                key={module.id}
+                onClick={() => setCurrentModuleIndex(idx)}
+                className={`h-2.5 rounded-full transition-colors ${
+                  idx === currentModuleIndex
+                    ? "w-8 bg-slate-800 dark:bg-white"
+                    : "w-2.5 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400"
+                }`}
+                whileTap={{ scale: 0.9 }}
+                aria-label={`Go to module ${idx + 1}: ${module.title}`}
+              />
+            ))}
+          </div>
         </motion.div>
 
         <div className="mb-6">
