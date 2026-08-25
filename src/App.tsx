@@ -32,6 +32,8 @@ const GlobalScrollHandler = () => {
 
 const Index = lazy(() => import("./pages/Index"));
 const Workshop = lazy(() => import("./pages/Workshop"));
+const Workshops = lazy(() => import("./pages/Workshops").then(m => ({ default: m.Workshops })));
+const WorkshopDetail = lazy(() => import("./pages/WorkshopDetail").then(m => ({ default: m.WorkshopDetail })));
 const ScreenTimeManagement = lazy(() => import("./pages/ScreenTimeManagement"));
 const FamilyDigitalAgreements = lazy(() => import("./pages/FamilyDigitalAgreements"));
 const FamilyCommitments = lazy(() => import("./pages/FamilyCommitments"));
@@ -57,6 +59,11 @@ const App = () => (
             <Route element={<Layout />}>
               <Route path="/" element={<Index />} />
               <Route path="/workshop" element={<Workshop />} />
+              <Route path="/workshops" element={<Workshops />} />
+              <Route
+                path="/workshop/:workshopId"
+                element={<WorkshopDetail />}
+              />
               <Route
                 path="/screen-time-management"
                 element={<ScreenTimeManagement />}
