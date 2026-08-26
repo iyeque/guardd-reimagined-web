@@ -171,7 +171,7 @@ export const WorkshopDetail = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto workshop-scroll">
         <motion.button
           onClick={() => navigate("/workshops")}
           className="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
