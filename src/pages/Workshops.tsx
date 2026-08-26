@@ -1,8 +1,34 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo } from "react";
 import { workshops } from "@/data/workshops";
 import { WorkshopCard } from "@/components/workshops/WorkshopCard";
 
 export const Workshops = () => {
+  const [query, setQuery] = useState("");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+
+  const tags = useMemo(() => {
+    const all = new Set<string>();
+    workshops.forEach((w) => {
+      all.add(w.ageGroup);
+      all.add(w.duration);
+    });
+    return Array.from(all);
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return workshops.filter((w) => {
+      const matchesQuery =
+        !q ||
+        [w.title, w.subtitle, w.description, w.icon].some((v) =>
+          String(v).toLowerCase().includes(q)
+        );
+      const matchesTag = !activeTag || w.ageGroup === activeTag || w.duration === activeTag;
+      return matchesQuery && matchesTag;
+    });
+  }, [query, activeTag]);
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -37,8 +63,8 @@ export const Workshops = () => {
         >
           {[
             { label: "Workshops", value: String(workshops.length), icon: "🎯" },
-            { label: "Modules", value: "15+", icon: "📚" },
-            { label: "Minutes", value: "75", icon: "⏱️" },
+            { label: "Modules", value: "20+", icon: "📚" },
+            { label: "Minutes", value: "135", icon: "⏱️" },
           ].map((stat, i) => (
             <div key={i} className="text-center">
               <div className="text-2xl mb-1">{stat.icon}</div>
@@ -52,11 +78,49 @@ export const Workshops = () => {
           ))}
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {workshops.map((workshop, index) => (
-            <WorkshopCard key={workshop.id} workshop={workshop} index={index} />
-          ))}
-        </div>
+        <motion.div
+          className="mb-10 flex flex-col sm:flex-row gap-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search workshops..."
+            className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 focus:outline-none focus:ring-2 focus:ring-[#4FD1C5]/40"
+          />
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag((prev) => (prev === tag ? null : tag))}
+                className={`px-3 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                  activeTag === tag
+                    ? "bg-[#4FD1C5]/15 border-[#4FD1C5]/40 text-[#2C7A7B]"
+                    : "bg-white/70 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${query}-${activeTag}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {filtered.map((workshop, index) => (
+              <WorkshopCard key={workshop.id} workshop={workshop} index={index} />
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
         <motion.div
           className="mt-20 text-center p-8 rounded-3xl bg-gradient-to-r from-[#4FD1C5]/10 to-[#FF9A8B]/10 border border-white/20"
