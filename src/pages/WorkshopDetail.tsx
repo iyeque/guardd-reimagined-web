@@ -26,6 +26,10 @@ export const WorkshopDetail = () => {
   const progress = workshop.modules.length > 0 ? (completedCount / workshop.modules.length) * 100 : 0;
   const isWorkshopComplete = currentModuleIndex >= workshop.modules.length;
 
+  const isModuleCompleted = (moduleId: string) => {
+    return !!rawProgress[workshop.id]?.[moduleId];
+  };
+
   const handleModuleComplete = (moduleId: string) => {
     completeModule(workshop.id, moduleId);
 
@@ -212,7 +216,7 @@ export const WorkshopDetail = () => {
                 key={module.id}
                 onClick={() => setCurrentModuleIndex(idx)}
                 className={`w-3 h-3 rounded-full transition-colors ${
-                  idx < currentModuleIndex
+                  isModuleCompleted(module.id)
                     ? "bg-green-400"
                     : idx === currentModuleIndex
                     ? ""
