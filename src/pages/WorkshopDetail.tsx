@@ -236,6 +236,21 @@ export const WorkshopDetail = () => {
         </motion.div>
 
         <div className="mb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+              style={{ backgroundColor: workshop.lightColor }}
+            >
+              {currentModule.type === 'lesson' && '📖'}
+              {currentModule.type === 'quiz' && '🧠'}
+              {currentModule.type === 'checklist' && '✅'}
+              {currentModule.type === 'reflection' && '💭'}
+              {currentModule.type === 'activity' && '🚀'}
+            </div>
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
+              {currentModule.type}
+            </span>
+          </div>
           <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
             {currentModule.title}
           </h2>
