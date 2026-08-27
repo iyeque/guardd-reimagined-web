@@ -667,5 +667,339 @@ export const workshops: Workshop[] = [
         ]
       }
     ]
+  },
+  {
+    id: "teen-digital-identity",
+    title: "Social Media & Identity",
+    subtitle: "Build a Reputation You Want to Keep",
+    description:
+      "For teenage users: understand how algorithms shape attention, protect your reputation, and set boundaries that keep social media useful instead of overwhelming.",
+    icon: "🧑‍💻",
+    color: "#F472B6",
+    lightColor: "#FDF2F8",
+    duration: "35 min",
+    ageGroup: "Ages 13-17",
+    modules: [
+      {
+        id: "tdi-intro-1",
+        title: "Your Online Identity Is Real",
+        type: "lesson",
+        content:
+          "Colleges, employers, coaches, and future friends often look at public digital profiles before meeting someone in person. A post, photo, or comment can follow you longer than expected. This isn't about fear; it's about intentionality. What story do you want your digital presence to tell? Understanding reputation risk helps you choose posts, privacy settings, and platform behaviors that match your real values."
+      },
+      {
+        id: "tdi-intro-2",
+        title: "Algorithms, Attention, and Mental Health",
+        type: "lesson",
+        content:
+          "Most platforms are designed to maximize attention, not wellbeing. Infinite scroll, autoplay, variable rewards, and engagement-driven ranking can increase anxiety, body-image pressure, comparison, and sleep loss. Knowing how these systems work helps you spot when an app is using you, instead of the other way around. You can still enjoy social media, but the best users treat it like a tool with boundaries, not an endless background habit."
+      },
+      {
+        id: "tdi-quiz",
+        title: "Digital Reputation Check",
+        type: "quiz",
+        content: "See how well you understand personal branding, privacy, and algorithm effects.",
+        items: [
+          {
+            question: "A future employer sees your public profile. Which signal is usually strongest?",
+            options: [
+              "How many posts you have",
+              "The tone and topics of what you share",
+              "Which app you use most",
+              "Your follower count"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Employers and coaches usually assess character and judgment from visible posts, comments, and shared values."
+          },
+          {
+            question: "Which choice best reduces algorithmic overuse?",
+            options: [
+              "Checking every notification instantly",
+              "Using app timers, turning off nonessential notifications, and scheduling use",
+              "Posting more content to stay visible",
+              "Using the same app for hours straight"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Intentional limits and fewer notifications reduce passive usage and attention capture."
+          },
+          {
+            question: "A safe post for public sharing is usually:",
+            options: [
+              "Your address, schedule, or younger sibling's photo without permission",
+              "General hobbies or achievements without private metadata",
+              "A screenshot of a private group chat",
+              "Location tags for your exact school or home"
+            ],
+            correctIndex: 1,
+            explanation:
+              "General achievements are usually fine; exact locations, private chats, and identifiable schedules are risky."
+          },
+          {
+            question: "If a platform feels consistently stressful, a strong next step is:",
+            options: [
+              "Posting more often",
+              "Auditing who you follow and setting usage limits",
+              "Ignoring it",
+              "Comparing yourself to top creators"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Curating your feed and setting limits often reduces stress more than simply pushing through discomfort."
+          }
+        ]
+      },
+      {
+        id: "tdi-checklist",
+        title: "Teen Privacy & Reputation Hardening",
+        type: "checklist",
+        content:
+          "Use this checklist to make your digital presence clearer, safer, and more intentional.",
+        items: [
+          { text: "Review who can see your posts and follower list", icon: "🔒" },
+          { text: "Turn off nonessential notifications", icon: "🔕" },
+          { text: "Remove old posts with sensitive or impulsive content", icon: "🧹" },
+          { text: "Disable exact location sharing by default", icon: "📍" },
+          { text: "Audit connected apps and authorized logins", icon: "📱" },
+          { text: "Choose one quiet time block without phone use", icon: "🧘" },
+          { text: "Write a short personal rule for what you will never post", icon: "📝" },
+          { text: "Create an emergency off switch if a thread feels harmful", icon: "🆘" }
+        ]
+      },
+      {
+        id: "tdi-reflection",
+        title: "Platform Impact Check",
+        type: "reflection",
+        content:
+          "Notice how specific apps and posts affect your mood, self-image, and attention.",
+        items: [
+          {
+            title: "Mood Pattern",
+            description:
+              "Track one session and notice whether you leave feeling better or worse.",
+            action: "Write 1 sentence"
+          },
+          {
+            title: "Self-Image Check",
+            description:
+              "Notice whether a platform increases or decreases body or social confidence.",
+            action: "Name 1 feeling"
+          },
+          {
+            title: "Attention Audit",
+            description:
+              "Notice whether one app makes time feel faster or slower than expected.",
+            action: "Note the difference"
+          },
+          {
+            title: "Boundary Draft",
+            description:
+              "Pick one rule you want to enforce this week to protect your attention.",
+            action: "Write the rule"
+          }
+        ]
+      },
+      {
+        id: "tdi-activity",
+        title: "Create Your Personal Digital Brand Plan",
+        type: "activity",
+        content:
+          "Design a digital presence that reflects who you actually are and protects your future options.",
+        items: [
+          {
+            title: "Identity Statement",
+            description:
+              "Write 2-3 sentences about what you want people to know about you online.",
+            action: "Write statement"
+          },
+          {
+            title: "Feed Cleanup",
+            description:
+              "Unfollow accounts that increase anxiety, comparison, or distraction.",
+            action: "Curate 5 accounts"
+          },
+          {
+            title: "Boundary Rules",
+            description:
+              "Set rules for posting, DMs, location, and time limits.",
+            action: "Write 3 rules"
+          },
+          {
+            title: "Weekly Reset",
+            description:
+              "Pick one weekly action to review your digital presence.",
+            action: "Schedule review"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "parents-digital-leadership",
+    title: "Raising Digital Kids",
+    subtitle: "Parent Leadership in a Connected Home",
+    description:
+      "For parents and caregivers: align household rules with child development, model healthy behavior, and create a family culture where digital tools support real-life growth.",
+    icon: "👨‍👩‍👧‍👦",
+    color: "#FB923C",
+    lightColor: "#FFF7ED",
+    duration: "40 min",
+    ageGroup: "Parents / Caregivers",
+    modules: [
+      {
+        id: "pdl-intro-1",
+        title: "Developmental Expectations by Age",
+        type: "lesson",
+        content:
+          "Children and teens process online content differently depending on age, maturity, and neurodevelopment. Younger kids need more structure, fewer open accounts, and more co-viewing. Older kids need autonomy with guardrails, honest conversations, and trusted adult access when things go wrong. Parents do best when rules are age-calibrated, reviewed regularly, and explained as safety systems instead of control for its own sake."
+      },
+      {
+        id: "pdl-intro-2",
+        title: "Modeling Behavior Over Enforcing Rules",
+        type: "lesson",
+        content:
+          "Children copy behavior more than they follow instructions. If adults want kids to put phones down during meals, be reachable at home, speak kindly online, and protect sleep, those habits need to be visible at the parent level. Modeling doesn't mean perfection; it means showing repair when you miss the mark. Apologizing for screen interruptions or resetting after a hard day teaches accountability better than a rule handed down without context."
+      },
+      {
+        id: "pdl-quiz",
+        title: "Parent Digital Leadership Check",
+        type: "quiz",
+        content: "Reflect on common parenting digital mistakes and stronger alternatives.",
+        items: [
+          {
+            question: "A strong digital household rule usually:",
+            options: [
+              "Only targets the child",
+              "Applies to the whole household and is explained with reasons",
+              "Bans all technology permanently",
+              "Changes every day without notice"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Rules work better when they are consistent, shared, and explained rather than imposed on children alone."
+          },
+          {
+            question: "Your teen sees an upsetting post. The best first move is:",
+            options: [
+              "Take the phone forever",
+              "Ask open questions before fixing or punishing",
+              "Ignore it",
+              "Share it publicly"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Curiosity and support create safer reporting habits than immediate punishment or dismissal."
+          },
+          {
+            question: "Modeling healthy device use matters because:",
+            options: [
+              "Children notice adult inconsistency and lose trust in rules",
+              "Children do not watch adult behavior",
+              "Only school rules matter",
+              "Phones are not influential"
+            ],
+            correctIndex: 0,
+            explanation:
+              "Modeling builds trust. When adults show repair after screen overuse, kids learn accountability."
+          },
+          {
+            question: "A useful family conversation about social media usually:",
+            options: [
+              "Lectures without listening",
+              "Includes questions, examples, and agreed next steps",
+              "Never mentions real risks",
+              "Happens only after a problem"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Ongoing conversations with questions and agreements work better than lectures or reactive-only talks."
+          }
+        ]
+      },
+      {
+        id: "pdl-checklist",
+        title: "Household Digital Safety Setup",
+        type: "checklist",
+        content:
+          "Create a home environment where digital safety is normal, shared, and supported.",
+        items: [
+          { text: "Set shared device-free zones and times", icon: "🚫" },
+          { text: "Use parental controls matched to age and maturity", icon: "🔒" },
+          { text: "Agree on charging outside bedrooms overnight", icon: "🔌" },
+          { text: "Review apps, permissions, and privacy settings together", icon: "📱" },
+          { text: "Name 3 trusted adults your child can contact anytime", icon: "🧑‍🏫" },
+          { text: "Create a no-blame reporting agreement", icon: "🤝" },
+          { text: "Schedule a weekly 10-minute digital check-in", icon: "🗓️" },
+          { text: "Model one intentional screen habit you want to see in your child", icon: "🧘" }
+        ]
+      },
+      {
+        id: "pdl-reflection",
+        title: "Values, Boundaries, and Trust",
+        type: "reflection",
+        content:
+          "Reflect on whether your household digital habits match the values you want to teach.",
+        items: [
+          {
+            title: "Values Check",
+            description:
+              "List 3 family values and whether your household digital habits reflect them.",
+            action: "Write 3 pairs"
+          },
+          {
+            title: "Boundary Review",
+            description:
+              "Identify one boundary that feels unclear or inconsistently enforced.",
+            action: "Name the boundary"
+          },
+          {
+            title: "Trust Plan",
+            description:
+              "Pick one way to give your child more autonomy as they demonstrate readiness.",
+            action: "Choose 1 step"
+          },
+          {
+            title: "Repair Practice",
+            description:
+              "Write a short script for how you will acknowledge a digital rule miss as a parent.",
+            action: "Write script"
+          }
+        ]
+      },
+      {
+        id: "pdl-activity",
+        title: "Create a Family Media Agreement",
+        type: "activity",
+        content:
+          "Build a living family agreement for devices, privacy, help-seeking, and offline time.",
+        items: [
+          {
+            title: "Device-Free Zones",
+            description:
+              "Agree on spaces and times where devices stay away or silent.",
+            action: "List 3 zones"
+          },
+          {
+            title: "Privacy and Sharing Rules",
+            description:
+              "Define what can be shared, who decides, and how to ask before posting.",
+            action: "Write rules"
+          },
+          {
+            title: "Help-Seeking Protocol",
+            description:
+              "Create a simple, no-shame path for reporting something uncomfortable.",
+            action: "Post protocol"
+          },
+          {
+            title: "Conversation Starters",
+            description:
+              "Pick 3 weekly prompts to discuss apps, friends, and experiences.",
+            action: "Schedule check-ins"
+          }
+        ]
+      }
+    ]
   }
 ];
