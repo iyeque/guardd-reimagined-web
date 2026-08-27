@@ -29,6 +29,7 @@ export interface QuizItem {
 export interface ChecklistItem {
   text: string;
   icon: string;
+  tip?: string;
 }
 
 export interface ActivityItem {
@@ -120,14 +121,14 @@ export const workshops: Workshop[] = [
         content:
           "Make sure your family accounts are secure and private.",
         items: [
-          { text: "Set profiles to private", icon: "🔒" },
-          { text: "Turn off location sharing", icon: "📍" },
-          { text: "Review friend/follower lists", icon: "👥" },
-          { text: "Enable two-factor authentication", icon: "🛡️" },
-          { text: "Discuss what NOT to share", icon: "🗣️" },
-          { text: "Remove old posts with sensitive info", icon: "🧹" },
-          { text: "Review app permissions", icon: "📱" },
-          { text: "Set up shared family rules for posting", icon: "📝" }
+          { text: "Set profiles to private", icon: "🔒", tip: "Open account settings, then set profiles to private/friends-only." },
+          { text: "Turn off location sharing", icon: "📍", tip: "Disable location tagging and remove past location history." },
+          { text: "Review friend/follower lists", icon: "👥", tip: "Remove accounts you don't recognize." },
+          { text: "Enable two-factor authentication", icon: "🛡️", tip: "Use an authenticator app or SMS verification." },
+          { text: "Discuss what NOT to share", icon: "🗣️", tip: "Agree on no live location, schedules, or travel photos." },
+          { text: "Remove old posts with sensitive info", icon: "🧹", tip: "Search your username and delete risky old posts." },
+          { text: "Review app permissions", icon: "📱", tip: "Remove camera/mic/location access you don't use." },
+          { text: "Set up shared family rules for posting", icon: "📝", tip: "Write one rule everyone agrees on before posting." }
         ]
       },
       {
@@ -278,14 +279,14 @@ export const workshops: Workshop[] = [
         content:
           "Complete these steps to secure your family's digital life.",
         items: [
-          { text: "Use a password manager", icon: "🔑" },
-          { text: "Update all devices and apps", icon: "📦" },
-          { text: "Set up parental controls where needed", icon: "👨‍👩‍👧‍👦" },
-          { text: "Backup important photos/files", icon: "💾" },
-          { text: "Create a family safe word for scams", icon: "🆘" },
-          { text: "Enable encryption on phones and laptops", icon: "🔐" },
-          { text: "Review account recovery options", icon: "🔄" },
-          { text: "Agree on a policy for downloading apps", icon: "📲" }
+          { text: "Use a password manager", icon: "🔑", tip: "Try Bitwarden, 1Password, or Apple Keychain/Google Password Manager." },
+          { text: "Update all devices and apps", icon: "📦", tip: "Enable automatic updates in device settings." },
+          { text: "Set up parental controls where needed", icon: "👨‍👩‍👧‍👦", tip: "Use Google Family Link or iOS Screen Time." },
+          { text: "Backup important photos/files", icon: "💾", tip: "Use cloud backup plus one external drive." },
+          { text: "Create a family safe word for scams", icon: "🆘", tip: "Pick one short word only your family knows." },
+          { text: "Enable encryption on phones and laptops", icon: "🔐", tip: "Use device encryption in security settings." },
+          { text: "Review account recovery options", icon: "🔄", tip: "Add a backup email and phone number." },
+          { text: "Agree on a policy for downloading apps", icon: "📲", tip: "Only download from official stores and review permissions." }
         ]
       },
       {
@@ -429,17 +430,18 @@ export const workshops: Workshop[] = [
         content:
           "Steps to create a healthier screen time routine.",
         items: [
-          { text: "Create a family screen schedule", icon: "📅" },
-          { text: "Designate tech-free times", icon: "🚫" },
+          { text: "Create a family screen schedule", icon: "📅", tip: "Use shared calendar blocks for device-free windows." },
+          { text: "Designate tech-free times", icon: "🚫", tip: "Meals, homework time, and 1 hour before bed work well." },
           {
             text: "Set up device charging station outside bedrooms",
-            icon: "🔌"
+            icon: "🔌",
+            tip: "Buy one charging hub and place it in the kitchen or living room."
           },
-          { text: "Plan 3 offline activities per week", icon: "⚽" },
-          { text: "Use apps to track actual screen time", icon: "📊" },
-          { text: "Name a 'reset activity' after heavy use", icon: "🧘" },
-          { text: "Agree on do-not-disturb windows", icon: "🔕" },
-          { text: "Review weekly as a family", icon: "🗓️" }
+          { text: "Plan 3 offline activities per week", icon: "⚽", tip: "Include one walk, one game night, and one hobby session." },
+          { text: "Use apps to track actual screen time", icon: "📊", tip: "Try built-in Screen Time or Digital Wellbeing tools." },
+          { text: "Name a 'reset activity' after heavy use", icon: "🧘", tip: "Choose stretching, walking, or reading for 10 minutes." },
+          { text: "Agree on do-not-disturb windows", icon: "🔕", tip: "Set automatic quiet hours on shared and personal devices." },
+          { text: "Review weekly as a family", icon: "🗓️", tip: "Spend 10 minutes checking schedule adherence and adjusting limits." }
         ]
       },
       {
@@ -590,14 +592,14 @@ export const workshops: Workshop[] = [
         content:
           "Use this checklist to help keep your family safer online.",
         items: [
-          { text: "Use privacy settings together", icon: "🔒" },
-          { text: "Name 3 trusted adults to contact", icon: "🧑‍🏫" },
-          { text: "Save evidence of risky messages", icon: "📁" },
-          { text: "Agree on a no-blame reporting rule", icon: "🤝" },
-          { text: "Review apps and permissions", icon: "📱" },
-          { text: "Create a list of safe spaces and safe people", icon: "✅" },
-          { text: "Set limits on stranger contact and DMs", icon: "🚫" },
-          { text: "Practice a quick exit phrase if something feels off", icon: "🆘" }
+          { text: "Use privacy settings together", icon: "🔒", tip: "Set profiles to private/friends-only and review together monthly." },
+          { text: "Name 3 trusted adults to contact", icon: "🧑‍🏫", tip: "Include one parent, one teacher, and one family friend." },
+          { text: "Save evidence of risky messages", icon: "📁", tip: "Take screenshots with metadata visible and store safely." },
+          { text: "Agree on a no-blame reporting rule", icon: "🤝", tip: "Promise no punishment for reporting something uncomfortable." },
+          { text: "Review apps and permissions", icon: "📱", tip: "Remove unused apps and revoke unnecessary permissions." },
+          { text: "Create a list of safe spaces and safe people", icon: "✅", tip: "Write down apps, rooms, and adults that feel safe." },
+          { text: "Set limits on stranger contact and DMs", icon: "🚫", tip: "Switch DMs to followers-only and decline unknown calls." },
+          { text: "Practice a quick exit phrase if something feels off", icon: "🆘", tip: "Use a code word like 'red' to leave or get help immediately." }
         ]
       },
       {
@@ -757,14 +759,14 @@ export const workshops: Workshop[] = [
         content:
           "Use this checklist to make your digital presence clearer, safer, and more intentional.",
         items: [
-          { text: "Review who can see your posts and follower list", icon: "🔒" },
-          { text: "Turn off nonessential notifications", icon: "🔕" },
-          { text: "Remove old posts with sensitive or impulsive content", icon: "🧹" },
-          { text: "Disable exact location sharing by default", icon: "📍" },
-          { text: "Audit connected apps and authorized logins", icon: "📱" },
-          { text: "Choose one quiet time block without phone use", icon: "🧘" },
-          { text: "Write a short personal rule for what you will never post", icon: "📝" },
-          { text: "Create an emergency off switch if a thread feels harmful", icon: "🆘" }
+          { text: "Review who can see your posts and follower list", icon: "🔒", tip: "Switch to private/friends-only and audit followers monthly." },
+          { text: "Turn off nonessential notifications", icon: "🔕", tip: "Keep only calls and texts; mute social apps." },
+          { text: "Remove old posts with sensitive or impulsive content", icon: "🧹", tip: "Search your username and delete risky old posts." },
+          { text: "Disable exact location sharing by default", icon: "📍", tip: "Turn off location tags and remove location history." },
+          { text: "Audit connected apps and authorized logins", icon: "📱", tip: "Revoke access for apps you no longer use." },
+          { text: "Choose one quiet time block without phone use", icon: "🧘", tip: "Try 30-60 minutes after school or before homework." },
+          { text: "Write a short personal rule for what you will never post", icon: "📝", tip: "Write it down and keep it in notes for reminders." },
+          { text: "Create an emergency off switch if a thread feels harmful", icon: "🆘", tip: "Use mute/block/report and tell a trusted adult immediately." }
         ]
       },
       {
@@ -924,14 +926,14 @@ export const workshops: Workshop[] = [
         content:
           "Create a home environment where digital safety is normal, shared, and supported.",
         items: [
-          { text: "Set shared device-free zones and times", icon: "🚫" },
-          { text: "Use parental controls matched to age and maturity", icon: "🔒" },
-          { text: "Agree on charging outside bedrooms overnight", icon: "🔌" },
-          { text: "Review apps, permissions, and privacy settings together", icon: "📱" },
-          { text: "Name 3 trusted adults your child can contact anytime", icon: "🧑‍🏫" },
-          { text: "Create a no-blame reporting agreement", icon: "🤝" },
-          { text: "Schedule a weekly 10-minute digital check-in", icon: "🗓️" },
-          { text: "Model one intentional screen habit you want to see in your child", icon: "🧘" }
+          { text: "Set shared device-free zones and times", icon: "🚫", tip: "Pick dinner table, bedrooms, and one morning block." },
+          { text: "Use parental controls matched to age and maturity", icon: "🔒", tip: "Try Google Family Link or iOS Screen Time with grace periods." },
+          { text: "Agree on charging outside bedrooms overnight", icon: "🔌", tip: "Use one kitchen/living room charging hub." },
+          { text: "Review apps, permissions, and privacy settings together", icon: "📱", tip: "Schedule a 15-minute monthly app review." },
+          { text: "Name 3 trusted adults your child can contact anytime", icon: "🧑‍🏫", tip: "Include parent, teacher, and family friend." },
+          { text: "Create a no-blame reporting agreement", icon: "🤝", tip: "Promise no punishment for reporting something uncomfortable." },
+          { text: "Schedule a weekly 10-minute digital check-in", icon: "🗓️", tip: "Ask one open question about apps, friends, or stress." },
+          { text: "Model one intentional screen habit you want to see in your child", icon: "🧘", tip: "Pick one behavior to change first and explain it openly." }
         ]
       },
       {

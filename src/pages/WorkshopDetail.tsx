@@ -299,6 +299,7 @@ function ChecklistItems({
           key={idx}
           text={item.text}
           icon={item.icon}
+          tip={item.tip}
           color={color}
           onToggle={handleToggle}
         />

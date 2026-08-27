@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/context/useTheme";
@@ -18,7 +18,6 @@ export const Navigation = () => {
       const id = href.substring(1);
       if (location.pathname !== '/') {
         navigate('/#' + id);
-        // The scroll will be handled by a global scroll handler or by being on the home page with the hash
       } else {
         const element = document.getElementById(id);
         if (element) {
@@ -44,7 +43,7 @@ export const Navigation = () => {
       <div className="container mx-auto px-6 py-2">
         <div className="flex items-center justify-between">
           <button onClick={() => handleNavClick('#home')} className="flex items-center space-x-2 group">
-            <Heart className="h-8 w-8 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-300" />
+            <img src="/dg-logo.png" alt="DigitalGuard" className="h-8 w-8 rounded-md object-contain group-hover:scale-110 transition-transform duration-300" />
             <span className="text-2xl font-black text-foreground tracking-tight uppercase">DigitalGuard</span>
           </button>
           
