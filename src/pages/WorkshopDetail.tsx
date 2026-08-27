@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { workshops } from "@/data/workshops";
+import type { QuizItem, ChecklistItem as ChecklistItemType, ActivityItem } from "@/data/workshops";
 import { useWorkshopProgress } from "@/hooks/useWorkshopProgress";
 import { QuizCard } from "@/components/workshops/shared/QuizCard";
 import { WorkshopProgress } from "@/components/workshops/WorkshopProgress";
@@ -12,7 +13,7 @@ import { CompletionBadge } from "@/components/workshops/shared/CompletionBadge";
 export const WorkshopDetail = () => {
   const { workshopId } = useParams<{ workshopId: string }>();
   const navigate = useNavigate();
-  const { completeModule, rawProgress } = useWorkshopProgress();
+  const { completeModule, getWorkshopProgress, rawProgress } = useWorkshopProgress(workshopId);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
 
   const workshop = workshops.find((w) => w.id === workshopId);
@@ -22,8 +23,7 @@ export const WorkshopDetail = () => {
   }
 
   const currentModule = workshop.modules[currentModuleIndex];
-  const completedCount = Object.values(rawProgress[workshop.id] || {}).filter(Boolean).length;
-  const progress = workshop.modules.length > 0 ? (completedCount / workshop.modules.length) * 100 : 0;
+  const progress = getWorkshopProgress(workshop.id, workshop.modules.length);
   const isWorkshopComplete = currentModuleIndex >= workshop.modules.length;
 
   const isModuleCompleted = (moduleId: string) => {
@@ -33,13 +33,11 @@ export const WorkshopDetail = () => {
   const handleModuleComplete = (moduleId: string) => {
     completeModule(workshop.id, moduleId);
 
-    setTimeout(() => {
-      if (currentModuleIndex < workshop.modules.length - 1) {
-        setCurrentModuleIndex((prev) => prev + 1);
-      } else {
-        setCurrentModuleIndex((prev) => prev + 1);
-      }
-    }, 1500);
+    if (currentModuleIndex < workshop.modules.length - 1) {
+      setCurrentModuleIndex((prev) => prev + 1);
+    } else {
+      setCurrentModuleIndex((prev) => prev + 1);
+    }
   };
 
   const renderModuleContent = () => {
@@ -73,7 +71,7 @@ export const WorkshopDetail = () => {
       case "quiz":
         return (
           <div className="space-y-6">
-            {(currentModule.items as any[])?.map((item: any, idx: number) => (
+            {(currentModule.items as QuizItem[] | undefined)?.map((item, idx) => (
               <QuizCard
                 key={idx}
                 {...item}
@@ -95,7 +93,7 @@ export const WorkshopDetail = () => {
               {currentModule.content}
             </p>
             <ChecklistItems
-              items={(currentModule.items as any[]) || []}
+              items={(currentModule.items as ChecklistItemType[] | undefined) || []}
               color={workshop.color}
               onComplete={() => handleModuleComplete(currentModule.id)}
             />
@@ -119,7 +117,7 @@ export const WorkshopDetail = () => {
           <div className="space-y-6">
             <p className="text-slate-700 dark:text-slate-300">{currentModule.content}</p>
             <div className="grid gap-4">
-              {(currentModule.items as any[])?.map((item: any, idx: number) => (
+              {(currentModule.items as ActivityItem[] | undefined)?.map((item, idx) => (
                 <motion.div
                   key={idx}
                   className="p-6 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700"
@@ -279,7 +277,7 @@ function ChecklistItems({
   color,
   onComplete,
 }: {
-  items: any[];
+  items: ChecklistItemType[];
   color: string;
   onComplete: () => void;
 }) {

@@ -63,7 +63,7 @@ export const Workshops = () => {
         >
           {[
             { label: "Workshops", value: String(workshops.length), icon: "🎯" },
-            { label: "Modules", value: "20+", icon: "📚" },
+            { label: "Modules", value: String(workshops.reduce((sum, w) => sum + w.modules.length, 0) + "+"), icon: "📚" },
             { label: "Minutes", value: "135", icon: "⏱️" },
           ].map((stat, i) => (
             <div key={i} className="text-center">
@@ -78,11 +78,76 @@ export const Workshops = () => {
           ))}
         </motion.div>
 
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-16">
+          {[
+            { label: "Progress Persistence", desc: "LocalStorage saves progress across sessions", icon: "💾" },
+            { label: "Completion Celebration", desc: "Animated badge with confetti-style effects", icon: "🎉" },
+            { label: "Responsive Design", desc: "Works beautifully on mobile and desktop", icon: "📱" },
+            { label: "Dark Mode Ready", desc: "All components respect dark mode", icon: "🌙" },
+            { label: "Accessibility", desc: "Respects prefers-reduced-motion", icon: "♿" },
+          ].map((feature, idx) => (
+            <motion.div
+              key={feature.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 + idx * 0.05 }}
+              className="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 backdrop-blur border border-white/20 text-center"
+            >
+              <div className="text-2xl mb-2">{feature.icon}</div>
+              <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-1">{feature.label}</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{feature.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="p-6 rounded-2xl bg-white/50 dark:bg-slate-800/50 backdrop-blur border border-white/20"
+          >
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Interactive Cards</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">Animated workshop cards with progress tracking.</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#4FD1C5]/10 text-[#2C7A7B] flex items-center justify-center text-lg">🎯</div>
+              <div>
+                <p className="text-sm font-medium text-slate-800 dark:text-white">Visual progress</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">See completion status at a glance</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="p-6 rounded-2xl bg-white/50 dark:bg-slate-800/50 backdrop-blur border border-white/20"
+          >
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">Step-by-Step Modules</h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">Guided journey through lessons, quizzes, checklists, reflections, activities.</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: "Lessons", icon: "📖" },
+                { label: "Quizzes", icon: "🧠" },
+                { label: "Checklists", icon: "✅" },
+                { label: "Reflections", icon: "💭" },
+                { label: "Activities", icon: "🚀" },
+              ].map((chip) => (
+                <span key={chip.label} className="px-3 py-1.5 rounded-full bg-white/70 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <span className="mr-1">{chip.icon}</span>
+                  {chip.label}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
         <motion.div
           className="mb-10 flex flex-col sm:flex-row gap-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
+          transition={{ delay: 0.45 }}
         >
           <input
             value={query}

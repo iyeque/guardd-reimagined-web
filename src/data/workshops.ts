@@ -55,7 +55,7 @@ export const workshops: Workshop[] = [
         title: "Understanding Your Digital Footprint",
         type: "lesson",
         content:
-          "Everything you post online creates a digital footprint that can last forever. Think before you share."
+          "Everything you post, share, or even like online contributes to your digital footprint. That footprint can last for years, affect college applications, job opportunities, and how others see you. Start by auditing what you’ve shared, review old photos and comments, and practice thinking before you post. Good digital habits begin with awareness, not fear."
       },
       {
         id: "sm-quiz",
@@ -64,8 +64,7 @@ export const workshops: Workshop[] = [
         content: "Test your ability to identify trustworthy information online.",
         items: [
           {
-            question:
-              'You see a shocking headline on social media. What should you do first?',
+            question: 'You see a shocking headline on social media. What should you do first?',
             options: [
               "Share it immediately",
               "Check the source website",
@@ -77,8 +76,7 @@ export const workshops: Workshop[] = [
               "Always verify the source before sharing. Check if it's from a reputable news outlet."
           },
           {
-            question:
-              'A "friend" you don\'t know asks for personal info. You should:',
+            question: 'A "friend" you don\'t know asks for personal info. You should:',
             options: [
               "Share it - they seem nice",
               "Ask your parents first",
@@ -88,6 +86,30 @@ export const workshops: Workshop[] = [
             correctIndex: 3,
             explanation:
               "Never share personal info with strangers online. Block and report suspicious accounts."
+          },
+          {
+            question: "Which post is safest to share publicly?",
+            options: [
+              "Your full home address",
+              "Your school schedule",
+              "A photo from a public park",
+              "Your parent's credit card last 4 digits"
+            ],
+            correctIndex: 2,
+            explanation:
+              "General photos from public places are usually fine. Location, schedules, and financial details are risky."
+          },
+          {
+            question: "You get a message with a link claiming you won a prize. Best move?",
+            options: [
+              "Click to claim it",
+              "Send it to friends",
+              "Verify the sender and ignore suspicious links",
+              "Reply with your details"
+            ],
+            correctIndex: 2,
+            explanation:
+              "Unsolicited prize links are often scams. Verify the sender and avoid clicking unknown links."
           }
         ]
       },
@@ -102,7 +124,10 @@ export const workshops: Workshop[] = [
           { text: "Turn off location sharing", icon: "📍" },
           { text: "Review friend/follower lists", icon: "👥" },
           { text: "Enable two-factor authentication", icon: "🛡️" },
-          { text: "Discuss what NOT to share", icon: "🗣️" }
+          { text: "Discuss what NOT to share", icon: "🗣️" },
+          { text: "Remove old posts with sensitive info", icon: "🧹" },
+          { text: "Review app permissions", icon: "📱" },
+          { text: "Set up shared family rules for posting", icon: "📝" }
         ]
       },
       {
@@ -129,6 +154,12 @@ export const workshops: Workshop[] = [
             description:
               "Pick one small rule that would improve your social media experience.",
             action: "Share with family"
+          },
+          {
+            title: "Time Audit",
+            description:
+              "Track one social media session from opening the app to closing it.",
+            action: "Note the real duration"
           }
         ]
       },
@@ -154,6 +185,11 @@ export const workshops: Workshop[] = [
             title: "Time Limits",
             description: "Set daily social media time limits",
             action: "Set time limits"
+          },
+          {
+            title: "Check-In Ritual",
+            description: "Pick one weekly family check-in about social media experiences",
+            action: "Schedule check-in"
           }
         ]
       }
@@ -176,7 +212,7 @@ export const workshops: Workshop[] = [
         title: "Why Cybersecurity Matters",
         type: "lesson",
         content:
-          "Just like you lock your front door, you need to lock your digital life. Cybersecurity protects your family's information, photos, and identity."
+          "Just like you lock your front door, you need to lock your digital life. Cybersecurity protects your family's information, photos, and identity. Real risks include stolen accounts, ransomware, phishing scams, and unsafe public Wi-Fi. Start by mapping your family's digital footprint, then build habits that make you harder to target. Good security isn't one big action; it's many small ones done consistently."
       },
       {
         id: "cs-quiz",
@@ -208,6 +244,30 @@ export const workshops: Workshop[] = [
             correctIndex: 1,
             explanation:
               "This is likely phishing. Check the sender address and go directly to the website instead of clicking links."
+          },
+          {
+            question: "Which habit improves security the most for most families?",
+            options: [
+              "Writing passwords on a sticky note",
+              "Reusing the same password everywhere",
+              "Using a password manager with unique passwords",
+              "Changing your password every week"
+            ],
+            correctIndex: 2,
+            explanation:
+              "A password manager with unique passwords stops credential reuse, which is one of the most common attack paths."
+          },
+          {
+            question: "Public Wi-Fi is safest for:",
+            options: [
+              "Online banking",
+              "Sending sensitive work emails",
+              "Browsing public news sites",
+              "Entering credit card details"
+            ],
+            correctIndex: 2,
+            explanation:
+              "Public Wi-Fi is fine for low-risk browsing, but avoid sensitive logins unless you use a trusted VPN."
           }
         ]
       },
@@ -220,9 +280,12 @@ export const workshops: Workshop[] = [
         items: [
           { text: "Use a password manager", icon: "🔑" },
           { text: "Update all devices and apps", icon: "📦" },
-          { text: "Set up parental controls", icon: "👨‍👩‍👧‍👦" },
+          { text: "Set up parental controls where needed", icon: "👨‍👩‍👧‍👦" },
           { text: "Backup important photos/files", icon: "💾" },
-          { text: "Create a family safe word for scams", icon: "🆘" }
+          { text: "Create a family safe word for scams", icon: "🆘" },
+          { text: "Enable encryption on phones and laptops", icon: "🔐" },
+          { text: "Review account recovery options", icon: "🔄" },
+          { text: "Agree on a policy for downloading apps", icon: "📲" }
         ]
       },
       {
@@ -249,6 +312,12 @@ export const workshops: Workshop[] = [
             description:
               "Decide how family members will remind each other safely without shaming.",
             action: "Agree on tone"
+          },
+          {
+            title: "Emergency Plan",
+            description:
+              "Pick one thing to do first if a device, account, or password may be compromised.",
+            action: "Write the first step"
           }
         ]
       },
@@ -273,6 +342,11 @@ export const workshops: Workshop[] = [
             title: "Scam Alert System",
             description: "Agree on how to verify suspicious messages",
             action: "Set protocol"
+          },
+          {
+            title: "Quarterly Security Review",
+            description: "Pick a recurring date to review settings and backups as a family",
+            action: "Add to calendar"
           }
         ]
       }
@@ -295,7 +369,7 @@ export const workshops: Workshop[] = [
         title: "The Balance Equation",
         type: "lesson",
         content:
-          "Screens are tools, not enemies. The key is balance - enough for learning and connection, but not so much that we miss real-world experiences."
+          "Screens are tools, not enemies. The key is balance: enough for learning and connection, but not so much that we miss real-world experiences. Research shows that consistent routines matter more than exact minute limits. Work with your family to design a day that includes focused screen blocks, physical movement, face-to-face time, and recovery rituals. The goal is intentional use, not guilt-driven restriction."
       },
       {
         id: "st-quiz",
@@ -304,16 +378,14 @@ export const workshops: Workshop[] = [
         content: "How much do you really know about your habits?",
         items: [
           {
-            question:
-              "How long before bed should screens be turned off?",
+            question: "How long before bed should screens be turned off?",
             options: ["5 minutes", "30 minutes", "1 hour", "2 hours"],
             correctIndex: 2,
             explanation:
               "Blue light from screens suppresses melatonin. Turn off screens at least 1 hour before bed for better sleep."
           },
           {
-            question:
-              "A healthy daily screen time limit for kids (non-school) is:",
+            question: "A healthy daily screen time limit for kids (non-school) is:",
             options: [
               "No limit",
               "1-2 hours",
@@ -323,6 +395,30 @@ export const workshops: Workshop[] = [
             correctIndex: 1,
             explanation:
               "The AAP recommends 1-2 hours of recreational screen time for children, with co-viewing when possible."
+          },
+          {
+            question: "Which habit most improves evening sleep quality?",
+            options: [
+              "Using night mode only",
+              "Keeping screens in the bedroom overnight",
+              "Using a charging station outside the bedroom",
+              "Shortening all daytime screen use to zero"
+            ],
+            correctIndex: 2,
+            explanation:
+              "A charging station outside the bedroom reduces late-night temptation and notification interruptions."
+          },
+          {
+            question: "Co-viewing with a parent is helpful because:",
+            options: [
+              "It doubles screen time",
+              "It turns passive watching into conversation",
+              "It makes kids less independent",
+              "It only works for movies"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Co-viewing adds context, questions, and shared reflection, which makes media use more intentional."
           }
         ]
       },
@@ -340,7 +436,10 @@ export const workshops: Workshop[] = [
             icon: "🔌"
           },
           { text: "Plan 3 offline activities per week", icon: "⚽" },
-          { text: "Use apps to track actual screen time", icon: "📊" }
+          { text: "Use apps to track actual screen time", icon: "📊" },
+          { text: "Name a 'reset activity' after heavy use", icon: "🧘" },
+          { text: "Agree on do-not-disturb windows", icon: "🔕" },
+          { text: "Review weekly as a family", icon: "🗓️" }
         ]
       },
       {
@@ -367,6 +466,12 @@ export const workshops: Workshop[] = [
             description:
               "Pick one reset activity after heavy screen use.",
             action: "Schedule it weekly"
+          },
+          {
+            title: "Triggers List",
+            description:
+              "List 2 situations where you tend to overuse screens.",
+            action: "Write the triggers"
           }
         ]
       },
@@ -392,6 +497,12 @@ export const workshops: Workshop[] = [
             title: "Weekend Activities",
             description: "Plan offline fun for weekends",
             action: "List activities"
+          },
+          {
+            title: "Buffer Zones",
+            description:
+              "Add 15-minute buffers before transitions like dinner or bedtime",
+            action: "Add buffers"
           }
         ]
       }
@@ -414,7 +525,7 @@ export const workshops: Workshop[] = [
         title: "Digital Kindness",
         type: "lesson",
         content:
-          "Being online doesn't change how we should treat people. Kind comments, respectful disagreements, and honest sharing create a better internet for everyone."
+          "Being online doesn't change how we should treat people. Kind comments, respectful disagreements, and honest sharing create a better internet for everyone. Online interactions still have real emotional impact. This workshop helps families set shared standards for respectful behavior, recognize harmful dynamics early, and build a culture where everyone feels safe speaking up—or reaching out for help."
       },
       {
         id: "os-quiz",
@@ -423,8 +534,7 @@ export const workshops: Workshop[] = [
         content: "See how well you understand online boundaries and safety.",
         items: [
           {
-            question:
-              "Someone asks you to keep an online interaction secret. You should:",
+            question: "Someone asks you to keep an online interaction secret. You should:",
             options: [
               "Keep it secret to be loyal",
               "Tell a trusted adult",
@@ -436,8 +546,7 @@ export const workshops: Workshop[] = [
               "Requests for secrecy can be a warning sign. Trusted adults can help you decide what to do next."
           },
           {
-            question:
-              "You see a friend being treated badly in a chat. A good next step is:",
+            question: "You see a friend being treated badly in a chat. A good next step is:",
             options: [
               "Ignore it",
               "Join in",
@@ -447,6 +556,30 @@ export const workshops: Workshop[] = [
             correctIndex: 2,
             explanation:
               "Support and reporting are safer and more helpful than retaliation or silence."
+          },
+          {
+            question: "A strong boundary statement usually includes:",
+            options: [
+              "An insult back",
+              "A clear request and a consequence if ignored",
+              "Silence for as long as possible",
+              "Copying the rude behavior"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Clear, calm boundaries work better than retaliation or silence."
+          },
+          {
+            question: "If someone shares an intimate photo without consent, the best first response is to:",
+            options: [
+              "Forward it to stop the rumor",
+              "Delete all shared photos and tell a trusted adult",
+              "Reply publicly to shame them",
+              "Ignore it"
+            ],
+            correctIndex: 1,
+            explanation:
+              "Preserve evidence, remove it if possible, and involve a trusted adult or platform/reporting path."
           }
         ]
       },
@@ -461,7 +594,10 @@ export const workshops: Workshop[] = [
           { text: "Name 3 trusted adults to contact", icon: "🧑‍🏫" },
           { text: "Save evidence of risky messages", icon: "📁" },
           { text: "Agree on a no-blame reporting rule", icon: "🤝" },
-          { text: "Review apps and permissions", icon: "📱" }
+          { text: "Review apps and permissions", icon: "📱" },
+          { text: "Create a list of safe spaces and safe people", icon: "✅" },
+          { text: "Set limits on stranger contact and DMs", icon: "🚫" },
+          { text: "Practice a quick exit phrase if something feels off", icon: "🆘" }
         ]
       },
       {
@@ -488,6 +624,12 @@ export const workshops: Workshop[] = [
             description:
               "Agree on how to ask for help without embarrassment.",
             action: "Share the plan"
+          },
+          {
+            title: "Bystander Plan",
+            description:
+              "Pick one small way to support someone if you see unkind behavior online.",
+            action: "Write one action"
           }
         ]
       },
@@ -515,6 +657,12 @@ export const workshops: Workshop[] = [
             description:
               "Create a simple script for reporting without shame.",
             action: "Post it nearby"
+          },
+          {
+            title: "Follow-Up Routine",
+            description:
+              "Choose one weekly check-in question about online experiences.",
+            action: "Add to calendar"
           }
         ]
       }
