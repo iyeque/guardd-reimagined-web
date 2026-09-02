@@ -13,7 +13,6 @@ import { CompletionBadge } from "@/components/workshops/shared/CompletionBadge";
 export const WorkshopDetail = () => {
   const { workshopId } = useParams<{ workshopId: string }>();
   const navigate = useNavigate();
-  const { completeModule, getWorkshopProgress, rawProgress } = useWorkshopProgress(workshopId);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
 
   const workshop = workshops.find((w) => w.id === workshopId);
@@ -21,6 +20,11 @@ export const WorkshopDetail = () => {
   if (!workshop) {
     return <div className="min-h-screen pt-24 px-4">Workshop not found</div>;
   }
+
+  const { completeModule, getWorkshopProgress, rawProgress } = useWorkshopProgress(
+    workshopId,
+    workshop.modules.length
+  );
 
   const currentModule = workshop.modules[currentModuleIndex];
   const progress = getWorkshopProgress(workshop.id, workshop.modules.length);
@@ -252,7 +256,6 @@ export const WorkshopDetail = () => {
           <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
             {currentModule.title}
           </h2>
-          <p className="text-slate-600 dark:text-slate-400">{currentModule.content}</p>
         </div>
 
         <AnimatePresence mode="wait">

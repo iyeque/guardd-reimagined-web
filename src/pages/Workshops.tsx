@@ -1,11 +1,15 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { workshops } from "@/data/workshops";
 import { WorkshopCard } from "@/components/workshops/WorkshopCard";
+import { useWorkshopProgress } from "@/hooks/useWorkshopProgress";
 
 export const Workshops = () => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const { rawProgress } = useWorkshopProgress();
 
   const tags = useMemo(() => {
     const all = new Set<string>();
@@ -29,11 +33,19 @@ export const Workshops = () => {
     });
   }, [query, activeTag]);
 
+  const completedCount = workshops.filter((w) => {
+    return rawProgress[w.id] && Object.values(rawProgress[w.id]).filter(Boolean).length >= w.modules.length;
+  }).length;
+  const nextWorkshop = workshops.find((w) => {
+    return !rawProgress[w.id] || Object.values(rawProgress[w.id]).filter(Boolean).length < w.modules.length;
+  });
+  const hasProgress = Object.keys(rawProgress).length > 0;
+
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -43,17 +55,122 @@ export const Workshops = () => {
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.2 }}
           >
-            <span>🧠</span>
-            <span>Interactive Learning</span>
+            <span>🎓</span>
+            <span>Flagship Course + Workshops</span>
           </motion.div>
 
           <h1 className="text-4xl md:text-6xl font-bold mb-4 text-slate-800 dark:text-white">
             Family <span className="gradient-text">Workshops</span>
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
             Learn together through interactive activities, quizzes, and collaborative exercises designed for the whole family.
           </p>
+
+          <motion.div
+            className="p-6 rounded-3xl bg-gradient-to-r from-[#4FD1C5]/10 to-[#FF9A8B]/10 border border-white/20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <h2 className="text-xl md:text-2xl font-bold mb-2 text-slate-800 dark:text-white">
+              Digital Guardian Wellness Initiative
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-4 max-w-2xl mx-auto">
+              Our flagship 1-hour course. Go from awareness to digital mastery with guided lessons, hands-on action pauses, and two assessments.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <button
+                onClick={() => window.scrollTo({ top: 800, behavior: "smooth" })}
+                className="px-6 py-3 rounded-full bg-[#4FD1C5] text-white font-bold shadow-lg hover:shadow-xl transition-all"
+              >
+                Start Full Course
+              </button>
+              <button
+                onClick={() => setQuery("")}
+                className="px-6 py-3 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-300"
+              >
+                Browse Individual Topics
+              </button>
+            </div>
+          </motion.div>
         </motion.div>
+
+        <motion.div
+          className="mb-10 p-6 rounded-3xl bg-white/50 dark:bg-slate-800/50 backdrop-blur border border-white/20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.28 }}
+        >
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-1">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">
+                Trusted by families
+              </h3>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">
+                10,000+
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Families exploring Guardd workshops together.
+              </p>
+            </div>
+            <div className="md:col-span-2">
+              <div className="grid gap-4">
+                <div className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                    “My teen actually enjoyed the Social Media workshop. We ended up making a family posting agreement the same night.”
+                  </p>
+                  <p className="text-xs font-medium text-slate-500 mt-2">
+                    — Sarah, mom of 3
+                  </p>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 italic">
+                    “Raising Digital Kids gave us better boundaries and calmer check-ins. It felt like a reset for our household.”
+                  </p>
+                  <p className="text-xs font-medium text-slate-500 mt-2">
+                    — Family of the Week
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {hasProgress && (
+          <motion.div
+            className="mb-10 p-6 rounded-3xl bg-gradient-to-r from-[#4FD1C5]/10 to-[#FF9A8B]/10 border border-white/20"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+                  Welcome back! 👋
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  You've completed {completedCount} of {workshops.length} workshops.
+                </p>
+                {nextWorkshop && (
+                  <button
+                    onClick={() => navigate(`/workshop/${nextWorkshop.id}`)}
+                    className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-[#2C7A7B] dark:text-[#4FD1C5] hover:underline"
+                  >
+                    Continue {nextWorkshop.title} →
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-slate-600 dark:text-slate-400">
+                  {Math.round((completedCount / workshops.length) * 100)}% complete
+                </div>
+                <div className="w-24 h-24 rounded-full flex items-center justify-center text-3xl bg-gradient-to-br from-[#4FD1C5] to-[#FF9A8B] text-white">
+                  {completedCount === workshops.length ? '🏆' : '🔒'}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         <motion.div
           className="grid grid-cols-3 gap-4 max-w-lg mx-auto mb-16 p-6 rounded-2xl bg-white/50 dark:bg-slate-800/50 backdrop-blur border border-white/20"
@@ -194,10 +311,16 @@ export const Workshops = () => {
           viewport={{ once: true }}
         >
           <h3 className="text-2xl font-bold mb-2 text-slate-800 dark:text-white">
-            Complete all workshops to earn your badge!
+            {completedCount === 0
+              ? "Start Your Journey! 🚀"
+              : completedCount === workshops.length
+              ? "🏆 All Workshops Complete!"
+              : `${completedCount}/${workshops.length} Complete — Keep Going!`}
           </h3>
           <p className="text-slate-600 dark:text-slate-400">
-            Track your family's progress and celebrate milestones together.
+            {nextWorkshop
+              ? `Next up: ${nextWorkshop.title}`
+              : "Track your family's progress and celebrate milestones together."}
           </p>
         </motion.div>
       </div>

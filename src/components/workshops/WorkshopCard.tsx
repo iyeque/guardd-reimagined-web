@@ -10,7 +10,7 @@ interface Props {
 
 export const WorkshopCard = ({ workshop, index }: Props) => {
   const navigate = useNavigate();
-  const { progress } = useWorkshopProgress(workshop.id);
+  const { progress } = useWorkshopProgress(workshop.id, workshop.modules.length);
   const isCompleted = progress === 100;
 
   return (
@@ -42,15 +42,39 @@ export const WorkshopCard = ({ workshop, index }: Props) => {
             </div>
           </div>
 
-          <h3 className="text-2xl font-bold mb-2 text-slate-800 dark:text-white group-hover:text-[#4FD1C5] transition-colors">
-            {workshop.title}
-          </h3>
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <h3 className="text-2xl font-bold text-slate-800 dark:text-white group-hover:text-[#4FD1C5] transition-colors">
+              {workshop.title}
+            </h3>
+            {workshop.role && (
+              <span className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-white/90 dark:bg-slate-700/90 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                {workshop.role === 'Parents' ? '👨‍👩‍👧 For Parents' : workshop.role === 'Teens' ? '👦 For Teens' : '👨‍👩‍👧‍👦 Whole Family'}
+              </span>
+            )}
+          </div>
+
           <p className="text-sm font-medium mb-3" style={{ color: workshop.color }}>
             {workshop.subtitle}
           </p>
-          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-6">
+          <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-5">
             {workshop.description}
           </p>
+
+          <div className="flex flex-wrap gap-2 mb-6">
+            {workshop.modules.slice(0, 3).map((m) => (
+              <span
+                key={m.id}
+                className="text-xs px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+              >
+                {m.type === 'lesson' ? '📖' : m.type === 'quiz' ? '❓' : m.type === 'checklist' ? '✅' : m.type === 'reflection' ? '💭' : '🚀'} {m.title}
+              </span>
+            ))}
+            {(workshop.modulesCount ?? workshop.modules.length) > 3 && (
+              <span className="text-xs px-2 py-1 rounded-md bg-[#4FD1C5]/10 text-[#2C7A7B] dark:text-[#4FD1C5]">
+                +{(workshop.modulesCount ?? workshop.modules.length) - 3} more
+              </span>
+            )}
+          </div>
 
           <div className="flex items-center justify-between">
             {progress > 0 ? (
@@ -77,16 +101,28 @@ export const WorkshopCard = ({ workshop, index }: Props) => {
               </span>
             )}
 
-            {isCompleted && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-                style={{ backgroundColor: workshop.lightColor }}
-              >
-                ✅
-              </motion.div>
-            )}
+            <div className="flex items-center gap-2">
+              {workshop.hasAssessment && (
+                <span className="text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2 py-1 rounded-full">
+                  🧠 Quiz
+                </span>
+              )}
+              {workshop.actionPauseCount && workshop.actionPauseCount > 0 && (
+                <span className="text-xs font-medium text-[#2C7A7B] dark:text-[#4FD1C5] bg-[#4FD1C5]/10 px-2 py-1 rounded-full">
+                  ⏸️ {workshop.actionPauseCount}
+                </span>
+              )}
+              {isCompleted && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+                  style={{ backgroundColor: workshop.lightColor }}
+                >
+                  ✅
+                </motion.div>
+              )}
+            </div>
           </div>
         </div>
 

@@ -6,7 +6,7 @@ interface ProgressState {
   };
 }
 
-export const useWorkshopProgress = (workshopId?: string) => {
+export const useWorkshopProgress = (workshopId?: string, totalModules?: number) => {
   const [progress, setProgress] = useState<ProgressState>({});
 
   useEffect(() => {
@@ -60,8 +60,8 @@ export const useWorkshopProgress = (workshopId?: string) => {
     [progress]
   );
 
-  const currentProgress = workshopId
-    ? getWorkshopProgress(workshopId, 5)
+  const currentProgress = workshopId && totalModules
+    ? getWorkshopProgress(workshopId, totalModules)
     : 0;
 
   return {

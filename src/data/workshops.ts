@@ -8,6 +8,11 @@ export interface Workshop {
   lightColor: string;
   duration: string;
   ageGroup: string;
+  role?: string;
+  modulesCount?: number;
+  hasAssessment?: boolean;
+  actionPauseCount?: number;
+  isCourse?: boolean;
   modules: Module[];
 }
 
@@ -50,6 +55,11 @@ export const workshops: Workshop[] = [
     lightColor: "#FFF5F5",
     duration: "35 min",
     ageGroup: "Ages 10+",
+    role: "Whole Family",
+    modulesCount: 5,
+    hasAssessment: true,
+    actionPauseCount: 1,
+    isCourse: false,
     modules: [
       {
         id: "sm-intro",
@@ -207,6 +217,11 @@ export const workshops: Workshop[] = [
     lightColor: "#E6FFFA",
     duration: "40 min",
     ageGroup: "All Ages",
+    role: "Whole Family",
+    modulesCount: 5,
+    hasAssessment: true,
+    actionPauseCount: 1,
+    isCourse: false,
     modules: [
       {
         id: "cs-intro",
@@ -364,6 +379,11 @@ export const workshops: Workshop[] = [
     lightColor: "#FAF5FF",
     duration: "30 min",
     ageGroup: "All Ages",
+    role: "Whole Family",
+    modulesCount: 5,
+    hasAssessment: true,
+    actionPauseCount: 1,
+    isCourse: false,
     modules: [
       {
         id: "st-intro",
@@ -521,6 +541,11 @@ export const workshops: Workshop[] = [
     lightColor: "#F0F9FF",
     duration: "30 min",
     ageGroup: "Ages 8+",
+    role: "Whole Family",
+    modulesCount: 4,
+    hasAssessment: true,
+    actionPauseCount: 1,
+    isCourse: false,
     modules: [
       {
         id: "os-intro",
@@ -681,6 +706,11 @@ export const workshops: Workshop[] = [
     lightColor: "#FDF2F8",
     duration: "35 min",
     ageGroup: "Ages 13-17",
+    role: "Teens",
+    modulesCount: 4,
+    hasAssessment: true,
+    actionPauseCount: 1,
+    isCourse: false,
     modules: [
       {
         id: "tdi-intro-1",
@@ -848,6 +878,11 @@ export const workshops: Workshop[] = [
     lightColor: "#FFF7ED",
     duration: "40 min",
     ageGroup: "Parents / Caregivers",
+    role: "Parents",
+    modulesCount: 4,
+    hasAssessment: true,
+    actionPauseCount: 1,
+    isCourse: false,
     modules: [
       {
         id: "pdl-intro-1",

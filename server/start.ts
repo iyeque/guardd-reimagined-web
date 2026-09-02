@@ -1,6 +1,6 @@
 // Ensure env vars are loaded before anything else imports process.env-dependent modules.
-// @ts-ignore
-Promise.resolve(import("dotenv") as any).then((m: any) => m.config?.()).catch(() => {});
+// @ts-expect-error dotenv config import is intentionally untyped for bootstrap
+Promise.resolve(import("dotenv")).then((m: { config?: () => void }) => m.config?.()).catch(() => {});
 
 import { app } from "./index.js";
 import { setupVite, serveStatic } from "./vite.js";
