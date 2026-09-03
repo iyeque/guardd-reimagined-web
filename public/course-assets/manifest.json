@@ -1,0 +1,155 @@
+{
+  "version": "1",
+  "title": "Digital Guardian Wellness Initiative",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction to Digital Guardian",
+      "duration": "2:00",
+      "assets": {
+        "audio": "/course-assets/audio/m1.mp3",
+        "video": "/course-assets/video/m1.mp4",
+        "overlay": "/course-assets/overlays/m1.png",
+        "final": "/course-assets/final/m1.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 85,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m2",
+      "title": "Checking Your Digital Wellbeing",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m2.mp3",
+        "video": "/course-assets/video/m2.mp4",
+        "overlay": "/course-assets/overlays/m2.png",
+        "final": "/course-assets/final/m2.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 230,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m3",
+      "title": "Privacy & Permission Settings",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m3.mp3",
+        "video": "/course-assets/video/m3.mp4",
+        "overlay": "/course-assets/overlays/m3.png",
+        "final": "/course-assets/final/m3.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 245,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m4",
+      "title": "Content Filtering & Your Algorithm",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m4.mp3",
+        "video": "/course-assets/video/m4.mp4",
+        "overlay": "/course-assets/overlays/m4.png",
+        "final": "/course-assets/final/m4.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 200,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m5",
+      "title": "Manage Subscriptions & Feed Cleanup",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m5.mp3",
+        "video": "/course-assets/video/m5.mp4",
+        "overlay": "/course-assets/overlays/m5.png",
+        "final": "/course-assets/final/m5.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 210,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m6",
+      "title": "Approving Content (YouTube Kids & Kidio)",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m6.mp3",
+        "video": "/course-assets/video/m6.mp4",
+        "overlay": "/course-assets/overlays/m6.png",
+        "final": "/course-assets/final/m6.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 240,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m7",
+      "title": "Report & Block on Social Media",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m7.mp3",
+        "video": "/course-assets/video/m7.mp4",
+        "overlay": "/course-assets/overlays/m7.png",
+        "final": "/course-assets/final/m7.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 235,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m8",
+      "title": "Conversation Starters on Cyberbullying",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m8.mp3",
+        "video": "/course-assets/video/m8.mp4",
+        "overlay": "/course-assets/overlays/m8.png",
+        "final": "/course-assets/final/m8.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 225,
+        "title": "Action Pause"
+      }
+    },
+    {
+      "id": "m9",
+      "title": "Digital Literacy & AI",
+      "duration": "4:45",
+      "assets": {
+        "audio": "/course-assets/audio/m9.mp3",
+        "video": "/course-assets/video/m9.mp4",
+        "overlay": "/course-assets/overlays/m9.png",
+        "final": "/course-assets/final/m9.mp4"
+      },
+      "actionPause": {
+        "enabled": true,
+        "timeSeconds": 250,
+        "title": "Action Pause"
+      }
+    }
+  ],
+  "productionHosting": {
+    "dev": "local-public",
+    "recommended": "cdn-object-storage",
+    "notes": "Keep dev assets under public/course-assets. Move to CDN/object storage when videos/assets are finalized."
+  }
+}

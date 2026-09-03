@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getCourseManifest, resolveAssetForModule, type CourseManifest } from "@/lib/courseAssets";
 
 export interface CourseModule {
   id: string;
@@ -148,6 +149,36 @@ export const Course = () => {
     return [];
   }, [activeAssessmentId]);
 
+  const [manifest, setManifest] = useState<CourseManifest | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getCourseManifest()
+      .then(setManifest)
+      .catch(() => setLoadError("Unable to load course assets manifest."));
+  }, []);
+
+  const currentModuleEntry = manifest?.modules.find((m) => m.moduleId === current.id);
+  const playback = currentModuleEntry ? resolveAssetForModule(currentModuleEntry) : null;
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen pt-24 px-4">
+        <div className="max-w-3xl mx-auto p-6 rounded-2xl bg-white/70 dark:bg-slate-800 border border-red-200 text-red-700">
+          {loadError}
+        </div>
+      </div>
+    );
+  }
+
+  if (!manifest) {
+    return (
+      <div className="min-h-screen pt-24 px-4 flex items-center justify-center">
+        <div className="animate-pulse text-slate-500">Loading course manifest...</div>
+      </div>
+    );
+  }
+
   if (isComplete) {
     return (
       <div className="min-h-screen pt-24 px-4 flex items-center justify-center">
@@ -269,6 +300,37 @@ export const Course = () => {
                       Start Assessment
                     </button>
                   </div>
+                </div>
+              ) : loadError ? (
+                <div className="absolute inset-0 flex items-center justify-center text-white/80">
+                  <div className="text-center p-8">
+                    <p className="text-sm text-white/70">
+                      {loadError}
+                    </p>
+                  </div>
+                </div>
+              ) : playback?.type === "video" ? (
+                <video
+                  key={current.id}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  controls
+                  playsInline
+                  poster={currentModuleEntry?.overlay || undefined}
+                >
+                  <source src={playback.primarySrc} />
+                </video>
+              ) : playback?.type === "audio" ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8">
+                  <div className="text-5xl mb-2">🎙️</div>
+                  <h3 className="text-xl font-bold text-white mb-1">{current.title}</h3>
+                  <p className="text-sm text-white/70">Audio playback ready once narration is generated.</p>
+                  <audio
+                    key={current.id}
+                    className="w-full max-w-md"
+                    controls
+                  >
+                    <source src={playback.primarySrc} />
+                  </audio>
                 </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-white/80">

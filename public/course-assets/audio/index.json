@@ -1,0 +1,68 @@
+{
+  "generatedAt": "2026-09-03T15:53:43.711Z",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Introduction to Digital Guardian",
+      "audio": "/course-assets/audio/m1.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m2",
+      "title": "Checking Your Digital Wellbeing",
+      "audio": "/course-assets/audio/m2.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m3",
+      "title": "Privacy & Permission Settings",
+      "audio": "/course-assets/audio/m3.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m4",
+      "title": "Content Filtering & Your Algorithm",
+      "audio": "/course-assets/audio/m4.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m5",
+      "title": "Manage Subscriptions & Feed Cleanup",
+      "audio": "/course-assets/audio/m5.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m6",
+      "title": "Approving Content (YouTube Kids & Kidio)",
+      "audio": "/course-assets/audio/m6.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m7",
+      "title": "Report & Block on Social Media",
+      "audio": "/course-assets/audio/m7.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m8",
+      "title": "Conversation Starters on Cyberbullying",
+      "audio": "/course-assets/audio/m8.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    },
+    {
+      "id": "m9",
+      "title": "Digital Literacy & AI",
+      "audio": "/course-assets/audio/m9.mp3",
+      "status": "missing",
+      "notes": "Generate narration audio and place at the path above."
+    }
+  ]
+}
