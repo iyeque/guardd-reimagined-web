@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/context/useTheme";
@@ -75,6 +75,11 @@ export const Navigation = () => {
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
+            <Link to="/course">
+              <Button variant="ghost" className="text-foreground hover:text-green-600 dark:hover:text-green-400 font-black uppercase tracking-widest">
+                Course
+              </Button>
+            </Link>
             <Link to="/workshop">
               <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black shadow-xl shadow-green-500/20 transition-all duration-300 rounded-xl">
                 Get Started

@@ -34,6 +34,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Workshop = lazy(() => import("./pages/Workshop"));
 const Workshops = lazy(() => import("./pages/Workshops").then(m => ({ default: m.Workshops })));
 const WorkshopDetail = lazy(() => import("./pages/WorkshopDetail").then(m => ({ default: m.WorkshopDetail })));
+const Course = lazy(() => import("./pages/Course").then(m => ({ default: m.Course })));
 const ScreenTimeManagement = lazy(() => import("./pages/ScreenTimeManagement"));
 const FamilyDigitalAgreements = lazy(() => import("./pages/FamilyDigitalAgreements"));
 const FamilyCommitments = lazy(() => import("./pages/FamilyCommitments"));
@@ -64,6 +65,7 @@ const App = () => (
                 path="/workshop/:workshopId"
                 element={<WorkshopDetail />}
               />
+              <Route path="/course" element={<Course />} />
               <Route
                 path="/screen-time-management"
                 element={<ScreenTimeManagement />}
