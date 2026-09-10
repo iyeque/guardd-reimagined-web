@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getCourseManifest, resolveAssetForModule, type CourseManifest } from "@/lib/courseAssets";
+import { getCourseManifest, resolveAssetForModule } from "@/lib/courseAssets";
+import { type CourseManifest } from "@/lib/courseAssets";
+import { CourseAudioPlayer } from "@/components/course/CourseAudioPlayer";
 
 export interface CourseModule {
   id: string;
@@ -324,13 +326,7 @@ export const Course = () => {
                   <div className="text-5xl mb-2">🎙️</div>
                   <h3 className="text-xl font-bold text-white mb-1">{current.title}</h3>
                   <p className="text-sm text-white/70">Audio playback ready once narration is generated.</p>
-                  <audio
-                    key={current.id}
-                    className="w-full max-w-md"
-                    controls
-                  >
-                    <source src={playback.primarySrc} />
-                  </audio>
+                  <CourseAudioPlayer src={playback.primarySrc} title={current.title} />
                 </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-white/80">
