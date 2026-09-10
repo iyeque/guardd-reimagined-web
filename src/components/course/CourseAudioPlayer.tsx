@@ -84,9 +84,11 @@ export const CourseAudioPlayer = ({ src, title }: CourseAudioPlayerProps) => {
         </motion.button>
 
         <div className="flex-1">
+          <div className="text-xs text-white/80 mb-1 truncate">
+            {title}
+          </div>
           <div className="flex justify-between text-xs text-white/80 mb-1">
             <span>{formatTime(currentTime)}</span>
-            <span>{title}</span>
             <span>{formatTime(duration)}</span>
           </div>
           <input

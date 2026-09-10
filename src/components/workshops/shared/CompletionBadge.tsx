@@ -169,42 +169,59 @@ export const CompletionBadge = ({ title, icon, color }: Props) => {
 
           <div
             ref={certificateRef}
-            className="p-8 rounded-none border-2 bg-white dark:bg-slate-900"
-            style={{ borderColor: color }}
+            className="p-8 bg-white dark:bg-slate-900 overflow-hidden"
+            style={{
+              width: "11in",
+              height: "8.5in",
+              borderColor: color,
+              borderWidth: "2px",
+              borderStyle: "solid",
+              borderRadius: "0px",
+            }}
           >
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="flex-1 text-center md:text-left">
-                <div className="text-5xl mb-3">🏅</div>
-                <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
-                  Certificate of Completion
-                </h3>
-                <p className="text-slate-500 dark:text-slate-400">
-                  This certifies that
-                </p>
-                <p className="text-xl font-bold mt-1 text-slate-800 dark:text-white">
-                  {familyName || "________________________"}
-                </p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                  has completed
-                </p>
-                <p className="text-2xl font-bold mt-1" style={{ color }}>
-                  {title}
-                </p>
+            <div className="flex flex-col h-full">
+              <div className="flex justify-center mb-6">
+                <img
+                  src="/dg-logo.png"
+                  alt="Digital Guardian"
+                  className="h-12 w-auto object-contain"
+                />
               </div>
-              <div className="flex-shrink-0 text-center">
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  Completion Date
+
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8 flex-grow">
+                <div className="flex-1 text-center md:text-left">
+                  <div className="text-5xl mb-3">🏅</div>
+                  <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
+                    Certificate of Completion
+                  </h3>
+                  <p className="text-slate-500 dark:text-slate-400">
+                    This certifies that
+                  </p>
+                  <p className="text-xl font-bold mt-1 text-slate-800 dark:text-white">
+                    {familyName || "________________________"}
+                  </p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    has completed
+                  </p>
+                  <p className="text-2xl font-bold mt-1" style={{ color }}>
+                    {title}
+                  </p>
                 </div>
-                <div className="text-lg font-bold text-slate-800 dark:text-white mt-1">
-                  {new Date().toLocaleDateString()}
-                </div>
-                <div className="mt-4">
-                  <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl" style={{ backgroundColor: color }}>
-                    {icon}
+                <div className="flex-shrink-0 text-center">
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    Completion Date
                   </div>
-                </div>
-                <div className="text-xs text-slate-400 mt-2">
-                  Guardian-Digital Wellness Workshop
+                  <div className="text-lg font-bold text-slate-800 dark:text-white mt-1">
+                    {new Date().toLocaleDateString()}
+                  </div>
+                  <div className="mt-4">
+                    <div className="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl" style={{ backgroundColor: color }}>
+                      {icon}
+                    </div>
+                  </div>
+                  <div className="text-xs text-slate-400 mt-2">
+                    Guardian-Digital Wellness Workshop
+                  </div>
                 </div>
               </div>
             </div>

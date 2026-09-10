@@ -248,6 +248,21 @@ export const Course = () => {
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
+        <div className="relative mb-8 pb-16">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 px-6 py-4 rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200 dark:border-slate-700 shadow-xl font-bold text-sm text-slate-700 dark:text-slate-200 text-center"
+          >
+            Coming Soon — course modules, voice narration, and final video playback are being prepared.
+          </motion.p>
+          <img
+            src="/dg-logo.png"
+            alt="Digital Guardian logo"
+            className="w-auto h-14 max-w-[160px]"
+          />
+        </div>
+
         <motion.div
           className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
