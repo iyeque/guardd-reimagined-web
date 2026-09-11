@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -92,6 +92,26 @@ export const familyCommitmentMilestones = pgTable("family_commitment_milestones"
   targetDate: text("target_date"),
   completedAt: timestamp("completed_at"),
 });
+
+export const assessmentAnalytics = pgTable("assessment_analytics", {
+  id: serial("id").primaryKey(),
+  assessmentId: text("assessment_id").notNull(),
+  moduleId: text("module_id").notNull(),
+  workshopId: text("workshop_id"),
+  totalQuestions: integer("total_questions").notNull(),
+  correctCount: integer("correct_count").notNull(),
+  score: integer("score").notNull(),
+  passed: text("passed").notNull(),
+  completedAt: timestamp("completed_at").defaultNow(),
+});
+
+export const insertAssessmentAnalyticsSchema = createInsertSchema(assessmentAnalytics).omit({
+  id: true,
+  completedAt: true,
+});
+
+export type AssessmentAnalytics = typeof assessmentAnalytics.$inferSelect;
+export type InsertAssessmentAnalytics = z.infer<typeof insertAssessmentAnalyticsSchema>;
 
 export const insertMessageSchema = createInsertSchema(contactMessages);
 export const insertMentorApplicationSchema = createInsertSchema(mentorApplications);

@@ -274,6 +274,79 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Assessment Analytics (Admin)
+  app.get("/api/assessment-analytics", validateAdmin, async (req, res) => {
+    try {
+      const limit = Number(req.query.limit || 50);
+      const offset = Number(req.query.offset || 0);
+      const rows = await storage.listAssessmentAnalytics(limit, offset);
+      const out = rows.map((row) => ({
+        id: row.id,
+        assessmentId: row.assessmentId,
+        moduleId: row.moduleId,
+        workshopId: row.workshopId ?? null,
+        totalQuestions: row.totalQuestions,
+        correctCount: row.correctCount,
+        score: row.score,
+        passed: row.passed === "true",
+        completedAt: row.completedAt?.toISOString() ?? null,
+      }));
+      res.json(out);
+    } catch (error) {
+      console.error("/api/assessment-analytics failed:", error);
+      res.status(500).json({ error: "Failed to load assessment analytics" });
+    }
+  });
+
+  app.post("/api/assessment-analytics", async (req, res) => {
+    try {
+      // Rate limit: allow max 10 submissions per IP per minute
+      const ip = req.ip || req.headers["x-forwarded-for"]?.toString().split(",")[0].trim() || "unknown";
+      const key = `ratelimit:analytics:${ip}`;
+      const now = Date.now();
+      const windowMs = 60 * 1000; // 1 minute
+      const maxRequests = 10;
+
+      const existing = (await storage.getSyncMetadata(key)) ?? "";
+      const timestamps = existing ? JSON.parse(existing) : [];
+      const recent = timestamps.filter((t: number) => now - t < windowMs);
+
+      if (recent.length >= maxRequests) {
+        return res.status(429).json({ error: "Too many requests. Please wait before submitting again." });
+      }
+
+      recent.push(now);
+      await storage.setSyncMetadata(key, JSON.stringify(recent));
+
+      const raw = req.body as Record<string, unknown>;
+      const body = insertAssessmentAnalyticsSchema.parse({
+        assessmentId: raw.assessmentId,
+        moduleId: raw.moduleId,
+        workshopId: raw.workshopId ?? undefined,
+        totalQuestions: raw.totalQuestions,
+        correctCount: raw.correctCount,
+        score: raw.score,
+        passed: raw.passed,
+      });
+      const created = await storage.createAssessmentAnalytics(body);
+      res.status(201).json(created);
+    } catch (error) {
+      console.error("/api/assessment-analytics failed:", error);
+      res.status(400).json({ error: "Invalid assessment analytics data" });
+    }
+  });
+
+  app.delete("/api/assessment-analytics/:id", validateAdmin, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      await storage.deleteAssessmentAnalytics(id);
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("/api/assessment-analytics delete failed:", error);
+      res.status(500).json({ error: "Failed to delete assessment analytics" });
+    }
+  });
+
   // FAQ: Ask a question (RAG-style retrieval)
   app.post("/api/faq/ask", async (req, res) => {
     try {

@@ -9,6 +9,7 @@ import { WorkshopProgress } from "@/components/workshops/WorkshopProgress";
 import { ChecklistItem } from "@/components/workshops/shared/ChecklistItem";
 import { ReflectionBox } from "@/components/workshops/shared/ReflectionBox";
 import { CompletionBadge } from "@/components/workshops/shared/CompletionBadge";
+import { Info } from "lucide-react";
 
 export const WorkshopDetail = () => {
   const { workshopId } = useParams<{ workshopId: string }>();
@@ -173,6 +174,21 @@ export const WorkshopDetail = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      {/* Family & privacy note */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <div className="flex items-start gap-3 px-5 py-4 rounded-2xl bg-white/5 border border-white/10 text-sm text-white/70">
+          <Info className="w-5 h-5 text-[#4FD1C5] flex-shrink-0 mt-0.5" />
+          <div className="min-w-0">
+            <p className="font-medium text-white/80 mb-1">Saved locally · Family-friendly</p>
+            <p className="leading-relaxed">
+              Your workshop progress is saved in your browser so you can continue where you left off.
+              Reflection prompts are meant to be discussed with a parent, guardian, or trusted adult.
+              If a child is using this workshop, we encourage an adult to review the content with them.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-3xl mx-auto workshop-scroll">
         <motion.button
           onClick={() => navigate("/workshops")}
@@ -243,11 +259,11 @@ export const WorkshopDetail = () => {
               className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
               style={{ backgroundColor: workshop.lightColor }}
             >
-              {currentModule.type === 'lesson' && '📖'}
-              {currentModule.type === 'quiz' && '🧠'}
-              {currentModule.type === 'checklist' && '✅'}
-              {currentModule.type === 'reflection' && '💭'}
-              {currentModule.type === 'activity' && '🚀'}
+              {currentModule.type === "lesson" && "📖"}
+              {currentModule.type === "quiz" && "🧠"}
+              {currentModule.type === "checklist" && "✅"}
+              {currentModule.type === "reflection" && "💭"}
+              {currentModule.type === "activity" && "🚀"}
             </div>
             <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
               {currentModule.type}

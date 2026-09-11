@@ -1,12 +1,28 @@
 import {
-  contactMessages, type Message, type InsertMessage,
-  mentorApplications, type MentorApplication, type InsertMentorApplication,
-  communityEvents, type CommunityEvent, type InsertEvent,
-  trendingDiscussions, type TrendingDiscussion, type InsertDiscussion,
+  contactMessages,
+  type Message,
+  type InsertMessage,
+  mentorApplications,
+  type MentorApplication,
+  type InsertMentorApplication,
+  communityEvents,
+  type CommunityEvent,
+  type InsertEvent,
+  trendingDiscussions,
+  type TrendingDiscussion,
+  type InsertDiscussion,
   syncMetadata,
-  siteClaims, type SiteClaim, type InsertSiteClaim,
-  familyCommitments, type FamilyCommitment, type InsertFamilyCommitment,
-  familyCommitmentMilestones, type InsertFamilyCommitmentMilestone
+  siteClaims,
+  type SiteClaim,
+  type InsertSiteClaim,
+  familyCommitments,
+  type FamilyCommitment,
+  type InsertFamilyCommitment,
+  familyCommitmentMilestones,
+  type InsertFamilyCommitmentMilestone,
+  assessmentAnalytics,
+  type AssessmentAnalytics,
+  type InsertAssessmentAnalytics,
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { desc, eq } from "drizzle-orm";
@@ -17,7 +33,7 @@ export interface IStorage {
   createMentorApplication(app: InsertMentorApplication): Promise<MentorApplication>;
   getMentorApplications(): Promise<MentorApplication[]>;
   updateMentorApplicationStatus(id: number, status: string): Promise<MentorApplication>;
-  
+
   // Community Data
   getEvents(): Promise<CommunityEvent[]>;
   setEvents(events: InsertEvent[]): Promise<void>;
@@ -30,15 +46,21 @@ export interface IStorage {
 
   // Site claims
   listClaims(): Promise<SiteClaim[]>;
-  upsertClaim(claim: InsertSiteClaim): Promise<SiteClaim>;
+  upsertClaim(insert: InsertSiteClaim): Promise<SiteClaim>;
   deleteClaim(id: number): Promise<void>;
 
-  // Family commitments (ORCA-style inventory bridge adapted for family wellness)
+  // Family commitments
   listFamilyCommitments(familyId: string): Promise<FamilyCommitment[]>;
   getFamilyCommitment(id: number): Promise<FamilyCommitment | null>;
-  createFamilyCommitment(commitment: InsertFamilyCommitment): Promise<FamilyCommitment>;
+  createFamilyCommitment(insert: InsertFamilyCommitment): Promise<FamilyCommitment>;
   updateFamilyCommitment(id: number, patch: Partial<InsertFamilyCommitment>): Promise<FamilyCommitment | null>;
   listFamilyCommitmentMilestones(commitmentId: number): Promise<InsertFamilyCommitmentMilestone[]>;
+
+  // Assessment analytics
+  createAssessmentAnalytics(insert: InsertAssessmentAnalytics): Promise<AssessmentAnalytics>;
+  listAssessmentAnalytics(limit?: number, offset?: number): Promise<AssessmentAnalytics[]>;
+  getAssessmentAnalyticsById(id: number): Promise<AssessmentAnalytics | null>;
+  deleteAssessmentAnalytics(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -148,6 +170,29 @@ export class DatabaseStorage implements IStorage {
 
   async listFamilyCommitmentMilestones(commitmentId: number): Promise<InsertFamilyCommitmentMilestone[]> {
     return await db.select().from(familyCommitmentMilestones).where(eq(familyCommitmentMilestones.commitmentId, commitmentId));
+  }
+
+  async createAssessmentAnalytics(insert: InsertAssessmentAnalytics): Promise<AssessmentAnalytics> {
+    const [row] = await db.insert(assessmentAnalytics).values(insert).returning();
+    return row;
+  }
+
+  async listAssessmentAnalytics(limit = 50, offset = 0): Promise<AssessmentAnalytics[]> {
+    return await db
+      .select()
+      .from(assessmentAnalytics)
+      .orderBy(desc(assessmentAnalytics.completedAt))
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async getAssessmentAnalyticsById(id: number): Promise<AssessmentAnalytics | null> {
+    const [row] = await db.select().from(assessmentAnalytics).where(eq(assessmentAnalytics.id, id)).limit(1);
+    return row ?? null;
+  }
+
+  async deleteAssessmentAnalytics(id: number): Promise<void> {
+    await db.delete(assessmentAnalytics).where(eq(assessmentAnalytics.id, id));
   }
 }
 

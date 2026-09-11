@@ -3,6 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getCourseManifest, resolveAssetForModule } from "@/lib/courseAssets";
 import { type CourseManifest } from "@/lib/courseAssets";
 import { CourseAudioPlayer } from "@/components/course/CourseAudioPlayer";
+import {
+  buildAssessmentAnalyticsPayload,
+  sendAssessmentAnalytics,
+  getCommonMisconceptions,
+  formatCertificationMessage,
+  type AssessmentAnalyticsPayload,
+} from "@/lib/assessmentAnalytics";
 
 export interface CourseModule {
   id: string;
@@ -78,6 +85,15 @@ const ASSESSMENT_2_QUESTIONS: AssessmentQuestion[] = [
 ];
 
 const STORAGE_KEY = "guardd_course_progress";
+
+const ASSESSMENT_SCORE_CACHE_KEY = "guardd_assessment_score_cache";
+
+type ScoreCacheEntry = {
+  moduleId: "a1" | "a2";
+  score: number;
+  passed: boolean;
+  misconceptions: { questionIndex: number; selectedWrongCount: number; explanation: string }[];
+};
 
 interface CourseState {
   completedModuleIds: string[];
@@ -447,6 +463,9 @@ const AssessmentModal = ({ moduleId, questions, onComplete, onClose }: Assessmen
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
+  const [cachedPayload, setCachedPayload] = useState<AssessmentAnalyticsPayload | null>(null);
+  const [misconceptions, setMisconceptions] = useState<{ questionIndex: number; selectedWrongCount: number; explanation: string }[]>([]);
+  const [certMessage, setCertMessage] = useState<string>("");
 
   const handleAnswer = (index: number) => {
     const newAnswers = [...answers, index];
@@ -466,6 +485,30 @@ const AssessmentModal = ({ moduleId, questions, onComplete, onClose }: Assessmen
   }, [showResult, answers, questions]);
 
   const passingScore = moduleId === "a1" ? 70 : 75;
+  const passed = score >= passingScore;
+
+  useEffect(() => {
+    if (showResult && answers.length === questions.length) {
+      const payload = buildAssessmentAnalyticsPayload(
+        moduleId,
+        questions.map((q) => ({ question: q.question, correctIndex: q.correct })),
+        answers
+      );
+      setCachedPayload(payload);
+
+      const commonMisconceptions = getCommonMisconceptions(
+        answers,
+        questions.map((q) => ({ correctIndex: q.correct, explanation: q.explanation }))
+      );
+
+      const message = formatCertificationMessage(score, passed, commonMisconceptions);
+      setCertMessage(message);
+
+      setMisconceptions(commonMisconceptions);
+
+      sendAssessmentAnalytics(payload);
+    }
+  }, [showResult, answers, questions, moduleId, score, passed]);
 
   return (
     <motion.div
@@ -526,17 +569,23 @@ const AssessmentModal = ({ moduleId, questions, onComplete, onClose }: Assessmen
               animate={{ scale: 1 }}
               className="text-6xl mb-4"
             >
-              {score >= passingScore ? "🎉" : "🧠"}
+              {passed ? "🎉" : "🧠"}
             </motion.div>
             <h3 className="text-2xl font-bold mb-2 text-slate-800 dark:text-white">
-              {score >= passingScore ? "Assessment Complete!" : "Nice try—review and retry soon."}
+              {passed ? "Assessment Complete!" : "Nice try—review and retry soon."}
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
               You scored {score}%
             </p>
+            {passed && misconceptions.length > 0 && (
+              <div className="mt-4 max-w-md mx-auto bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-left text-sm text-slate-600 dark:text-slate-300 border border-blue-200 dark:border-blue-800">
+                <p className="font-medium mb-1">People often miss this part:</p>
+                <p className="opacity-90">{misconceptions[0].explanation}</p>
+              </div>
+            )}
             <p className="text-sm text-slate-500 mt-4">
-              {score >= passingScore
-                ? "Redirecting to the next module..."
+              {passed
+                ? certMessage || "Redirecting to the next module..."
                 : "You can review the material and try again later."}
             </p>
             <button

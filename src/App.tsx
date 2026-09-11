@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { Shield } from "lucide-react";
 
 // Global Scroll and Hash Handler
 const GlobalScrollHandler = () => {
@@ -45,6 +46,9 @@ const CommunitySupport = lazy(() => import("./pages/CommunitySupport"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Layout = lazy(() => import("./components/Layout"));
 const Admin = lazy(() => import("./pages/Admin"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 
 const queryClient = new QueryClient();
 
@@ -95,13 +99,23 @@ const App = () => (
                 element={<CommunitySupport />}
               />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
         </Suspense>
       </BrowserRouter>
-      <Analytics />
+      <Analytics
+        beforeSend={(event) => {
+          if (typeof window !== "undefined" && localStorage.getItem("dg_cookie_consent") !== "accept") {
+            return null;
+          }
+          return event;
+        }}
+      />
     </TooltipProvider>
   </QueryClientProvider>
 );

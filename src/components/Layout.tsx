@@ -8,6 +8,8 @@ import OrganicTexture from "./wellness/OrganicTexture";
 import { WellnessCompanion } from "./wellness/WellnessCompanion";
 import { FamilyModeSwitcher } from "./wellness/FamilyModeSwitcher";
 import { useWellness } from "@/context/WellnessContext";
+import Footer from "./Footer";
+import CookieConsentBanner from "./CookieConsentBanner";
 
 const Layout = () => {
   const { mode, setMode } = useWellness();
@@ -40,6 +42,12 @@ const Layout = () => {
 
       {/* Optimized Cursor Trail (Auto-disables on mobile) */}
       <GentleTrail />
+      
+      {/* Fixed See-Through Footer */}
+      <Footer />
+      
+      {/* Cookie Consent Banner */}
+      <CookieConsentBanner />
     </div>
   );
 };
