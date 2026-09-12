@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-white/5 backdrop-blur-xl px-4 py-3">
+    <footer className="mt-auto border-t border-white/10 bg-white/5 backdrop-blur-xl px-4 py-3">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-6 text-sm text-white/50">
         <Link
           to="/privacy"

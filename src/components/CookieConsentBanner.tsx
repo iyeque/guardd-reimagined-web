@@ -1,38 +1,52 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Info, Cookie, Check, X } from "lucide-react";
 
 type ConsentChoice = "accept" | "reject" | null;
 
 const CookieConsentBanner = () => {
-  const storedChoice = typeof window !== "undefined" ? localStorage.getItem("dg_cookie_consent") : null;
+  const [choice, setChoice] = useState<ConsentChoice>(() => {
+    if (typeof window === "undefined") return null;
+    const stored = localStorage.getItem("dg_cookie_consent");
+    if (stored === "accept" || stored === "reject") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).__DG_ANALYTICS_ENABLED = stored === "accept";
+      return stored;
+    }
+    return null;
+  });
 
   useEffect(() => {
-    if (storedChoice) {
-      const analyticsEnabled = storedChoice === "accept";
-      if (typeof window !== "undefined") {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).__DG_ANALYTICS_ENABLED = analyticsEnabled;
+    if (typeof window === "undefined") return;
+    const handler = (e: StorageEvent) => {
+      if (e.key === "dg_cookie_consent") {
+        const stored = e.newValue;
+        if (stored === "accept" || stored === "reject") {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any).__DG_ANALYTICS_ENABLED = stored === "accept";
+          setChoice(stored);
+        }
       }
-    }
-  }, [storedChoice]);
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
 
-  // Already made a choice; nothing to show
-  if (storedChoice) {
+  if (choice) {
     return null;
   }
 
-  const handleChoice = (choice: ConsentChoice) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("dg_cookie_consent", choice);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).__DG_ANALYTICS_ENABLED = choice === "accept";
-    }
+  const handleChoice = (selected: "accept" | "reject") => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("dg_cookie_consent", selected);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).__DG_ANALYTICS_ENABLED = selected === "accept";
+    setChoice(selected);
   };
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 z-[60] mx-auto max-w-3xl px-4">
+    <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[70] w-fit max-w-[calc(100vw-2rem)]">
       <div className="rounded-2xl bg-white/10 border border-white/10 bg-opacity-80 backdrop-blur-xl p-5 shadow-2xl">
         <div className="flex items-start gap-4">
           <div className="bg-[#4FD1C5]/20 rounded-xl p-3 flex-shrink-0">
@@ -44,10 +58,13 @@ const CookieConsentBanner = () => {
               We use cookies to improve the platform
             </h3>
             <p className="text-white/70 text-sm leading-relaxed mb-3">
-              This site uses essential cookies to save your progress and preferences.
+              This site uses essential storage to save your progress and preferences.
               <br />
               We also use{" "}
-              <a href="/cookie-policy" className="text-[#4FD1C5] underline underline-offset-2 hover:text-white transition-colors">
+              <a
+                href="/cookie-policy"
+                className="text-[#4FD1C5] underline underline-offset-2 hover:text-white transition-colors"
+              >
                 Vercel Analytics
               </a>{" "}
               to understand how the platform is used so we can improve it.
@@ -57,6 +74,7 @@ const CookieConsentBanner = () => {
 
             <div className="flex items-center gap-3 flex-wrap">
               <button
+                type="button"
                 onClick={() => handleChoice("accept")}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#4FD1C5] text-white text-sm font-medium hover:opacity-90 transition-opacity"
               >
@@ -65,6 +83,7 @@ const CookieConsentBanner = () => {
               </button>
 
               <button
+                type="button"
                 onClick={() => handleChoice("reject")}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white text-sm font-medium border border-white/10 hover:bg-white/20 transition-colors"
               >

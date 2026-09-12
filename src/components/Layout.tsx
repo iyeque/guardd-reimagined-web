@@ -15,7 +15,7 @@ const Layout = () => {
   const { mode, setMode } = useWellness();
 
   return (
-    <div className="relative min-h-screen bg-transparent transition-colors duration-700">
+    <div className="relative flex min-h-screen flex-col bg-transparent transition-colors duration-700">
       {/* Optimized Unified Background - Replaces BreathingGradient and PlayfulBlobs */}
       <UnifiedBackground />
 
@@ -33,7 +33,7 @@ const Layout = () => {
       {/* Personalized Experience Switcher */}
       <FamilyModeSwitcher currentMode={mode} onModeChange={setMode} />
 
-      <main className="relative">
+      <main className="relative flex-1">
         <Outlet />
       </main>
       
