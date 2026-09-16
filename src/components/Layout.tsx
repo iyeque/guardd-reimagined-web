@@ -1,3 +1,4 @@
+import React, { type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import UnifiedBackground from "./wellness/UnifiedBackground";
@@ -11,7 +12,7 @@ import { useWellness } from "@/context/WellnessContext";
 import Footer from "./Footer";
 import CookieConsentBanner from "./CookieConsentBanner";
 
-const Layout = () => {
+const Layout = ({ children }: { children?: ReactNode }) => {
   const { mode, setMode } = useWellness();
 
   return (
@@ -21,31 +22,31 @@ const Layout = () => {
 
       {/* Dynamic Mood Ambiance - Subtle Overlay */}
       <MoodColorShift />
-      
+
       {/* Optimized Organic Textures */}
       <OrganicTexture />
 
       {/* Optimized Wellness Particles */}
       <WellnessParticles />
-      
+
       <Navigation />
-      
+
       {/* Personalized Experience Switcher */}
       <FamilyModeSwitcher currentMode={mode} onModeChange={setMode} />
 
       <main className="relative flex-1">
-        <Outlet />
+        {children ?? <Outlet />}
       </main>
-      
+
       {/* AI Wellness Companion */}
       <WellnessCompanion />
 
       {/* Optimized Cursor Trail (Auto-disables on mobile) */}
       <GentleTrail />
-      
+
       {/* Fixed See-Through Footer */}
       <Footer />
-      
+
       {/* Cookie Consent Banner */}
       <CookieConsentBanner />
     </div>

@@ -13,13 +13,15 @@ import {
   Trash2,
   Target,
   ArrowLeft,
-  Loader2
+  Loader2,
+  User,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { useProfile, useProfileId } from "@/context/ProfileContext";
 
 type Commitment = {
   id: number;
@@ -84,7 +86,9 @@ const api = {
 };
 
 const FamilyCommitments: React.FC = () => {
-  const [familyId] = useState("default-family");
+  const { currentProfile } = useProfile();
+  const profileId = useProfileId();
+  const familyId = currentProfile?.familyId ?? "default-family";
   const [items, setItems] = useState<Commitment[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);

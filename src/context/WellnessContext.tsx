@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, FC } from 'react';
-import { FamilyMode } from '../components/wellness/FamilyModeSwitcher';
+import type { FamilyMode } from '@/lib/profiles';
 
 interface WellnessContextType {
   mode: FamilyMode;

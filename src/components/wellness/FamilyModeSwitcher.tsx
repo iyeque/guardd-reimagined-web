@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { FC, useState } from 'react';
 
-export type FamilyMode = 'parent' | 'child' | 'family';
+import type { FamilyMode } from '@/lib/profiles';
 
 interface FamilyModeSwitcherProps {
   currentMode: FamilyMode;

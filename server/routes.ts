@@ -1,6 +1,6 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage.js";
-import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema } from "../shared/schema.js";
+import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema } from "../shared/schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import axios from "axios";
 import { z } from "zod";

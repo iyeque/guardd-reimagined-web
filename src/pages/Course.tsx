@@ -10,6 +10,7 @@ import {
   formatCertificationMessage,
   type AssessmentAnalyticsPayload,
 } from "@/lib/assessmentAnalytics";
+import { useProfileId, useProfile } from "@/context/ProfileContext";
 
 export interface CourseModule {
   id: string;
@@ -86,6 +87,34 @@ const ASSESSMENT_2_QUESTIONS: AssessmentQuestion[] = [
 
 const STORAGE_KEY = "guardd_course_progress";
 
+export function getCourseStorageKey(profileId: string | null): string {
+  if (!profileId) return STORAGE_KEY;
+  return `dg_course_${profileId}`;
+}
+
+export function getStoredCourseState(
+  profileId: string | null
+): CourseState {
+  const key = getCourseStorageKey(profileId);
+  try {
+    const saved = typeof window !== "undefined" ? localStorage.getItem(key) : null;
+    if (saved) return JSON.parse(saved);
+  } catch (e) {
+    console.error("Failed to parse course progress", e);
+  }
+  return {
+    completedModuleIds: [],
+    passedAssessments: {},
+    currentIndex: 0,
+  };
+}
+
+export function saveCourseState(profileId: string | null, state: CourseState): void {
+  const key = getCourseStorageKey(profileId);
+  if (typeof window === "undefined") return;
+  localStorage.setItem(key, JSON.stringify(state));
+}
+
 const ASSESSMENT_SCORE_CACHE_KEY = "guardd_assessment_score_cache";
 
 type ScoreCacheEntry = {
@@ -105,26 +134,19 @@ interface CourseState {
 }
 
 export const Course = () => {
+  const profileId = useProfileId();
+  const { resetCurrentProgress } = useProfile();
+
   const [state, setState] = useState<CourseState>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error("Failed to parse course progress", e);
-    }
-    return {
-      completedModuleIds: [],
-      passedAssessments: {},
-      currentIndex: 0,
-    };
+    return getStoredCourseState(profileId);
   });
 
   const [showAssessment, setShowAssessment] = useState(false);
   const [activeAssessmentId, setActiveAssessmentId] = useState<"a1" | "a2" | null>(null);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
+    saveCourseState(profileId, state);
+  }, [state, profileId]);
 
   const current = COURSE_MODULES[state.currentIndex];
   const progress = ((state.currentIndex) / COURSE_MODULES.length) * 100;

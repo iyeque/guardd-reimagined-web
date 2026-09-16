@@ -1,5 +1,4 @@
 // Ensure env vars are loaded before anything else imports process.env-dependent modules.
-// @ts-expect-error dotenv config import is intentionally untyped for bootstrap
 Promise.resolve(import("dotenv")).then((m: { config?: () => void }) => m.config?.()).catch(() => {});
 
 import { app } from "./index.js";

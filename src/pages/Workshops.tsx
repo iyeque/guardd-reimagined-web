@@ -1,15 +1,18 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { workshops } from "@/data/workshops";
 import { WorkshopCard } from "@/components/workshops/WorkshopCard";
 import { useWorkshopProgress } from "@/hooks/useWorkshopProgress";
+import { useProfileId } from "@/context/ProfileContext";
 
 export const Workshops = () => {
   const navigate = useNavigate();
+  const profileId = useProfileId();
   const [query, setQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
-  const { rawProgress } = useWorkshopProgress();
+  const { rawProgress } = useWorkshopProgress(profileId ?? undefined);
+  const workshopGridRef = useRef<HTMLDivElement>(null);
 
   const tags = useMemo(() => {
     const all = new Set<string>();
@@ -80,13 +83,17 @@ export const Workshops = () => {
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <button
-                onClick={() => window.scrollTo({ top: 800, behavior: "smooth" })}
+                onClick={() => navigate("/course")}
                 className="px-6 py-3 rounded-full bg-[#4FD1C5] text-white font-bold shadow-lg hover:shadow-xl transition-all"
               >
                 Start Full Course
               </button>
               <button
-                onClick={() => setQuery("")}
+                onClick={() => {
+                  setQuery("");
+                  setActiveTag(null);
+                  workshopGridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
                 className="px-6 py-3 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-medium text-slate-700 dark:text-slate-300"
               >
                 Browse Individual Topics
@@ -117,7 +124,7 @@ export const Workshops = () => {
               <div className="grid gap-4">
                 <div className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700">
                   <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                    “My teen actually enjoyed the Social Media workshop. We ended up making a family posting agreement the same night.”
+                    "My teen actually enjoyed the Social Media workshop. We ended up making a family posting agreement the same night."
                   </p>
                   <p className="text-xs font-medium text-slate-500 mt-2">
                     — Sarah, mom of 3
@@ -125,7 +132,7 @@ export const Workshops = () => {
                 </div>
                 <div className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700">
                   <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                    “Raising Digital Kids gave us better boundaries and calmer check-ins. It felt like a reset for our household.”
+                    "Raising Digital Kids gave us better boundaries and calmer check-ins. It felt like a reset for our household."
                   </p>
                   <p className="text-xs font-medium text-slate-500 mt-2">
                     — Family of the Week
@@ -165,7 +172,7 @@ export const Workshops = () => {
                   {Math.round((completedCount / workshops.length) * 100)}% complete
                 </div>
                 <div className="w-24 h-24 rounded-full flex items-center justify-center text-3xl bg-gradient-to-br from-[#4FD1C5] to-[#FF9A8B] text-white">
-                  {completedCount === workshops.length ? '🏆' : '🔒'}
+                  {completedCount === workshops.length ? "🏆" : "🔒"}
                 </div>
               </div>
             </div>
@@ -194,28 +201,6 @@ export const Workshops = () => {
             </div>
           ))}
         </motion.div>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-16">
-          {[
-            { label: "Progress Persistence", desc: "LocalStorage saves progress across sessions", icon: "💾" },
-            { label: "Completion Celebration", desc: "Animated badge with confetti-style effects", icon: "🎉" },
-            { label: "Responsive Design", desc: "Works beautifully on mobile and desktop", icon: "📱" },
-            { label: "Dark Mode Ready", desc: "All components respect dark mode", icon: "🌙" },
-            { label: "Accessibility", desc: "Respects prefers-reduced-motion", icon: "♿" },
-          ].map((feature, idx) => (
-            <motion.div
-              key={feature.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 + idx * 0.05 }}
-              className="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 backdrop-blur border border-white/20 text-center"
-            >
-              <div className="text-2xl mb-2">{feature.icon}</div>
-              <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-1">{feature.label}</h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-16">
           <motion.div
@@ -289,20 +274,22 @@ export const Workshops = () => {
           </div>
         </motion.div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${query}-${activeTag}`}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {filtered.map((workshop, index) => (
-              <WorkshopCard key={workshop.id} workshop={workshop} index={index} />
-            ))}
-          </motion.div>
-        </AnimatePresence>
+        <div ref={workshopGridRef}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${query}-${activeTag}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+              {filtered.map((workshop, index) => (
+                <WorkshopCard key={workshop.id} workshop={workshop} index={index} />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         <motion.div
           className="mt-20 text-center p-8 rounded-3xl bg-gradient-to-r from-[#4FD1C5]/10 to-[#FF9A8B]/10 border border-white/20"

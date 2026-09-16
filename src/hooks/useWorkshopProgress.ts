@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { useProfileId } from "@/context/ProfileContext";
+import { getProfileStorageKey } from "@/lib/profiles";
 
 interface ProgressState {
   [workshopId: string]: {
@@ -7,41 +9,57 @@ interface ProgressState {
 }
 
 export const useWorkshopProgress = (workshopId?: string, totalModules?: number) => {
+  const profileId = useProfileId();
   const [progress, setProgress] = useState<ProgressState>({});
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("guardd_workshop_progress");
+      const key =
+        profileId != null
+          ? getProfileStorageKey("dg_workshops", profileId)
+          : "guardd_workshop_progress";
+      const saved = typeof window !== "undefined" ? localStorage.getItem(key) : null;
       if (saved) setProgress(JSON.parse(saved));
     } catch (e) {
       console.error("Failed to parse progress", e);
     }
-  }, []);
+  }, [profileId]);
 
-  const saveProgress = useCallback((newProgress: ProgressState) => {
-    setProgress(newProgress);
-    localStorage.setItem(
-      "guardd_workshop_progress",
-      JSON.stringify(newProgress)
-    );
-  }, []);
+  const saveProgress = useCallback(
+    (newProgress: ProgressState) => {
+      setProgress(newProgress);
+      const key =
+        profileId != null
+          ? getProfileStorageKey("dg_workshops", profileId)
+          : "guardd_workshop_progress";
+      if (typeof window === "undefined") return;
+      localStorage.setItem(key, JSON.stringify(newProgress));
+    },
+    [profileId]
+  );
 
-  const completeModule = useCallback((wsId: string, moduleId: string) => {
-    setProgress((prev) => {
-      const updated = {
-        ...prev,
-        [wsId]: {
-          ...prev[wsId],
-          [moduleId]: true,
-        },
-      };
-      localStorage.setItem(
-        "guardd_workshop_progress",
-        JSON.stringify(updated)
-      );
-      return updated;
-    });
-  }, []);
+  const completeModule = useCallback(
+    (wsId: string, moduleId: string) => {
+      setProgress((prev) => {
+        const updated = {
+          ...prev,
+          [wsId]: {
+            ...prev[wsId],
+            [moduleId]: true,
+          },
+        };
+        const key =
+          profileId != null
+            ? getProfileStorageKey("dg_workshops", profileId)
+            : "guardd_workshop_progress";
+        if (typeof window !== "undefined") {
+          localStorage.setItem(key, JSON.stringify(updated));
+        }
+        return updated;
+      });
+    },
+    [profileId]
+  );
 
   const getWorkshopProgress = useCallback(
     (wsId: string, totalModules: number) => {

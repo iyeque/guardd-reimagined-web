@@ -3,6 +3,7 @@ import { Menu, X, Sun, Moon, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/context/useTheme";
+import ProfileSwitcher from "@/components/ProfileSwitcher";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,15 +81,19 @@ export const Navigation = () => {
                 Course
               </Button>
             </Link>
-            <Link to="/workshop">
-              <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black shadow-xl shadow-green-500/20 transition-all duration-300 rounded-xl">
-                Get Started
-              </Button>
-            </Link>
+            <div className="flex items-center space-x-2">
+              <ProfileSwitcher />
+              <Link to="/workshop">
+                <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black shadow-xl shadow-green-500/20 transition-all duration-300 rounded-xl">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-4">
+            <ProfileSwitcher />
             <Button
               variant="ghost"
               size="icon"
@@ -128,6 +133,9 @@ export const Navigation = () => {
                   {item.label}
                 </button>
               ))}
+              <div className="pt-2">
+                <ProfileSwitcher />
+              </div>
               <Link to="/workshop" onClick={toggleMenu} className="pt-2">
                 <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black shadow-lg rounded-xl h-12">
                   Get Started

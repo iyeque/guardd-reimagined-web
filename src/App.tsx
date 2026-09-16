@@ -6,30 +6,21 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { Shield } from "lucide-react";
+import { ProfileProvider } from "@/context/ProfileContext";
 
-// Global Scroll and Hash Handler
-const GlobalScrollHandler = () => {
+function GlobalScrollHandler() {
   const { pathname, hash } = useLocation();
-
   useEffect(() => {
-    if (!hash) {
-      window.scrollTo(0, 0);
-    } else {
+    if (!hash) { window.scrollTo(0, 0); }
+    else {
       const id = hash.replace("#", "");
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      } else {
-        setTimeout(() => {
-          const el = document.getElementById(id);
-          if (el) el.scrollIntoView({ behavior: "smooth" });
-        }, 300);
-      }
+      const el = document.getElementById(id);
+      if (el) { el.scrollIntoView({ behavior: "smooth" }); }
+      else { setTimeout(() => { const e = document.getElementById(id); if (e) e.scrollIntoView({ behavior: "smooth" }); }, 300); }
     }
   }, [pathname, hash]);
-
   return null;
-};
+}
 
 const Index = lazy(() => import("./pages/Index"));
 const Workshop = lazy(() => import("./pages/Workshop"));
@@ -53,71 +44,44 @@ const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <GlobalScrollHandler />
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-black uppercase tracking-tighter text-2xl animate-pulse">Loading Platform...</div>}>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/workshop" element={<Workshop />} />
-              <Route path="/workshops" element={<Workshops />} />
-              <Route
-                path="/workshop/:workshopId"
-                element={<WorkshopDetail />}
-              />
-              <Route path="/course" element={<Course />} />
-              <Route
-                path="/screen-time-management"
-                element={<ScreenTimeManagement />}
-              />
-              <Route
-                path="/family-digital-agreements"
-                element={<FamilyDigitalAgreements />}
-              />
-              <Route
-                path="/family-commitments"
-                element={<FamilyCommitments />}
-              />
-              <Route
-                path="/educational-games"
-                element={<EducationalGames />}
-              />
-              <Route
-                path="/educational-blog"
-                element={<EducationalBlog />}
-              />
-              <Route
-                path="/video-resources"
-                element={<VideoResources />}
-              />
-              <Route
-                path="/community-support"
-                element={<CommunitySupport />}
-              />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/cookie-policy" element={<CookiePolicy />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-      <Analytics
-        beforeSend={(event) => {
-          if (typeof window !== "undefined" && localStorage.getItem("dg_cookie_consent") !== "accept") {
-            return null;
-          }
-          return event;
-        }}
-      />
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ProfileProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <GlobalScrollHandler />
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-black uppercase tracking-tighter text-2xl animate-pulse">Loading Platform...</div>}>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/workshop" element={<Workshop />} />
+                <Route path="/workshops" element={<Workshops />} />
+                <Route path="/workshop/:workshopId" element={<WorkshopDetail />} />
+                <Route path="/course" element={<Course />} />
+                <Route path="/screen-time-management" element={<ScreenTimeManagement />} />
+                <Route path="/family-digital-agreements" element={<FamilyDigitalAgreements />} />
+                <Route path="/family-commitments" element={<FamilyCommitments />} />
+                <Route path="/educational-games" element={<EducationalGames />} />
+                <Route path="/educational-blog" element={<EducationalBlog />} />
+                <Route path="/video-resources" element={<VideoResources />} />
+                <Route path="/community-support" element={<CommunitySupport />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+            </Suspense>
+          </BrowserRouter>
+          <Analytics beforeSend={(event) => {
+            if (typeof window !== "undefined" && localStorage.getItem("dg_cookie_consent") !== "accept") { return null; }
+            return event;
+          }} />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ProfileProvider>
 );
 
 export default App;
