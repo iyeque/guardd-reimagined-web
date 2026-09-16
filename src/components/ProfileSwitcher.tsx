@@ -181,7 +181,7 @@ const ProfileSwitcher: FC = () => {
           onClick={() => setShowNew(false)}
         >
           <div
-            className="absolute inset-0 flex items-center justify-center p-4"
+            className="absolute inset-0 flex flex-col items-center justify-start p-4 pt-[15vh]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 w-full max-w-sm">
@@ -248,7 +248,7 @@ const ProfileSwitcher: FC = () => {
           onClick={() => setEditing(false)}
         >
           <div
-            className="absolute inset-0 flex items-center justify-center p-4"
+            className="absolute inset-0 flex flex-col items-center justify-start p-4 pt-[15vh]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 w-full max-w-sm">

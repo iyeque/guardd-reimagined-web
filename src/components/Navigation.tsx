@@ -50,12 +50,6 @@ export const Navigation = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <button 
-              onClick={() => handleNavClick('#home')} 
-              className="text-xs font-black text-muted-foreground hover:text-foreground transition-all uppercase tracking-widest"
-            >
-              Home
-            </button>
             {navItems.filter(item => item.label !== "Blog").map((item) => (
               <button 
                 key={item.label}
@@ -76,11 +70,6 @@ export const Navigation = () => {
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
-            <Link to="/course">
-              <Button variant="ghost" className="text-foreground hover:text-green-600 dark:hover:text-green-400 font-black uppercase tracking-widest">
-                Course
-              </Button>
-            </Link>
             <div className="flex items-center space-x-2">
               <ProfileSwitcher />
               <Link to="/workshop">
