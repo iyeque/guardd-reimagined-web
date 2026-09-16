@@ -5,16 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  MessageSquare, 
-  Calendar, 
-  Users, 
-  Heart, 
-  Star, 
+import {
+  MessageSquare,
+  Calendar,
+  Users,
+  Heart,
+  Star,
   X,
-  ArrowRight, 
-  Search, 
-  MapPin, 
+  ArrowRight,
+  Search,
+  MapPin,
   ExternalLink,
   Globe,
   TrendingUp,
@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useWellness } from "@/context/WellnessContext";
 
 declare global {
   interface Window {
@@ -68,6 +69,7 @@ interface Mentor {
 }
 
 const CommunitySupport: React.FC = () => {
+  const { setContentAgeGroup } = useWellness();
   const [events, setEvents] = useState<GlobalEvent[]>([]);
   const [discussions, setDiscussions] = useState<TrendingDiscussion[]>([]);
   const [mentors, setMentors] = useState<Mentor[]>([]);
@@ -223,8 +225,9 @@ const CommunitySupport: React.FC = () => {
       fetchData();
       setLiveUsers(prev => Math.max(900, prev + stableSessionOffset.current));
     }, 45000);
+    setContentAgeGroup('family');
     return () => clearInterval(refreshInterval);
-  }, []);
+  }, [setContentAgeGroup]);
 
   const filteredEvents = useMemo(() => {
     const lower = eventSearch.toLowerCase();

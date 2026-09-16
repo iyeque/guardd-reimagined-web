@@ -3,15 +3,16 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  Calendar, 
-  Clock, 
-  ExternalLink, 
+import {
+  Calendar,
+  Clock,
+  ExternalLink,
   Search,
   BookOpen,
   Filter
 } from 'lucide-react';
 import { toast } from "sonner";
+import { useWellness } from "@/context/WellnessContext";
 
 interface BlogPost {
   id: number;
@@ -26,6 +27,7 @@ interface BlogPost {
 }
 
 const EducationalBlog: React.FC = () => {
+  const { setContentAgeGroup } = useWellness();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleCount, setVisibleCount] = useState(9);
@@ -43,7 +45,8 @@ const EducationalBlog: React.FC = () => {
         console.error("Failed to load resources:", err);
         toast.error("Failed to load resource database.");
       });
-  }, []);
+    setContentAgeGroup('both');
+  }, [setContentAgeGroup]);
 
   const filteredPosts = useMemo(() => {
     if (!searchTerm) return posts;

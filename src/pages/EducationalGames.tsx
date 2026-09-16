@@ -4,14 +4,14 @@ import CyberSafeQuiz from '@/components/CyberSafeQuiz';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Gamepad2, 
-  ShieldCheck, 
-  ArrowLeft, 
-  Trophy, 
-  Zap, 
-  Target, 
-  Users, 
+import {
+  Gamepad2,
+  ShieldCheck,
+  ArrowLeft,
+  Trophy,
+  Zap,
+  Target,
+  Users,
   ExternalLink,
   Sparkles,
   MousePointer2,
@@ -22,9 +22,11 @@ import {
   CheckCircle2,
   XCircle,
   Eye,
-  Settings
+  Settings,
+  Keyboard
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { useWellness, type ContentAgeGroup } from "@/context/WellnessContext";
 
 type GameCategory = 'all' | 'kids' | 'teens' | 'parents';
 
@@ -101,15 +103,15 @@ const GAMES: Game[] = [
     type: 'Game'
   },
   {
-    id: 'digital-passport',
-    title: 'Digital Passport',
-    description: 'Common Sense Media\'s suite of games helping kids ages 7-11 build essential digital citizenship skills.',
+    id: 'tinyfingers',
+    title: 'TinyFingers',
+    description: 'A fullscreen keyboard playground for little fingers — press any key or tap the screen and colorful letters, shapes and sounds burst out. Free, no account, works on computer, tablet or phone. Six playful mini-games: xylophone, color sorting, counting picnic and memory.',
     category: ['kids'],
-    icon: Shield,
-    color: 'from-cyan-500 to-blue-600',
-    accentColor: 'text-cyan-400',
+    icon: Keyboard,
+    color: 'from-amber-400 to-pink-500',
+    accentColor: 'text-amber-400',
     isExternal: true,
-    url: 'https://www.commonsense.org/education/digital-passport',
+    url: 'https://tinyfingers.net/',
     difficulty: 'Easy',
     type: 'Game'
   },
@@ -341,12 +343,30 @@ const TechSavvyQuiz = () => {
 // --- Main Page ---
 
 const EducationalGames: React.FC = () => {
+  const { setContentAgeGroup } = useWellness();
   const [activeGame, setActiveGame] = useState<string | null>(null);
   const [filter, setFilter] = useState<GameCategory>('all');
   const [claims, setClaims] = useState<{slug:string;value:string;label:string;context:string}[]>([]);
   useEffect(() => {
     fetch("/api/claims").then(r => r.ok ? r.json() : []).then(data => setClaims(Array.isArray(data) ? data : [])).catch(() => {});
   }, []);
+
+  const activeCategories = useMemo(() => {
+    if (!activeGame) return ['kids', 'teens', 'parents'];
+    const game = GAMES.find(g => g.id === activeGame);
+    return game?.category ?? ['kids', 'teens', 'parents'];
+  }, [activeGame]);
+
+  useEffect(() => {
+    const hasKids = activeCategories.includes('kids');
+    const hasTeens = activeCategories.includes('teens');
+    const hasParents = activeCategories.includes('parents');
+    if (hasKids && hasTeens) setContentAgeGroup('both');
+    else if (hasKids) setContentAgeGroup('kids');
+    else if (hasTeens) setContentAgeGroup('teens');
+    else if (hasParents) setContentAgeGroup('parents');
+    else setContentAgeGroup('family');
+  }, [activeCategories, setContentAgeGroup]);
 
   const filteredGames = useMemo(() => {
     if (filter === 'all') return GAMES;

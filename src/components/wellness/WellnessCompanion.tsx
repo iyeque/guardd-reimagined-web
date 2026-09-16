@@ -1,6 +1,6 @@
 import { useState, FC, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useWellness } from "@/context/WellnessContext";
+import { useWellness, type ContentAgeGroup } from "@/context/WellnessContext";
 import { useNavigate } from "react-router-dom";
 import { useProfileId } from "@/context/ProfileContext";
 
@@ -9,8 +9,112 @@ function getCompanionStorageKey(profileId: string | null): string {
   return `dg_companion_${profileId}`;
 }
 
+// Age-group-aware tips: picked by contentAgeGroup, refined by mode where relevant.
+const ageGroupTips: Record<ContentAgeGroup, Record<string, string[]>> = {
+  kids: {
+    parent: [
+      "Play a cybersecurity quiz with your child 🎮",
+      "Watch a wellness video together 🍿",
+      "Set up parental controls for their apps 🔒",
+      "Practice 3 deep breaths together 🌬️",
+    ],
+    child: [
+      "Play a quick cybersecurity quiz 🎮",
+      "Watch a fun wellness video 🍿",
+      "Take a 20-20-20 eye break 👁️",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    family: [
+      "Play a keyboard game together ⌨️",
+      "Watch a video as a family 🍿",
+      "Take a 20-20-20 eye break 👁️",
+      "Practice 3 deep breaths together 🌬️",
+    ],
+  },
+  teens: {
+    parent: [
+      "Discuss screen time with your teen 📊",
+      "Review their privacy settings 🔒",
+      "Watch a teen wellness video together 🍿",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    child: [
+      "Review your privacy settings 🔒",
+      "Check your screen time report 📊",
+      "Take a 20-20-20 eye break 👁️",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    family: [
+      "Talk online safety as a family 💬",
+      "Watch a teen wellness video 🍿",
+      "Take a 20-20-20 eye break 👁️",
+      "Practice 3 deep breaths together 🌬️",
+    ],
+  },
+  parents: {
+    parent: [
+      "Review this week's screen time reports 📊",
+      "Create a family digital agreement 📝",
+      "Discuss online footprints with your teens 👣",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    child: [
+      "Ask your parents about screen time limits ⏰",
+      "Learn about online safety 🛡️",
+      "Take a 20-20-20 eye break 👁️",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    family: [
+      "Create a family digital agreement 📝",
+      "Plan a device-free family activity 🌳",
+      "Review screen time as a family 📊",
+      "Practice 3 deep breaths together 🌬️",
+    ],
+  },
+  both: {
+    parent: [
+      "Try a cybersecurity quiz together 🎮",
+      "Watch a wellness video as a family 🍿",
+      "Set up parental controls together 🔒",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    child: [
+      "Play a quick cybersecurity quiz 🎮",
+      "Watch a fun wellness video 🍿",
+      "Learn about online safety 🛡️",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    family: [
+      "Play a game together 🎮",
+      "Watch a wellness video as a family 🍿",
+      "Create a family digital agreement 📝",
+      "Practice 3 deep breaths together 🌬️",
+    ],
+  },
+  family: {
+    parent: [
+      "Create a family digital agreement 📝",
+      "Plan a device-free family walk 🌳",
+      "Review screen time as a family 📊",
+      "Practice 3 deep breaths together 🌬️",
+    ],
+    child: [
+      "Ask your family about digital rules 📜",
+      "Learn about online safety 🛡️",
+      "Take a 20-20-20 eye break 👁️",
+      "Practice 3 deep breaths 🌬️",
+    ],
+    family: [
+      "Plan a device-free family walk 🌳",
+      "Create a family digital agreement 📝",
+      "Watch a wellness video together 🍿",
+      "Practice 3 deep breaths together 🌬️",
+    ],
+  },
+};
+
 export const WellnessCompanion: FC = () => {
-  const { mode, setMode } = useWellness();
+  const { mode, setMode, contentAgeGroup, setContentAgeGroup } = useWellness();
   const navigate = useNavigate();
   const profileId = useProfileId();
   const storageKey = getCompanionStorageKey(profileId);
@@ -98,45 +202,36 @@ export const WellnessCompanion: FC = () => {
     } else if (tipLabel.includes("video")) {
       navigate("/video-resources");
       setIsExpanded(false);
-    } else if (tipLabel.includes("reports") || tipLabel.includes("Limits")) {
+    } else if (tipLabel.includes("reports") || tipLabel.includes("screen time") || tipLabel.includes("privacy settings") || tipLabel.includes("parental controls")) {
       navigate("/screen-time-management");
       setIsExpanded(false);
-    } else if (tipLabel.includes("quiz")) {
+    } else if (tipLabel.includes("quiz") || tipLabel.includes("game") || tipLabel.includes("keyboard")) {
       navigate("/educational-games");
+      setIsExpanded(false);
+    } else if (tipLabel.includes("online safety") || tipLabel.includes("online footprints") || tipLabel.includes("privacy") || tipLabel.includes("digital rules")) {
+      navigate("/family-digital-agreements");
       setIsExpanded(false);
     } else {
       setMessage(tipLabel);
     }
   };
 
+  const tips = useMemo(() => {
+    const groupTips = ageGroupTips[contentAgeGroup];
+    if (!groupTips) return [];
+    return groupTips[mode] || groupTips.parent || [];
+  }, [contentAgeGroup, mode]);
+
   const modeContent = useMemo(
     () => ({
       parent: {
         greeting: "Welcome to the Parent Hub. How can I assist with your family's digital safety today? 🌿",
-        tips: [
-          "Review this week's screen time reports. 📊",
-          "Create a family digital agreement. 📝",
-          "Discuss online footprints with your teens. 👣",
-          "Practice 3 deep breaths. 🌬️",
-        ],
       },
       child: {
         greeting: "Hi there, explorer! Ready to learn about the digital world? 🎨",
-        tips: [
-          "Play a quick cybersecurity quiz! 🎮",
-          "Watch a fun wellness video. 🍿",
-          "Take a 20-20-20 eye break! 👁️",
-          "Practice 3 deep breaths. 🌬️",
-        ],
       },
       family: {
         greeting: "Hello! I'm here to help your family stay balanced and connected. ❤️",
-        tips: [
-          "Plan a device-free family walk. 🌳",
-          "Create a family digital agreement. 📝",
-          "Watch a wellness video together. 🍿",
-          "Practice 3 deep breaths together. 🌬️",
-        ],
       },
     }),
     []
@@ -232,7 +327,7 @@ export const WellnessCompanion: FC = () => {
               </p>
               <div className="space-y-2">
                 {!faqMode &&
-                  modeContent[mode].tips.map((tip, i) => (
+                  tips.map((tip, i) => (
                     <motion.button
                       key={i}
                       className="w-full text-left p-3 text-xs rounded-xl bg-white dark:bg-[#4FD1C5]/10 hover:bg-slate-50 dark:hover:bg-[#4FD1C5]/20 text-slate-900 dark:text-[#4FD1C5] transition-all font-black border border-slate-200 dark:border-[#4FD1C5]/20 shadow-sm"

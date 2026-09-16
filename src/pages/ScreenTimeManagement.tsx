@@ -3,6 +3,7 @@ import { Clock, Shield, Smartphone, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useWellness } from "@/context/WellnessContext";
 
 const ScreenTimeManagement: React.FC = () => {
   const [claims, setClaims] = useState<{slug:string;value:string;label:string;context:string}[]>([]);
