@@ -94,6 +94,10 @@ const ProfileTransfer = () => {
         setImportResult(r);
         setImporting(false);
         if (r.errors.length > 0) setImportError(r.errors.join("; "));
+        // Clear the stale source preview so the import step no longer shows
+        // the incoming data after the import is complete. Keep pasteCode so
+        // the result can re-decode it to show which profiles were imported.
+        setPreview(null);
       } catch (err) {
         setImportError(String(err));
         setImporting(false);
@@ -202,10 +206,33 @@ const ProfileTransfer = () => {
               )}
             </div>
 
+            {/* Profile names */}
+            {blob?.profiles && blob.profiles.length > 0 && (
+              <div className="mb-4 text-sm space-y-1">
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest mb-2">
+                  Profile Names
+                </div>
+                {blob.profiles.map((p) => (
+                  <div key={p.id} className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                    <span className="w-2 h-2 rounded-full bg-[#4FD1C5]" />
+                    <span className="font-medium">{p.nickname || "Unnamed"}</span>
+                    <span className="text-slate-400 dark:text-slate-500 font-mono text-xs">
+                      · {p.id.slice(0, 8)}…
+                    </span>
+                    {p.id === blob.currentProfileId && (
+                      <span className="ml-auto text-xs text-[#2C7A7B] dark:text-[#4FD1C5] font-medium">
+                        (current)
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Profile + key detail */}
-            {preview.scopedKeyDetails.length > 0 && (
+            {preview?.scopedKeyDetails?.length > 0 && (
               <div className="mb-4 text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                {preview.scopedKeyDetails.map((d) => (
+                {preview?.scopedKeyDetails?.map((d) => (
                   <div key={d.profileId} className="flex gap-2">
                     <span className="font-mono text-slate-400 w-24 truncate">
                       {d.profileId.slice(0, 8)}…
@@ -371,7 +398,37 @@ const ProfileTransfer = () => {
               </div>
 
               <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1">
-                {preview.scopedKeyDetails.map((d) => (
+                {/* Decoded blob profiles — show nicknames if available */}
+                {(() => {
+                  // preview.scopedKeyDetails has profileId + key info.
+                  // The decoded blob (from decodeBlob) has full Profile objects with nicknames,
+                  // but preview only carries counts/details. Re-decode to get names.
+                  const decoded = pasteCode.trim() ? decodeBlob(pasteCode) : null;
+                  const profiles: Array<{id: string; nickname: string}> = [];
+                  if (decoded) {
+                    for (const p of decoded.profiles) {
+                      profiles.push({ id: p.id, nickname: p.nickname || "Unnamed" });
+                    }
+                  }
+                  if (profiles.length === 0) return null;
+                  return (
+                    <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                      <div className="text-xs text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest mb-2">
+                        Profile Names
+                      </div>
+                      {profiles.map((p) => (
+                        <div key={p.id} className="flex items-center gap-2 text-sm">
+                          <span className="w-2 h-2 rounded-full bg-[#4FD1C5]" />
+                          <span className="font-medium text-slate-700 dark:text-slate-200">{p.nickname}</span>
+                          <span className="text-slate-400 dark:text-slate-500 font-mono text-xs">
+                            · {p.id.slice(0, 8)}…
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+                {preview?.scopedKeyDetails?.map((d) => (
                   <div key={d.profileId} className="flex gap-2">
                     <span className="font-mono text-slate-400 w-24 truncate">
                       {d.profileId.slice(0, 8)}…
@@ -479,41 +536,85 @@ const ProfileTransfer = () => {
 
           {/* Import result */}
           {importResult && (
-            <div className="mb-6 p-4 rounded-2xl bg-green-50 dark:bg-green-900/15 border border-green-200 dark:border-green-800/40 text-sm text-green-800 dark:text-green-300">
-              Imported {importResult.writtenProfiles} profile
-              {importResult.writtenProfiles === 1 ? "" : "s"} and{" "}
-              {importResult.writtenKeys} local key{importResult.writtenKeys === 1 ? "" : "s"}.
-              {importResult.errors.length > 0 && (
-                <span className="block mt-1 text-amber-700 dark:text-amber-300">
-                  Note: {importResult.errors.join(", ")}
-                </span>
-              )}
+            <div className="mb-6 space-y-4">
+              <div className="p-4 rounded-2xl bg-green-50 dark:bg-green-900/15 border border-green-200 dark:border-green-800/40 text-sm text-green-800 dark:text-green-300">
+                Imported {importResult.writtenProfiles} profile
+                {importResult.writtenProfiles === 1 ? "" : "s"} and{" "}
+                {importResult.writtenKeys} local key{importResult.writtenKeys === 1 ? "" : "s"}.
+                {importResult.errors.length > 0 && (
+                  <span className="block mt-1 text-amber-700 dark:text-amber-300">
+                    Note: {importResult.errors.join(", ")}
+                  </span>
+                )}
+              </div>
+
+              {/* Show which profiles were imported */}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700">
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest mb-2">
+                  Imported Profiles
+                </div>
+                {(() => {
+                  const decoded = pasteCode.trim() ? decodeBlob(pasteCode) : null;
+                  if (!decoded || !decoded.profiles.length) return null;
+                  return (
+                    <div className="space-y-1">
+                      {decoded.profiles.map((p) => (
+                        <div key={p.id} className="flex items-center gap-2 text-sm">
+                          <span className="w-2 h-2 rounded-full bg-[#4FD1C5]" />
+                          <span className="font-medium text-slate-700 dark:text-slate-200">
+                            {p.nickname || "Unnamed"}
+                          </span>
+                          <span className="text-slate-400 dark:text-slate-500 font-mono text-xs">
+                            · {p.id.slice(0, 8)}…
+                          </span>
+                          {p.id === decoded.currentProfileId && (
+                            <span className="ml-auto text-xs text-[#2C7A7B] dark:text-[#4FD1C5] font-medium">
+                              (current)
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           )}
 
           {/* Action */}
           <div className="flex gap-3">
-            <button
-              onClick={() => setStep("preview")}
-              className="flex-1 px-4 py-3 text-sm font-bold rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleImport}
-              disabled={!pasteCode.trim() || importing}
-              className="flex-1 px-4 py-3 text-sm font-bold rounded-xl bg-[#4FD1C5] text-white hover:bg-[#4FD1C5]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-            >
-              {importing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" /> Importing…
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4" /> Import
-                </>
-              )}
-            </button>
+            {importResult ? (
+              <button
+                onClick={() => setStep("preview")}
+                className="flex-1 px-4 py-3 text-sm font-bold rounded-xl bg-[#4FD1C5] text-white hover:bg-[#4FD1C5]/90 transition-colors"
+              >
+                Done — view profiles
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => setStep("preview")}
+                  className="flex-1 px-4 py-3 text-sm font-bold rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleImport}
+                  disabled={!pasteCode.trim() || importing}
+                  className="flex-1 px-4 py-3 text-sm font-bold rounded-xl bg-[#4FD1C5] text-white hover:bg-[#4FD1C5]/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                >
+                  {importing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Importing…
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4" /> Import
+                    </>
+                  )}
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
