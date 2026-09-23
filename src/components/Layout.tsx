@@ -8,12 +8,21 @@ import { MoodColorShift } from "./wellness/MoodColorShift";
 import OrganicTexture from "./wellness/OrganicTexture";
 import { WellnessCompanion } from "./wellness/WellnessCompanion";
 import { FamilyModeSwitcher } from "./wellness/FamilyModeSwitcher";
-import { useWellness } from "@/context/WellnessContext";
+import { useProfile } from "@/context/ProfileContext";
+import { updateProfile } from "@/lib/profiles";
+import { type FamilyMode } from "@/lib/profiles";
 import Footer from "./Footer";
 import CookieConsentBanner from "./CookieConsentBanner";
 
 const Layout = ({ children }: { children?: ReactNode }) => {
-  const { mode, setMode } = useWellness();
+  const { currentProfile } = useProfile();
+  const mode = currentProfile?.mode ?? ("family" as FamilyMode);
+
+  const handleModeChange = (newMode: FamilyMode) => {
+    const profileId = currentProfile?.id;
+    if (!profileId) return;
+    updateProfile(profileId, { mode: newMode });
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col bg-transparent transition-colors duration-700">
@@ -32,7 +41,7 @@ const Layout = ({ children }: { children?: ReactNode }) => {
       <Navigation />
 
       {/* Personalized Experience Switcher */}
-      <FamilyModeSwitcher currentMode={mode} onModeChange={setMode} />
+      <FamilyModeSwitcher currentMode={mode} onModeChange={handleModeChange} />
 
       <main className="relative flex-1">
         {children ?? <Outlet />}

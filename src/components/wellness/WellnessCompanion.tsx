@@ -197,19 +197,19 @@ export const WellnessCompanion: FC = () => {
       setEyeBreakTimer(20);
       setIsExpanded(false);
     } else if (tipLabel.includes("agreement")) {
-      navigate("/family-digital-agreements");
+      navigate("/family-agreements");
       setIsExpanded(false);
     } else if (tipLabel.includes("video")) {
       navigate("/video-resources");
       setIsExpanded(false);
     } else if (tipLabel.includes("reports") || tipLabel.includes("screen time") || tipLabel.includes("privacy settings") || tipLabel.includes("parental controls")) {
-      navigate("/screen-time-management");
+      navigate("/screen-time");
       setIsExpanded(false);
     } else if (tipLabel.includes("quiz") || tipLabel.includes("game") || tipLabel.includes("keyboard")) {
       navigate("/educational-games");
       setIsExpanded(false);
     } else if (tipLabel.includes("online safety") || tipLabel.includes("online footprints") || tipLabel.includes("privacy") || tipLabel.includes("digital rules")) {
-      navigate("/family-digital-agreements");
+      navigate("/family-agreements");
       setIsExpanded(false);
     } else {
       setMessage(tipLabel);

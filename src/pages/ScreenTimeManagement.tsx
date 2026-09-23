@@ -100,7 +100,7 @@ const ScreenTimeManagement: React.FC = () => {
         <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto font-medium leading-relaxed">
           Create a customized plan for your family with our interactive Digital Agreement tool.
         </p>
-        <Link to="/family-digital-agreements">
+        <Link to="/family-agreements">
           <Button className="bg-green-600 dark:bg-green-500 hover:bg-green-700 text-white text-xl px-12 py-8 rounded-2xl font-black shadow-xl shadow-green-500/20">
             Create Family Agreement
           </Button>

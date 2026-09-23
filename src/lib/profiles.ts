@@ -149,3 +149,5 @@ export function migrateOldProgress(profileId: string): void {
 export function getProfileStorageKey(prefix: string, profileId: string): string {
   return `${prefix}_${profileId}`;
 }
+
+export const COOKIE_CONSENT_KEY = "dg_cookie_consent";

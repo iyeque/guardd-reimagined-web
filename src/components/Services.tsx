@@ -12,14 +12,14 @@ export const Services = () => {
       icon: Monitor,
       title: "Master Your Screen Time",
       description: "Transform your family's digital habits with practical strategies for balanced and healthy screen use. Ready to reclaim your time?",
-      link: "/screen-time-management",
+      link: "/screen-time",
       tags: ['parent', 'family']
     },
     {
       icon: Users,
       title: "Harmonize Your Digital Home",
       description: "Create clear, collaborative family agreements that foster understanding and shared responsibility online. Start building trust today.",
-      link: "/family-digital-agreements",
+      link: "/family-agreements",
       tags: ['parent', 'family']
     },
     {

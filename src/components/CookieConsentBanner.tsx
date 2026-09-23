@@ -2,29 +2,34 @@
 
 import { useState, useEffect } from "react";
 import { Info, Cookie, Check, X } from "lucide-react";
+import { COOKIE_CONSENT_KEY } from "@/lib/profiles";
 
-type ConsentChoice = "accept" | "reject" | null;
+export type ConsentChoice = "accept" | "reject" | null;
+
+function checkConsent(): ConsentChoice {
+  if (typeof window === "undefined") return null;
+  const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
+  if (stored === "accept" || stored === "reject") {
+    return stored;
+  }
+  return null;
+}
+
+function setConsentEnabled(enabled: boolean) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__DG_ANALYTICS_ENABLED = enabled;
+}
 
 const CookieConsentBanner = () => {
-  const [choice, setChoice] = useState<ConsentChoice>(() => {
-    if (typeof window === "undefined") return null;
-    const stored = localStorage.getItem("dg_cookie_consent");
-    if (stored === "accept" || stored === "reject") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).__DG_ANALYTICS_ENABLED = stored === "accept";
-      return stored;
-    }
-    return null;
-  });
+  const [choice, setChoice] = useState<ConsentChoice>(checkConsent);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handler = (e: StorageEvent) => {
-      if (e.key === "dg_cookie_consent") {
+      if (e.key === COOKIE_CONSENT_KEY) {
         const stored = e.newValue;
         if (stored === "accept" || stored === "reject") {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (window as any).__DG_ANALYTICS_ENABLED = stored === "accept";
+          setConsentEnabled(stored === "accept");
           setChoice(stored);
         }
       }
@@ -39,9 +44,8 @@ const CookieConsentBanner = () => {
 
   const handleChoice = (selected: "accept" | "reject") => {
     if (typeof window === "undefined") return;
-    localStorage.setItem("dg_cookie_consent", selected);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).__DG_ANALYTICS_ENABLED = selected === "accept";
+    localStorage.setItem(COOKIE_CONSENT_KEY, selected);
+    setConsentEnabled(selected === "accept");
     setChoice(selected);
   };
 
@@ -92,7 +96,7 @@ const CookieConsentBanner = () => {
               </button>
 
               <a
-                href="/privacy"
+                href="/privacy-policy"
                 className="text-white/60 text-sm hover:text-white transition-colors ml-auto"
               >
                 Privacy Policy

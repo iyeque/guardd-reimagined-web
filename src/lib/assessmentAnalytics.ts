@@ -9,6 +9,16 @@ export interface AssessmentAnalyticsPayload {
   completedAt: number;
 }
 
+import { COOKIE_CONSENT_KEY } from "@/lib/profiles";
+
+const ANALYTICS_COOKIE_KEY = COOKIE_CONSENT_KEY;
+
+function isAnalyticsAllowed(): boolean {
+  if (typeof window === "undefined") return false;
+  const stored = localStorage.getItem(ANALYTICS_COOKIE_KEY);
+  return stored === "accept";
+}
+
 const DEFAULT_ANALYTICS_ENDPOINT = '/api/assessment-analytics';
 
 export const getAnalyticsEndpoint = (): string | undefined => {
@@ -19,18 +29,81 @@ export const getAnalyticsEndpoint = (): string | undefined => {
   return DEFAULT_ANALYTICS_ENDPOINT;
 };
 
+export interface MisconceptionEntry {
+  questionIndex: number;
+  selectedWrongCount: number;
+  explanation: string;
+}
+
+export function buildAssessmentAnalyticsPayload(
+  moduleId: string,
+  questions: { question: string; correctIndex: number }[],
+  answers: (number | string)[]
+): AssessmentAnalyticsPayload {
+  const totalQuestions = questions.length;
+  let correctCount = 0;
+  for (let i = 0; i < totalQuestions && i < answers.length; i++) {
+    const answer = answers[i];
+    const expected = questions[i].correctIndex;
+    const answerValue = typeof answer === 'string' ? Number(answer) : answer;
+    if (answerValue === expected) {
+      correctCount++;
+    }
+  }
+  const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+  return {
+    assessmentId: moduleId,
+    moduleId,
+    totalQuestions,
+    correctCount,
+    score,
+    passed: score >= 70,
+    completedAt: Date.now(),
+  };
+}
+
+export function getCommonMisconceptions(
+  answers: (number | string)[],
+  questions: { correctIndex: number; explanation: string }[]
+): MisconceptionEntry[] {
+  const misconceptions: MisconceptionEntry[] = [];
+  for (let i = 0; i < questions.length && i < answers.length; i++) {
+    const answer = answers[i];
+    const expected = questions[i].correctIndex;
+    const answerValue = typeof answer === 'string' ? Number(answer) : answer;
+    if (answerValue !== expected) {
+      const prev = misconceptions.find(m => m.questionIndex === i);
+      if (prev) {
+        prev.selectedWrongCount++;
+      } else {
+        misconceptions.push({ questionIndex: i, selectedWrongCount: 1, explanation: questions[i].explanation });
+      }
+    }
+  }
+  return misconceptions;
+}
+
+export function formatCertificationMessage(
+  score: number,
+  passed: boolean,
+  misconceptions: MisconceptionEntry[]
+): string {
+  if (passed) {
+    if (misconceptions.length === 0) {
+      return `Excellent! You scored ${score}% with a perfect score.`;
+    }
+    return `Great job! You passed with ${score}%. Review a few areas to strengthen your knowledge.`;
+  }
+  if (misconceptions.length === 0) {
+    return `You scored ${score}%. Keep learning to improve.`;
+  }
+  return `You scored ${score}%. Review: ${misconceptions.slice(0, 3).map(m => m.explanation).join('; ')}`;
+}
+
 export const sendAssessmentAnalytics = async (
   payload: AssessmentAnalyticsPayload
 ): Promise<void> => {
-  // Respect cookie consent: do not send analytics without consent
-  const consentChoice = typeof window !== "undefined"
-    ? localStorage.getItem("dg_cookie_consent")
-    : null;
-  const analyticsEnabled = typeof window !== "undefined"
-    ? (window as any).__DG_ANALYTICS_ENABLED
-    : undefined;
-
-  if (consentChoice !== "accept" && analyticsEnabled !== true) {
+  if (!isAnalyticsAllowed()) {
     return;
   }
 
@@ -59,72 +132,9 @@ export const sendAssessmentAnalytics = async (
     });
 
     if (!response.ok) {
-      console.warn('Failed to send assessment analytics', response.status);
+      console.error('Assessment analytics send failed', response.status, response.statusText);
     }
-  } catch (error) {
-    console.warn('Failed to send assessment analytics', error);
+  } catch (err) {
+    console.error('Assessment analytics network error', err);
   }
-};
-
-export const buildAssessmentAnalyticsPayload = (
-  moduleId: string,
-  questions: { question: string; correctIndex: number }[],
-  answers: number[],
-  workshopId?: string
-): AssessmentAnalyticsPayload => {
-  const correctCount = answers.filter((a, i) => a === questions[i].correctIndex).length;
-  const score = Math.round((correctCount / questions.length) * 100);
-
-  return {
-    assessmentId: moduleId + '-analytics',
-    moduleId,
-    workshopId,
-    totalQuestions: questions.length,
-    correctCount,
-    score,
-    passed: score >= (moduleId === 'a1' ? 70 : 75),
-    completedAt: Date.now(),
-  };
-};
-
-export const getCommonMisconceptions = (
-  answers: number[],
-  questions: { correctIndex: number; explanation: string }[]
-): { questionIndex: number; selectedWrongCount: number; explanation: string }[] => {
-  const wrongByQuestion: Record<number, number> = {};
-
-  answers.forEach((selected, i) => {
-    if (selected !== questions[i].correctIndex && questions[i].explanation) {
-      wrongByQuestion[i] = (wrongByQuestion[i] || 0) + 1;
-    }
-  });
-
-  return Object.entries(wrongByQuestion)
-    .map(([index, count]) => ({
-      questionIndex: Number(index),
-      selectedWrongCount: count,
-      explanation: questions[Number(index)].explanation || '',
-    }))
-    .sort((a, b) => b.selectedWrongCount - a.selectedWrongCount);
-};
-
-export const formatCertificationMessage = (
-  score: number,
-  passed: boolean,
-  misconceptions: { questionIndex: number; selectedWrongCount: number; explanation: string }[]
-): string => {
-  if (!passed) {
-    return 'You can review the material and try again later.';
-  }
-
-  if (misconceptions.length === 0) {
-    return 'You demonstrated strong understanding across all questions. Great job!';
-  }
-
-  const topIssue = misconceptions[0];
-  if (!topIssue.explanation) {
-    return 'You completed the assessment successfully.';
-  }
-
-  return 'You completed the assessment. ' + topIssue.explanation;
 };
