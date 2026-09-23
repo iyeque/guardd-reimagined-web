@@ -1,4 +1,5 @@
-import { useState, FC } from "react";
+import { useState, FC, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   User,
   Plus,
@@ -7,6 +8,7 @@ import {
   ChevronDown,
   X,
   Loader2,
+  Download,
 } from "lucide-react";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
 import { useWellness } from "@/context/WellnessContext";
@@ -30,6 +32,18 @@ const ProfileSwitcher: FC = () => {
   const [editMode, setEditMode] = useState<FamilyMode>("parent");
   const [newNickname, setNewNickname] = useState("");
   const [editingNickname, setEditingNickname] = useState("");
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   if (!currentProfile) return null;
 
@@ -86,7 +100,7 @@ const ProfileSwitcher: FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl p-3 z-50">
+        <div ref={dropdownRef} className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl p-3 z-50">
           <div className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3">
             Active Profile
           </div>
@@ -163,6 +177,17 @@ const ProfileSwitcher: FC = () => {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="border-t border-slate-200 dark:border-slate-700 pt-3">
+            <Link
+              to="/transfer"
+              onClick={() => setIsOpen(false)}
+              className="block w-full text-left px-3 py-2 rounded-xl text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2"
+            >
+              <Download className="w-3 h-3 text-[#4FD1C5]" />
+              Transfer Profiles
+            </Link>
           </div>
 
           <button
