@@ -117,6 +117,24 @@ const ProfileTransfer = () => {
             Back to home
           </Link>
 
+          {/* Step toggle */}
+          <div className="flex gap-2 mb-8">
+            <button
+              type="button"
+              onClick={() => setStep("preview")}
+              className="flex-1 py-2 px-4 rounded-full text-sm font-bold transition-colors bg-[#4FD1C5] text-white shadow-md shadow-[#4FD1C5]/20"
+            >
+              Export
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep("import")}
+              className="flex-1 py-2 px-4 rounded-full text-sm font-bold transition-colors bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            >
+              Import
+            </button>
+          </div>
+
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
@@ -273,14 +291,23 @@ const ProfileTransfer = () => {
     return (
       <div className="min-h-screen bg-white dark:bg-slate-900 pt-28 pb-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
-          <button
-            type="button"
-            onClick={() => setStep('preview')}
-            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to export
-          </button>
+          {/* Step toggle */}
+          <div className="flex gap-2 mb-8">
+            <button
+              type="button"
+              onClick={() => setStep("preview")}
+              className="flex-1 py-2 px-4 rounded-full text-sm font-bold transition-colors bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            >
+              Export
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep("import")}
+              className="flex-1 py-2 px-4 rounded-full text-sm font-bold transition-colors bg-[#4FD1C5] text-white shadow-md shadow-[#4FD1C5]/20"
+            >
+              Import
+            </button>
+          </div>
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
