@@ -11,6 +11,7 @@ import {
   Loader2,
   Download,
 } from "lucide-react";
+import { useProfile } from "@/context/ProfileContext";
 import {
   buildTransferBlob,
   previewBlob,
@@ -39,6 +40,9 @@ const ProfileTransfer = () => {
   const [copied, setCopied] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
+  const { reloadProfiles } = useProfile();
+  const [importedProfileNames, setImportedProfileNames] = useState<Array<{ id: string; nickname: string }>>([]);
+  const [importedCurrentProfileId, setImportedCurrentProfileId] = useState<string | null>(null);
 
   const regenerate = useCallback(() => {
     const b = buildTransferBlob();
@@ -94,10 +98,17 @@ const ProfileTransfer = () => {
         setImportResult(r);
         setImporting(false);
         if (r.errors.length > 0) setImportError(r.errors.join("; "));
-        // Clear the stale source preview so the import step no longer shows
-        // the incoming data after the import is complete. Keep pasteCode so
-        // the result can re-decode it to show which profiles were imported.
-        setPreview(null);
+        // Capture the decoded profile names before clearing the paste code,
+        // so the result box can still show which profiles were imported.
+        const names = decoded.profiles.map((p) => ({ id: p.id, nickname: p.nickname || "Unnamed" }));
+        setImportedProfileNames(names);
+        setImportedCurrentProfileId(decoded.currentProfileId ?? null);
+        // Rebuild the preview from the newly-imported localStorage state,
+        // clear the stale paste code, and refresh the profile context so the
+        // dropdown shows the imported profiles.
+        regenerate();
+        reloadProfiles();
+        setPasteCode("");
       } catch (err) {
         setImportError(String(err));
         setImporting(false);
@@ -549,35 +560,31 @@ const ProfileTransfer = () => {
               </div>
 
               {/* Show which profiles were imported */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest mb-2">
-                  Imported Profiles
+              {importedProfileNames.length > 0 && (
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest mb-2">
+                    Imported Profiles
+                  </div>
+                  <div className="space-y-1">
+                    {importedProfileNames.map((p) => (
+                      <div key={p.id} className="flex items-center gap-2 text-sm">
+                        <span className="w-2 h-2 rounded-full bg-[#4FD1C5]" />
+                        <span className="font-medium text-slate-700 dark:text-slate-200">
+                          {p.nickname}
+                        </span>
+                        <span className="text-slate-400 dark:text-slate-500 font-mono text-xs">
+                          · {p.id.slice(0, 8)}…
+                        </span>
+                        {p.id === importedCurrentProfileId && (
+                          <span className="ml-auto text-xs text-[#2C7A7B] dark:text-[#4FD1C5] font-medium">
+                            (current)
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                {(() => {
-                  const decoded = pasteCode.trim() ? decodeBlob(pasteCode) : null;
-                  if (!decoded || !decoded.profiles.length) return null;
-                  return (
-                    <div className="space-y-1">
-                      {decoded.profiles.map((p) => (
-                        <div key={p.id} className="flex items-center gap-2 text-sm">
-                          <span className="w-2 h-2 rounded-full bg-[#4FD1C5]" />
-                          <span className="font-medium text-slate-700 dark:text-slate-200">
-                            {p.nickname || "Unnamed"}
-                          </span>
-                          <span className="text-slate-400 dark:text-slate-500 font-mono text-xs">
-                            · {p.id.slice(0, 8)}…
-                          </span>
-                          {p.id === decoded.currentProfileId && (
-                            <span className="ml-auto text-xs text-[#2C7A7B] dark:text-[#4FD1C5] font-medium">
-                              (current)
-                            </span>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })()}
-              </div>
+              )}
             </div>
           )}
 

@@ -24,6 +24,7 @@ import {
 interface ProfileContextType {
   currentProfile: Profile | null;
   profiles: Profile[];
+  reloadProfiles: () => void;
   createNewProfile: (nickname?: string, mode?: FamilyMode) => void;
   switchProfile: (profileId: string) => void;
   updateCurrentProfile: (
@@ -130,6 +131,21 @@ export const ProfileProvider: FC<{ children: ReactNode }> = ({ children }) => {
     localStorage.removeItem(getProfileStorageKey("dg_companion", currentProfile.id));
   }, [currentProfile]);
 
+  const reloadProfiles = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const existing = getCurrentProfile();
+    const profileList = listProfiles();
+    if (existing) {
+      setCurrentProfileState(existing);
+    } else if (profileList.length > 0) {
+      const fallback = profileList[0];
+      setCurrentProfile(fallback.id);
+      setCurrentProfileState(fallback);
+      migrateOldProgress(fallback.id);
+    }
+    setProfiles(profileList);
+  }, []);
+
   if (!isLoaded) {
     return null;
   }
@@ -139,6 +155,7 @@ export const ProfileProvider: FC<{ children: ReactNode }> = ({ children }) => {
       value={{
         currentProfile,
         profiles,
+        reloadProfiles,
         createNewProfile,
         switchProfile,
         updateCurrentProfile,

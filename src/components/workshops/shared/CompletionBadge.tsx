@@ -67,7 +67,7 @@ export const CompletionBadge = ({ title, icon, color }: Props) => {
           filename: `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-certificate.pdf`,
           image: { type: "jpeg" as const, quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-          jsPDF: { unit: "in", format: "a4", orientation: "landscape" as const },
+          jsPDF: { unit: "in", format: "letter", orientation: "landscape" as const },
         })
         .from(certificateRef.current)
         .save();
