@@ -89,6 +89,7 @@ const ProfileSwitcher: FC = () => {
   return (
     <div className="relative">
       <button
+        data-tour="profile-switcher"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-white/20 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 transition-colors"
       >

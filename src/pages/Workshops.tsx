@@ -1,6 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion"
+import { useState, useMemo, useRef, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { resumeOnboardingTour } from "@/lib/onboarding"
 import { workshops } from "@/data/workshops";
 import { WorkshopCard } from "@/components/workshops/WorkshopCard";
 import { useWorkshopProgress } from "@/hooks/useWorkshopProgress";
@@ -42,7 +43,15 @@ export const Workshops = () => {
   const nextWorkshop = workshops.find((w) => {
     return !rawProgress[w.id] || Object.values(rawProgress[w.id]).filter(Boolean).length < w.modules.length;
   });
-  const hasProgress = Object.keys(rawProgress).length > 0;
+  const hasProgress = Object.keys(rawProgress).length > 0
+
+  useEffect(() => {
+    const pending = localStorage.getItem('dg_onboarding_pending_step')
+    if (pending === '6') {
+      localStorage.removeItem('dg_onboarding_pending_step')
+      resumeOnboardingTour(6)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
@@ -62,7 +71,7 @@ export const Workshops = () => {
             <span>Flagship Course + Workshops</span>
           </motion.div>
 
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-slate-800 dark:text-white">
+          <h1 data-tour="workshops-heading" className="text-4xl md:text-6xl font-bold mb-4 text-slate-800 dark:text-white">
             Family <span className="gradient-text">Workshops</span>
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">

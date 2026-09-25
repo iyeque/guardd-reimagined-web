@@ -381,6 +381,7 @@ export const WellnessCompanion: FC = () => {
         </AnimatePresence>
 
         <motion.button
+          data-tour="wellness-companion"
           className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FF9A8B] to-[#4FD1C5] shadow-lg flex items-center justify-center text-3xl border-4 border-white/20"
           whileHover={{ scale: 1.1, rotate: 5 }}
           whileTap={{ scale: 0.9 }}

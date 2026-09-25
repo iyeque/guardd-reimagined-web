@@ -95,7 +95,7 @@ export const Services = () => {
         </div>
 
         <div className="flex justify-center mt-12">
-          <Link to="/workshop">
+          <Link to="/workshop" data-tour="workshop-cta">
             <BreathingButton>
               {mode === 'child' ? 'Start Your First Adventure' : 'View All Tools & Workshops'}
             </BreathingButton>
