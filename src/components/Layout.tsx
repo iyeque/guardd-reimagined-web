@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react";
+import React, { type ReactNode, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import UnifiedBackground from "./wellness/UnifiedBackground";
@@ -9,17 +9,27 @@ import OrganicTexture from "./wellness/OrganicTexture";
 import { WellnessCompanion } from "./wellness/WellnessCompanion";
 import { FamilyModeSwitcher } from "./wellness/FamilyModeSwitcher";
 import { useProfile } from "@/context/ProfileContext";
+import { useWellness } from "@/context/WellnessContext";
 import { type FamilyMode } from "@/lib/profiles";
 import Footer from "./Footer";
 import CookieConsentBanner from "./CookieConsentBanner";
 
 const Layout = ({ children }: { children?: ReactNode }) => {
   const { currentProfile, updateCurrentProfile } = useProfile();
-  const mode = currentProfile?.mode ?? ("family" as FamilyMode);
+  const { mode, setMode } = useWellness();
+
+  // Keep wellness context in sync with profile on mount
+  useEffect(() => {
+    if (currentProfile?.mode && mode !== currentProfile.mode) {
+      setMode(currentProfile.mode);
+    }
+  }, [currentProfile?.mode, mode]);
 
   const handleModeChange = (newMode: FamilyMode) => {
-    if (!currentProfile) return;
-    updateCurrentProfile({ mode: newMode });
+    setMode(newMode);
+    if (currentProfile) {
+      updateCurrentProfile({ mode: newMode });
+    }
   };
 
   return (
