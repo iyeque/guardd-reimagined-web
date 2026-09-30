@@ -20,6 +20,11 @@ export function resetOnboardingSeen() {
   }
 }
 
+export function restartOnboardingTour(navigate?: NavigateFunction) {
+  resetOnboardingSeen()
+  startOnboardingTour(navigate)
+}
+
 const DRIVER_OPTIONS = {
   showProgress: true,
   animate: true,

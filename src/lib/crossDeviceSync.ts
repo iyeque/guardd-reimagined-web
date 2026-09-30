@@ -122,13 +122,18 @@ export interface TransferPreview {
 
 export type ImportMode = "replace" | "merge";
 
+export interface CompanionExportOptions {
+  /** Trim companion faqHistory to this many most-recent entries. 0 = no trim. Default 5 when true. */
+  trimCompanionHistory?: boolean | number;
+}
+
 // ---------------------------------------------------------------------------
 // Blob construction / preview
 // ---------------------------------------------------------------------------
 
 export const MAX_QR_UTF8_BYTES = 1_700; // safe single-QR threshold (v40 EC-L ≈ 1.8KB; keep margin)
 
-export function buildTransferBlob(): TransferBlob {
+export function buildTransferBlob(options?: CompanionExportOptions): TransferBlob {
   if (typeof window === "undefined") {
     return {
       version: 1,
@@ -186,6 +191,22 @@ export function buildTransferBlob(): TransferBlob {
   for (const id of Array.from(orphanKeys)) {
     scoped[id] = collectScopedKeys(id);
   }
+
+  // Trim companion faqHistory if requested (keeps most recent N entries).
+  const companionTrim = typeof options?.trimCompanionHistory === "number"
+    ? options.trimCompanionHistory
+    : options?.trimCompanionHistory === true
+      ? 5
+      : 0;
+  if (companionTrim > 0) {
+    for (const [profileId, keys] of Object.entries(scoped)) {
+      const companionKey = `dg_companion_${profileId}`;
+      if (keys[companionKey]) {
+        keys[companionKey] = trimCompanionHistory(keys[companionKey], companionTrim);
+      }
+    }
+  }
+
   return {
     version: 1,
     exportedAt: Date.now(),
@@ -370,4 +391,64 @@ export function applyTransferBlob(
   }
 
   return { writtenProfiles, writtenKeys, errors };
+}
+
+// ---------------------------------------------------------------------------
+// Companion history helpers
+// ---------------------------------------------------------------------------
+
+/** Trim a companion faqHistory JSON value to the N most-recent entries. */
+export function trimCompanionHistory(value: string, keepCount: number): string {
+  try {
+    const parsed = JSON.parse(value);
+    if (parsed && Array.isArray(parsed.faqHistory)) {
+      const trimmed = parsed.faqHistory.slice(-keepCount);
+      return JSON.stringify({ faqHistory: trimmed });
+    }
+  } catch {
+    // malformed — return as-is
+  }
+  return value;
+}
+
+/**
+ * Build a TransferBlob containing only the companion history for one profile.
+ * The resulting code fits in a QR when the companion value is small enough.
+ */
+export function buildCompanionExportBlob(profileId: string, options?: CompanionExportOptions): TransferBlob {
+  const companionKey = `dg_companion_${profileId}`;
+  const raw = typeof window !== "undefined"
+    ? localStorage.getItem(companionKey)
+    : null;
+  let companionValue = raw ?? "{}";
+  if (options?.trimCompanionHistory) {
+    companionValue = trimCompanionHistory(companionValue, typeof options.trimCompanionHistory === "number"
+      ? options.trimCompanionHistory
+      : 5);
+  }
+  return {
+    version: 1,
+    exportedAt: Date.now(),
+    exportedByProfileId: profileId,
+    profiles: [],
+    currentProfileId: profileId,
+    scoped: {
+      [profileId]: {
+        [companionKey]: companionValue,
+      },
+    },
+  };
+}
+
+/**
+ * Write a companion export blob's scoped keys back to localStorage.
+ * Used when importing a companion-only transfer on another device.
+ */
+export function applyCompanionExport(blob: TransferBlob): void {
+  if (typeof window === "undefined") return;
+  for (const [profileId, keys] of Object.entries(blob.scoped)) {
+    for (const [key, value] of Object.entries(keys)) {
+      localStorage.setItem(key, value);
+    }
+  }
 }

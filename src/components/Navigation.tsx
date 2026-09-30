@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/context/useTheme";
 import ProfileSwitcher from "@/components/ProfileSwitcher";
-import { resumeOnboardingTour, resetOnboardingSeen } from "@/lib/onboarding";
+import { resumeOnboardingTour, resetOnboardingSeen, restartOnboardingTour } from "@/lib/onboarding";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,8 +75,7 @@ export const Navigation = () => {
               variant="ghost"
               size="icon"
               onClick={() => {
-                resetOnboardingSeen()
-                navigate('/')
+                restartOnboardingTour(navigate)
               }}
               className={`text-foreground hover:bg-muted rounded-full transition-colors ${
                 location.pathname !== "/" ? "hidden" : ""
@@ -104,8 +103,7 @@ export const Navigation = () => {
               variant="ghost"
               size="icon"
               onClick={() => {
-                resetOnboardingSeen()
-                navigate('/')
+                restartOnboardingTour(navigate)
               }}
               className={`text-foreground hover:text-white hover:bg-white/10 rounded-full transition-colors ${
                 location.pathname !== "/" ? "hidden" : ""
