@@ -34,6 +34,8 @@ const DRIVER_OPTIONS = {
   allowKeyboardNavigation: true,
   skipMissingElement: true,
   onDestroyed: markTourSeen,
+  popoverClass: 'driver-popover',
+  highlighterClass: 'driver-highlight',
 }
 
 function createTourSteps(navigate?: NavigateFunction): DriveStep[] {
@@ -115,12 +117,82 @@ function createTourSteps(navigate?: NavigateFunction): DriveStep[] {
       },
     },
     {
-      id: 'workshops-page',
+      id: 'workshops-heading',
       element: () => document.querySelector('[data-tour="workshops-heading"]') as Element,
       popover: {
-        title: 'Family Workshops',
+        title: 'Family Workshops 📚',
         description:
           'Learn together through interactive activities, quizzes, and collaborative exercises designed for the whole family. Browse the full library here.',
+        side: 'bottom' as const,
+        showButtons: ['next', 'skip'] as const,
+      },
+    },
+    {
+      id: 'workshops-course-cta',
+      element: () => document.querySelector('[data-tour="workshops-course-cta"]') as Element,
+      popover: {
+        title: 'Start with the Full Course 🎓',
+        description:
+          'Our flagship 1-hour course takes you from awareness to digital mastery with guided lessons, hands-on action pauses, and two assessments. Or browse individual workshop topics below.',
+        side: 'bottom' as const,
+        showButtons: ['next'] as const,
+      },
+    },
+    {
+      id: 'workshops-search',
+      element: () => document.querySelector('[data-tour="workshops-search"]') as Element,
+      popover: {
+        title: 'Find What You Need 🔍',
+        description:
+          'Search workshops by topic or filter by age group and duration to find the perfect activity for your family.',
+        side: 'bottom' as const,
+        showButtons: ['next'] as const,
+        onNext: () => {},
+      },
+    },
+    {
+      id: 'transfer-tour',
+      element: () => null, // no element — jumps to transfer page
+      popover: {
+        title: 'Transfer Profiles 🔄',
+        description:
+          'Now let\'s look at how to move your profiles to another device. We\'ll cover export and import next.',
+        side: 'center' as const,
+        showButtons: ['next'] as const,
+        onNext: () => {
+          window.location.href = '/transfer';
+        },
+      },
+    },
+    {
+      id: 'transfer-tabs',
+      element: () => document.querySelector('[data-tour="transfer-tabs"]') as Element,
+      popover: {
+        title: 'Export or Import 🔄',
+        description:
+          'Use Export to create a transfer code for your profiles. Use Import to bring profiles from another device using a code or QR scan.',
+        side: 'bottom' as const,
+        showButtons: ['next'] as const,
+      },
+    },
+    {
+      id: 'transfer-code-area',
+      element: () => document.querySelector('[data-tour="transfer-code-area"]') as Element,
+      popover: {
+        title: 'Your Transfer Code 📋',
+        description:
+          'This code contains all your profile data. Scan the QR with another device, or copy and paste it. The code is not encrypted — only share with people you trust.',
+        side: 'bottom' as const,
+        showButtons: ['next', 'skip'] as const,
+      },
+    },
+    {
+      id: 'transfer-import-mode',
+      element: () => document.querySelector('[data-tour="transfer-import-mode"]') as Element,
+      popover: {
+        title: 'How to Import 🛡️',
+        description:
+          'Replace mode clears your existing data and loads the imported profiles. Merge adds new profiles while keeping your current ones. Replace is recommended when moving to a new device.',
         side: 'bottom' as const,
         showButtons: ['next', 'skip'] as const,
       },

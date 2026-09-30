@@ -66,7 +66,46 @@ export const Workshops = () => {
     }
   }, [])
 
-  return (
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  const TESTIMONIALS = [
+    {
+      name: "The Wigman Family",
+      avatar: "W",
+      quote: "The Social Media workshop changed how we talk about posting. Our teen actually led the family posting agreement discussion — something we'd been putting off for months.",
+      detail: "Completed: Social Media Safety + Screen Time Balance",
+    },
+    {
+      name: "Alex & Family",
+      avatar: "A",
+      quote: "We did the Privacy Settings workshop together and found 3 apps neither of us realized were tracking location. The step-by-step checklist made it actually doable instead of overwhelming.",
+      detail: "Completed: Privacy & Security Basics",
+    },
+    {
+      name: "The Johnsons",
+      avatar: "J",
+      quote: "Our youngest went from resisting screen time limits to asking for a family media plan. The eye break reminders turned into a whole family habit — even the dog gets a 'break' now.",
+      detail: "Completed: Screen Time & Family Agreements",
+    },
+    {
+      name: "Priya & Amit",
+      avatar: "P",
+      quote: "The Cyber Safety quiz had our 8-year-old teaching us about phishing links. We've since set up a family 'safe word' for suspicious messages — she came up with it.",
+      detail: "Completed: Cybersecurity Quiz + Family Agreements",
+    },
+    {
+      name: "The Marcus Family",
+      avatar: "M",
+      quote: "Three kids, three different age groups. The workshops let us tailor conversations — our teen did the teen track while the younger two did the kids track, and we all met in the middle for the family agreement.",
+      detail: "Completed: 3 workshops across age groups",
+    },
+    {
+      name: "The Cassidys",
+      avatar: "C",
+      quote: "We thought digital safety was something we'd get to 'someday.' The 20-minute modules fit between dinner and bedtime, and suddenly we'd done 6 workshops without anyone feeling lectured.",
+      detail: "Completed: Screen Time, Privacy, and Wellness modules",
+    },
+  ];
     <div className="min-h-screen pt-24 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <motion.div
@@ -118,6 +157,7 @@ export const Workshops = () => {
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <button
+                data-tour="workshops-course-cta"
                 onClick={() => navigate("/course")}
                 className="px-6 py-3 rounded-full bg-[#4FD1C5] text-white font-bold shadow-lg hover:shadow-xl transition-all"
               >
@@ -149,29 +189,55 @@ export const Workshops = () => {
                 Trusted by families
               </h3>
               <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                10,000+
+                100s
               </p>
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Families exploring Guardd workshops together.
               </p>
             </div>
             <div className="md:col-span-2">
-              <div className="grid gap-4">
-                <div className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700">
-                  <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                    "My teen actually enjoyed the Social Media workshop. We ended up making a family posting agreement the same night."
-                  </p>
-                  <p className="text-xs font-medium text-slate-500 mt-2">
-                    — Sarah, mom of 3
-                  </p>
+              {/* Rotating testimonials carousel */}
+              <div className="relative">
+                <div className="overflow-hidden">
+                  <div
+                    className="grid gap-4 transition-all duration-500"
+                    style={{ transform: `translateY(-${activeTestimonial * 100}%)` }}
+                  >
+                    {TESTIMONIALS.map((t) => (
+                      <div key={t.name} className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 min-h-[96px] flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4FD1C5] to-[#FF9A8B] flex-shrink-0 flex items-center justify-center text-white font-bold text-sm">
+                          {t.avatar}
+                        </div>
+                        <div>
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                            "{t.quote}"
+                          </p>
+                          <p className="text-xs font-medium text-[#2C7A7B] dark:text-[#4FD1C5] mt-2">
+                            — {t.name}
+                          </p>
+                          {t.detail && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                              {t.detail}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700">
-                  <p className="text-sm text-slate-700 dark:text-slate-300 italic">
-                    "Raising Digital Kids gave us better boundaries and calmer check-ins. It felt like a reset for our household."
-                  </p>
-                  <p className="text-xs font-medium text-slate-500 mt-2">
-                    — Family of the Week
-                  </p>
+                <div className="flex gap-2 mt-3 justify-center">
+                  {TESTIMONIALS.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveTestimonial(i)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        activeTestimonial === i
+                          ? "bg-[#4FD1C5] w-6"
+                          : "bg-slate-300 dark:bg-slate-600"
+                      }`}
+                      aria-label={`Show testimonial ${i + 1}`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -292,7 +358,7 @@ export const Workshops = () => {
             placeholder="Search workshops..."
             className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 focus:outline-none focus:ring-2 focus:ring-[#4FD1C5]/40"
           />
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" data-tour="workshops-search">
             {tags.map((tag) => (
               <button
                 key={tag}

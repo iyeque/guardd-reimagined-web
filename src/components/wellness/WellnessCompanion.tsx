@@ -143,7 +143,24 @@ export const WellnessCompanion: FC = () => {
   const [companionExportFitsQr, setCompanionExportFitsQr] = useState(true);
   const [copiedCompanionCode, setCopiedCompanionCode] = useState(false);
   const [companionExporting, setCompanionExporting] = useState(false);
+  const companionButtonRef = useRef<HTMLButtonElement>(null);
   const companionCodeRef = useRef<HTMLTextAreaElement>(null);
+  const companionPanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        companionButtonRef.current && !companionButtonRef.current.contains(target) &&
+        companionPanelRef.current && !companionPanelRef.current.contains(target)
+      ) {
+        setIsExpanded(false);
+        setCompanionPanelOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     try {
@@ -366,14 +383,32 @@ export const WellnessCompanion: FC = () => {
         <AnimatePresence>
           {isExpanded && !isBreathing && (
             <motion.div
+              ref={companionPanelRef}
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
               className="absolute bottom-24 right-0 w-80 p-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-[2rem] shadow-2xl border border-[#4FD1C5]/30"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">🌟</span>
-                <h4 className="font-bold text-foreground">Wellness Guide</h4>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">🌟</span>
+                  <h4 className="font-bold text-foreground">Wellness Guide</h4>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full">
+                    {companionCount} saved
+                  </span>
+                  <button
+                    onClick={() => setCompanionPanelOpen(!companionPanelOpen)}
+                    className="p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+                    title="Manage companion history"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <p className="text-sm text-slate-800 dark:text-slate-200 mb-6 leading-relaxed font-bold">
                 {message}
@@ -434,6 +469,7 @@ export const WellnessCompanion: FC = () => {
         </AnimatePresence>
 
         <motion.button
+          ref={companionButtonRef}
           data-tour="wellness-companion"
           className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FF9A8B] to-[#4FD1C5] shadow-lg flex items-center justify-center text-3xl border-4 border-white/20 relative"
           whileHover={{ scale: 1.1, rotate: 5 }}
@@ -447,21 +483,8 @@ export const WellnessCompanion: FC = () => {
           }}
           transition={{ boxShadow: { repeat: Infinity, duration: 2.5 } }}
         >
-          <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-slate-800 dark:bg-white text-[10px] font-bold text-white dark:text-slate-800 flex items-center justify-center shadow-lg">
-            {companionCount}
-          </span>
           {mode === "child" ? "🎮" : mode === "parent" ? "🛡️" : "🌟"}
         </motion.button>
-        <button
-          onClick={() => setCompanionPanelOpen(!companionPanelOpen)}
-          className="absolute -right-4 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-slate-800 dark:bg-white text-white dark:text-slate-800 text-xs flex items-center justify-center shadow-lg hover:bg-slate-700 dark:hover:bg-slate-200 transition-colors"
-          title="Manage companion history"
-        >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-          </svg>
-        </button>
 
         {/* Companion history management panel */}
         {companionPanelOpen && (

@@ -259,7 +259,7 @@ const ProfileTransfer = () => {
             )}
 
             {/* QR + code */}
-            <div className="space-y-4">
+            <div className="space-y-4" data-tour="transfer-code-area">
               {canQr && blob ? (
                 <div className="flex justify-center">
                   <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
@@ -475,7 +475,7 @@ const ProfileTransfer = () => {
 
           {/* Mode choice (only if there is a preview to import) */}
           {preview && (
-            <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
+            <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6" data-tour="transfer-import-mode">
               <h2 className="font-semibold text-slate-900 dark:text-white mb-4">
                 How to apply
               </h2>

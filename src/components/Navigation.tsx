@@ -97,7 +97,7 @@ export const Navigation = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-4">
+          <div className="md:hidden flex items-center space-x-2 sm:space-x-3">
             <ProfileSwitcher />
             <Button
               variant="ghost"

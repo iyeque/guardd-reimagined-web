@@ -101,7 +101,7 @@ const ProfileSwitcher: FC = () => {
       </button>
 
       {isOpen && (
-        <div ref={dropdownRef} className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl p-3 z-50">
+        <div ref={dropdownRef} className="absolute right-0 top-full mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl p-3 z-50">
           <div className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-3">
             Active Profile
           </div>
@@ -123,8 +123,9 @@ const ProfileSwitcher: FC = () => {
               <span className="text-slate-500 dark:text-slate-400">Mode</span>
               <button
                 onClick={() => {
-                  setEditMode(nextMode(selectedProfile.mode));
-                  setEditing(true);
+                  const newMode = nextMode(selectedProfile.mode);
+                  updateCurrentProfile({ mode: newMode });
+                  setMode(newMode);
                 }}
                 className="text-xs px-2 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
               >
