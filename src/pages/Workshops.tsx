@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useMemo, useRef, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { resumeOnboardingTour } from "@/lib/onboarding"
+import { STORAGE_KEY, resumeOnboardingTour } from "@/lib/onboarding";
 import { workshops } from "@/data/workshops";
 import { WorkshopCard } from "@/components/workshops/WorkshopCard";
 import { useWorkshopProgress } from "@/hooks/useWorkshopProgress";
@@ -45,11 +45,24 @@ export const Workshops = () => {
   });
   const hasProgress = Object.keys(rawProgress).length > 0
 
+  const [showReplay, setShowReplay] = useState(false)
   useEffect(() => {
-    const pending = localStorage.getItem('dg_onboarding_pending_step')
-    if (pending === '6') {
-      localStorage.removeItem('dg_onboarding_pending_step')
-      resumeOnboardingTour(6)
+    try {
+      setShowReplay(localStorage.getItem(STORAGE_KEY) === "true")
+    } catch {
+      // localStorage disabled (private browsing) — default to false, tour replay hidden
+    }
+  }, [])
+
+  useEffect(() => {
+    try {
+      const pending = localStorage.getItem('dg_onboarding_pending_step')
+      if (pending === '6') {
+        localStorage.removeItem('dg_onboarding_pending_step')
+        resumeOnboardingTour(6)
+      }
+    } catch {
+      // localStorage disabled — skip pending-step resume, no crash
     }
   }, [])
 
@@ -77,6 +90,19 @@ export const Workshops = () => {
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8">
             Learn together through interactive activities, quizzes, and collaborative exercises designed for the whole family.
           </p>
+
+          {showReplay && (
+            <button
+              onClick={() => resumeOnboardingTour(6)}
+              className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:border-[#4FD1C5] transition-colors"
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 4v6h6M23 20v-6h-6" />
+                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36M10 17l4.64-4.36" />
+              </svg>
+              Replay tour (steps 6–7)
+            </button>
+          )}
 
           <motion.div
             className="p-6 rounded-3xl bg-gradient-to-r from-[#4FD1C5]/10 to-[#FF9A8B]/10 border border-white/20"

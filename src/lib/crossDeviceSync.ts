@@ -143,7 +143,12 @@ export function buildTransferBlob(): TransferBlob {
   let profiles: Profile[] = [];
   if (profilesRaw) {
     try {
-      profiles = JSON.parse(profilesRaw) as Profile[];
+      const parsed = JSON.parse(profilesRaw);
+      // dg_profiles is stored as Record<string, Profile> (keyed by profile id),
+      // not as an array — convert to array for the transfer blob.
+      profiles = Array.isArray(parsed)
+        ? (parsed as Profile[])
+        : Object.values(parsed as Record<string, Profile>);
       if (!Array.isArray(profiles)) profiles = [];
     } catch {
       profiles = [];

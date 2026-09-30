@@ -2,7 +2,7 @@ import { driver, type DriveStep } from 'driver.js'
 import 'driver.js/dist/driver.css'
 import type { NavigateFunction } from 'react-router-dom'
 
-const STORAGE_KEY = 'dg_onboarding_seen'
+export const STORAGE_KEY = 'dg_onboarding_seen'
 const PENDING_STEP_KEY = 'dg_onboarding_pending_step'
 
 function markTourSeen() {
@@ -10,11 +10,21 @@ function markTourSeen() {
   localStorage.setItem(STORAGE_KEY, 'true')
 }
 
+export function resetOnboardingSeen() {
+  if (typeof window === 'undefined') return
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(PENDING_STEP_KEY)
+  } catch {
+    // private browsing / disabled storage — swallow, tour can't be reset but nav flow continues
+  }
+}
+
 const DRIVER_OPTIONS = {
   showProgress: true,
   animate: true,
   overlayOpacity: 0.5,
-  overlayColor: '#0f172a',
+  overlayColor: 'var(--background)',
   disableActiveInteraction: true,
   allowKeyboardNavigation: true,
   skipMissingElement: true,

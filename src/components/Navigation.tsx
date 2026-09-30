@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Menu, X, Sun, Moon, GraduationCap } from "lucide-react";
+import { Menu, X, Sun, Moon, GraduationCap, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/context/useTheme";
 import ProfileSwitcher from "@/components/ProfileSwitcher";
+import { resumeOnboardingTour, resetOnboardingSeen } from "@/lib/onboarding";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -70,6 +71,22 @@ export const Navigation = () => {
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                resetOnboardingSeen()
+                navigate('/')
+              }}
+              className={`text-foreground hover:bg-muted rounded-full transition-colors ${
+                location.pathname !== "/" ? "hidden" : ""
+              }`}
+              aria-label="Replay onboarding tour"
+              title="Replay tour"
+            >
+              <RefreshCw className="h-5 w-5" />
+            </Button>
+
             <div className="flex items-center space-x-2">
               <ProfileSwitcher />
               <Link to="/workshop">
@@ -83,6 +100,21 @@ export const Navigation = () => {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-4">
             <ProfileSwitcher />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                resetOnboardingSeen()
+                navigate('/')
+              }}
+              className={`text-foreground hover:text-white hover:bg-white/10 rounded-full transition-colors ${
+                location.pathname !== "/" ? "hidden" : ""
+              }`}
+              aria-label="Replay onboarding tour"
+              title="Replay tour"
+            >
+              <RefreshCw className="h-5 w-5" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
