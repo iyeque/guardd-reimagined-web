@@ -9,19 +9,17 @@ import OrganicTexture from "./wellness/OrganicTexture";
 import { WellnessCompanion } from "./wellness/WellnessCompanion";
 import { FamilyModeSwitcher } from "./wellness/FamilyModeSwitcher";
 import { useProfile } from "@/context/ProfileContext";
-import { updateProfile } from "@/lib/profiles";
 import { type FamilyMode } from "@/lib/profiles";
 import Footer from "./Footer";
 import CookieConsentBanner from "./CookieConsentBanner";
 
 const Layout = ({ children }: { children?: ReactNode }) => {
-  const { currentProfile } = useProfile();
+  const { currentProfile, updateCurrentProfile } = useProfile();
   const mode = currentProfile?.mode ?? ("family" as FamilyMode);
 
   const handleModeChange = (newMode: FamilyMode) => {
-    const profileId = currentProfile?.id;
-    if (!profileId) return;
-    updateProfile(profileId, { mode: newMode });
+    if (!currentProfile) return;
+    updateCurrentProfile({ mode: newMode });
   };
 
   return (

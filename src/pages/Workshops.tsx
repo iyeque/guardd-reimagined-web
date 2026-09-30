@@ -66,8 +66,6 @@ export const Workshops = () => {
     }
   }, [])
 
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-
   const TESTIMONIALS = [
     {
       name: "The Wigman Family",
@@ -198,49 +196,28 @@ export const Workshops = () => {
               </p>
             </div>
             <div className="md:col-span-2">
-              {/* Rotating testimonials carousel */}
+              {/* Testimonials horizontal scroll row */}
               <div className="relative">
-                <div className="overflow-hidden">
-                  <div
-                    className="grid gap-4 transition-all duration-500"
-                    style={{ transform: `translateY(-${activeTestimonial * 100}%)` }}
-                  >
+                <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 scrollbar-thin">
                     {TESTIMONIALS.map((t) => (
-                      <div key={t.name} className="p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 min-h-[96px] flex items-start gap-3">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4FD1C5] to-[#FF9A8B] flex-shrink-0 flex items-center justify-center text-white font-bold text-sm">
+                      <div key={t.name} className="flex-shrink-0 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 w-[280px]">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4FD1C5] to-[#FF9A8B] flex-shrink-0 flex items-center justify-center text-white font-bold text-sm mb-3">
                           {t.avatar}
                         </div>
-                        <div>
-                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                            "{t.quote}"
+                        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-2">
+                          "{t.quote}"
+                        </p>
+                        <p className="text-xs font-medium text-[#2C7A7B] dark:text-[#4FD1C5]">
+                          — {t.name}
+                        </p>
+                        {t.detail && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            {t.detail}
                           </p>
-                          <p className="text-xs font-medium text-[#2C7A7B] dark:text-[#4FD1C5] mt-2">
-                            — {t.name}
-                          </p>
-                          {t.detail && (
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                              {t.detail}
-                            </p>
-                          )}
-                        </div>
+                        )}
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="flex gap-2 mt-3 justify-center">
-                  {TESTIMONIALS.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveTestimonial(i)}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        activeTestimonial === i
-                          ? "bg-[#4FD1C5] w-6"
-                          : "bg-slate-300 dark:bg-slate-600"
-                      }`}
-                      aria-label={`Show testimonial ${i + 1}`}
-                    />
-                  ))}
-                </div>
               </div>
             </div>
           </div>
