@@ -13,7 +13,8 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { toast } from "sonner";
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom";
+import { Story } from "@shared/schema";
 
 interface Message {
   id: number;
@@ -40,6 +41,7 @@ const Admin: React.FC = () => {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [stories, setStories] = useState<Story[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
@@ -53,22 +55,25 @@ const Admin: React.FC = () => {
     }
 
     try {
-      const [msgRes, appRes] = await Promise.all([
+      const [msgRes, appRes, storyRes] = await Promise.all([
         fetch(`/api/admin/messages?key=${adminKey}`),
-        fetch(`/api/admin/applications?key=${adminKey}`)
+        fetch(`/api/admin/applications?key=${adminKey}`),
+        fetch(`/api/admin/stories?key=${adminKey}`),
       ]);
 
-      if (msgRes.status === 401 || appRes.status === 401) {
+      if (msgRes.status === 401 || appRes.status === 401 || storyRes.status === 401) {
         setAuthError(true);
         return;
       }
 
-      const [msgData, appData] = await Promise.all([
+      const [msgData, appData, storyData] = await Promise.all([
         msgRes.json(),
-        appRes.json()
+        appRes.json(),
+        storyRes.json(),
       ]);
       setMessages(msgData);
       setApplications(appData);
+      setStories(storyData);
     } catch (error) {
       console.error("Admin fetch failed", error);
       toast.error("Failed to load admin data");
@@ -104,6 +109,31 @@ const Admin: React.FC = () => {
     }
   };
 
+  const handleUpdateStoryStatus = async (id: number, status: string) => {
+    setIsUpdating(id);
+    try {
+      const res = await fetch(`/api/admin/stories/${id}?key=${adminKey}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+
+      if (res.ok) {
+        toast.success(`Story ${status === 'approved' ? 'Featured' : 'Hidden'}`);
+        setStories(prev => prev.map(story =>
+          story.id === id ? { ...story, status } : story
+        ));
+      } else {
+        const data = await res.json();
+        throw new Error(data.error || "Update failed");
+      }
+    } catch (error) {
+      toast.error("Failed to update story");
+      console.error(error);
+    } finally {
+      setIsUpdating(null);
+    }
+  };
   const handleSync = async () => {
     setIsSyncing(true);
     try {
@@ -210,6 +240,68 @@ const Admin: React.FC = () => {
                     <p className="text-muted-foreground bg-muted/30 p-4 rounded-xl italic leading-relaxed">
                       "{msg.message}"
                     </p>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* Stories */}
+        <section className="space-y-8">
+          <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
+            <svg className="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            Family Stories ({stories.length})
+          </h2>
+          <div className="space-y-4">
+            {stories.length === 0 ? (
+              <Card className="bg-white/40 dark:bg-white/5 border-dashed">
+                <CardContent className="py-12 text-center text-muted-foreground font-medium">
+                  No stories received yet.
+                </CardContent>
+              </Card>
+            ) : (
+              stories.map((story) => (
+                <Card key={story.id} className="bg-white/60 dark:bg-white/5 border-border hover:border-amber-500/20 transition-all shadow-lg rounded-2xl overflow-hidden">
+                  <div className="bg-amber-600 h-2 w-full" />
+                  <CardHeader className="p-6 pb-2">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-1">
+                        <CardTitle className="text-xl font-bold">{story.name}</CardTitle>
+                        <CardDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                          {story.workshops ? `Workshops: ${story.workshops}` : "No workshops listed"}
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline" className="text-[10px] font-black uppercase flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> {story.createdAt ? new Date(story.createdAt).toLocaleDateString() : '—'}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-6 pt-2 space-y-4">
+                    <div className="text-muted-foreground font-medium text-sm leading-relaxed">
+                      "{story.message}"
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleUpdateStoryStatus(story.id, 'approved')}
+                        disabled={isUpdating === story.id || story.status === 'approved'}
+                        className="bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-1 font-bold"
+                      >
+                        <CheckCircle className="w-4 h-4" /> {story.status === 'approved' ? 'Featured' : 'Feature'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleUpdateStoryStatus(story.id, 'rejected')}
+                        disabled={isUpdating === story.id || story.status === 'rejected'}
+                        className="text-red-600 border-red-200 hover:bg-red-50 rounded-lg flex items-center gap-1 font-bold"
+                      >
+                        <Trash2 className="w-4 h-4" /> {story.status === 'rejected' ? 'Hidden' : 'Hide'}
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))

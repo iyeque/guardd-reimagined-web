@@ -110,6 +110,19 @@ export const insertAssessmentAnalyticsSchema = createInsertSchema(assessmentAnal
   completedAt: true,
 });
 
+export const stories = pgTable("stories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  message: text("message").notNull(),
+  workshops: text("workshops").notNull().default(""),
+  status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertStorySchema = createInsertSchema(stories).omit({ id: true, createdAt: true });
+export type Story = typeof stories.$inferSelect;
+export type InsertStory = z.infer<typeof insertStorySchema>;
+
 export type AssessmentAnalytics = typeof assessmentAnalytics.$inferSelect;
 export type InsertAssessmentAnalytics = z.infer<typeof insertAssessmentAnalyticsSchema>;
 

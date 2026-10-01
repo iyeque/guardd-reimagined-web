@@ -23,6 +23,9 @@ import {
   assessmentAnalytics,
   type AssessmentAnalytics,
   type InsertAssessmentAnalytics,
+  stories,
+  type Story,
+  type InsertStory,
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { desc, eq } from "drizzle-orm";
@@ -61,6 +64,11 @@ export interface IStorage {
   listAssessmentAnalytics(limit?: number, offset?: number): Promise<AssessmentAnalytics[]>;
   getAssessmentAnalyticsById(id: number): Promise<AssessmentAnalytics | null>;
   deleteAssessmentAnalytics(id: number): Promise<void>;
+
+  // Stories
+  createStory(insert: InsertStory): Promise<Story>;
+  getStories(): Promise<Story[]>;
+  updateStoryStatus(id: number, status: string): Promise<Story>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -193,6 +201,25 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAssessmentAnalytics(id: number): Promise<void> {
     await db.delete(assessmentAnalytics).where(eq(assessmentAnalytics.id, id));
+  }
+
+  async createStory(insert: InsertStory): Promise<Story> {
+    const [row] = await db.insert(stories).values(insert).returning();
+    return row;
+  }
+
+  async getStories(): Promise<Story[]> {
+    return await db.select().from(stories).orderBy(desc(stories.createdAt));
+  }
+
+  async updateStoryStatus(id: number, status: string): Promise<Story> {
+    const [row] = await db
+      .update(stories)
+      .set({ status })
+      .where(eq(stories.id, id))
+      .returning();
+    if (!row) throw new Error(`Story with ID ${id} not found`);
+    return row;
   }
 }
 

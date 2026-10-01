@@ -48,12 +48,14 @@ export const Workshops = () => {
   const [showReplay, setShowReplay] = useState(false)
   const [storyName, setStoryName] = useState("")
   const [storyMessage, setStoryMessage] = useState("")
+  const [storyWorkshops, setStoryWorkshops] = useState<string[]>([])
   const [submittedStory, setSubmittedStory] = useState(false)
 
   const handleStorySubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!storyName || !storyMessage) return
-    const payload = { name: storyName, message: storyMessage, page: "workshops", timestamp: new Date().toISOString() }
+    const workshopsList = Array.isArray(storyWorkshops) ? (storyWorkshops as string[]).join(", ") : storyWorkshops
+    const payload = { name: storyName, message: storyMessage, workshops: workshopsList, page: "workshops", timestamp: new Date().toISOString() }
     fetch("/api/stories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -93,7 +95,7 @@ export const Workshops = () => {
     {
       name: "The Wigman Family",
       avatar: "W",
-      quote: "The Social Media workshop changed how we talk about posting. Our teen actually led the family posting agreement discussion — something we'd been putting off for months.",
+      quote: "The Social Media workshop changed how we talk about posting. Our teen actually led the family posting agreement discussion, something we'd been putting off for months.",
       detail: "Completed: Social Media Safety + Screen Time Balance",
     },
     {
@@ -105,19 +107,19 @@ export const Workshops = () => {
     {
       name: "The Johnsons",
       avatar: "J",
-      quote: "Our youngest went from resisting screen time limits to asking for a family media plan. The eye break reminders turned into a whole family habit — even the dog gets a 'break' now.",
+      quote: "Our youngest went from resisting screen time limits to asking for a family media plan. The eye break reminders turned into a whole family habit, even the dog gets a 'break' now.",
       detail: "Completed: Screen Time & Family Agreements",
     },
     {
       name: "Priya & Amit",
       avatar: "P",
-      quote: "The Cyber Safety quiz had our 8-year-old teaching us about phishing links. We've since set up a family 'safe word' for suspicious messages — she came up with it.",
+      quote: "The Cyber Safety quiz had our 8-year-old teaching us about phishing links. We've since set up a family 'safe word' for suspicious messages, she came up with it.",
       detail: "Completed: Cybersecurity Quiz + Family Agreements",
     },
     {
       name: "The Marcus Family",
       avatar: "M",
-      quote: "Three kids, three different age groups. The workshops let us tailor conversations — our teen did the teen track while the younger two did the kids track, and we all met in the middle for the family agreement.",
+      quote: "Three kids, three different age groups. The workshops let us tailor conversations, our teen did the teen track while the younger two did the kids track, and we all met in the middle for the family agreement.",
       detail: "Completed: 3 workshops across age groups",
     },
     {
@@ -246,9 +248,30 @@ export const Workshops = () => {
                     value={storyMessage}
                     onChange={(e) => setStoryMessage(e.target.value)}
                   />
+                  <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Which workshops did you complete?</p>
+                  <div className="flex flex-wrap gap-2">
+                    {workshops.slice(0, 8).map((w) => (
+                      <label key={w.id} className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${(storyWorkshops as string[]).includes(w.id) ? "bg-[#4FD1C5]/15 border-[#4FD1C5]/40 text-[#2C7A7B]" : "bg-white/70 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"}`}>
+                        <input
+                          type="checkbox"
+                          className="sr-only"
+                          checked={(storyWorkshops as string[]).includes(w.id)}
+                          onChange={() => {
+                            const current = storyWorkshops as string[]
+                            if (current.includes(w.id)) {
+                              setStoryWorkshops(current.filter(id => id !== w.id))
+                            } else {
+                              setStoryWorkshops([...current, w.id])
+                            }
+                          }}
+                        />
+                        {w.title}
+                      </label>
+                    ))}
+                  </div>
                   <button
                     type="submit"
-                    disabled={!storyName || !storyMessage}
+                    disabled={!storyName || !storyMessage || storyWorkshops.length === 0}
                     className="w-full py-2 rounded-full bg-gradient-to-r from-[#4FD1C5] to-[#FF9A8B] text-white text-sm font-semibold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     Submit for approval →
