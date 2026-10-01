@@ -51,10 +51,19 @@ export const Workshops = () => {
   const [storyWorkshops, setStoryWorkshops] = useState<string[]>([])
   const [submittedStory, setSubmittedStory] = useState(false)
 
+  const popularWorkshops = useMemo(() => [
+    workshops.find(w => w.id === "social-media") ?? workshops[0],
+    workshops.find(w => w.id === "cybersecurity") ?? workshops[1],
+    workshops.find(w => w.id === "screen-time") ?? workshops[2],
+    workshops.find(w => w.id === "online-safety") ?? workshops[3],
+    workshops.find(w => w.id === "teen-digital-identity") ?? workshops[4],
+    workshops.find(w => w.id === "parents-digital-leadership") ?? workshops[5],
+  ].filter((w): w is NonNullable<typeof w> => w != null), [workshops])
+
   const handleStorySubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!storyName || !storyMessage) return
-    const workshopsList = Array.isArray(storyWorkshops) ? (storyWorkshops as string[]).join(", ") : storyWorkshops
+    const workshopsList = storyWorkshops.join(", ")
     const payload = { name: storyName, message: storyMessage, workshops: workshopsList, page: "workshops", timestamp: new Date().toISOString() }
     fetch("/api/stories", {
       method: "POST",
@@ -222,7 +231,7 @@ export const Workshops = () => {
 
               {/* Share your story form */}
               <motion.div
-                className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-[#4FD1C5]/10 to-[#FF9A8B]/10 border border-white/20"
+                className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-[#4FD1C5]/8 to-[#FF9A8B]/8 border border-white/30 shadow-lg"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
@@ -233,35 +242,35 @@ export const Workshops = () => {
                   </svg>
                   Share your story
                 </h4>
-                <form onSubmit={handleStorySubmit} className="space-y-3">
+                <form onSubmit={handleStorySubmit} className="space-y-2.5">
                   <input
                     type="text"
                     placeholder="Your name"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 text-sm focus:outline-none focus:ring-2 focus:ring-[#4FD1C5]/40"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-sm focus:outline-none focus:ring-2 focus:ring-[#4FD1C5]/40"
                     value={storyName}
                     onChange={(e) => setStoryName(e.target.value)}
                   />
                   <textarea
                     placeholder="Tell us about your experience..."
                     rows={2}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800/70 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#4FD1C5]/40"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#4FD1C5]/40"
                     value={storyMessage}
                     onChange={(e) => setStoryMessage(e.target.value)}
                   />
-                  <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Which workshops did you complete?</p>
-                  <div className="flex flex-wrap gap-2">
-                    {workshops.slice(0, 8).map((w) => (
-                      <label key={w.id} className={`px-2.5 py-1 rounded-full text-xs font-medium border transition-colors cursor-pointer ${(storyWorkshops as string[]).includes(w.id) ? "bg-[#4FD1C5]/15 border-[#4FD1C5]/40 text-[#2C7A7B]" : "bg-white/70 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300"}`}>
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Which workshops did you complete?</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {popularWorkshops.map((w) => (
+                      <label key={w.id} className={`px-2 py-0.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${storyWorkshops.includes(w.id) ? "bg-[#4FD1C5]/20 border-[#4FD1C5]/50 text-[#2C7A7B] shadow-sm" : "bg-white/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-[#4FD1C5]/30"}`}>
                         <input
                           type="checkbox"
                           className="sr-only"
-                          checked={(storyWorkshops as string[]).includes(w.id)}
+                          checked={storyWorkshops.includes(w.id)}
                           onChange={() => {
-                            const current = storyWorkshops as string[]
+                            const current = storyWorkshops;
                             if (current.includes(w.id)) {
-                              setStoryWorkshops(current.filter(id => id !== w.id))
+                              setStoryWorkshops(current.filter(id => id !== w.id));
                             } else {
-                              setStoryWorkshops([...current, w.id])
+                              setStoryWorkshops([...current, w.id]);
                             }
                           }}
                         />
@@ -272,37 +281,59 @@ export const Workshops = () => {
                   <button
                     type="submit"
                     disabled={!storyName || !storyMessage || storyWorkshops.length === 0}
-                    className="w-full py-2 rounded-full bg-gradient-to-r from-[#4FD1C5] to-[#FF9A8B] text-white text-sm font-semibold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="w-full py-2 rounded-full bg-gradient-to-r from-[#4FD1C5] to-[#FF9A8B] text-white text-sm font-semibold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all mt-1"
                   >
                     Submit for approval →
                   </button>
                 </form>
                 {submittedStory && (
-                  <p className="text-xs text-[#2C7A7B] mt-2">✓ Sent! We'll review and feature it.</p>
+                  <p className="text-xs text-[#2C7A7B] mt-2 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    Sent! We'll review and feature it.
+                  </p>
                 )}
               </motion.div>
             </div>
             <div className="md:col-span-2">
               {/* Testimonials horizontal scroll row */}
               <div className="relative">
-                <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 scrollbar-thin">
-                    {TESTIMONIALS.map((t) => (
-                      <div key={t.name} className="flex-shrink-0 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 w-[280px]">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#4FD1C5] to-[#FF9A8B] flex-shrink-0 flex items-center justify-center text-white font-bold text-sm mb-3">
-                          {t.avatar}
+                <div className="flex gap-5 overflow-x-auto overflow-y-hidden pb-3 scrollbar-thin">
+                    {TESTIMONIALS.map((t, i) => (
+                      <motion.div
+                        key={t.name}
+                        className="flex-shrink-0 p-5 rounded-2xl bg-white/80 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 w-[320px] shadow-md hover:shadow-xl transition-shadow"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * i + 0.4, duration: 0.4 }}
+                      >
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#4FD1C5] to-[#FF9A8B] flex items-center justify-center text-white font-bold text-sm shadow-inner">
+                            {t.avatar}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800 dark:text-white">
+                              {t.name}
+                            </p>
+                            {t.detail && (
+                              <p className="text-xs text-slate-500 dark:text-slate-400">
+                                {t.detail}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-2">
-                          "{t.quote}"
-                        </p>
-                        <p className="text-xs font-medium text-[#2C7A7B] dark:text-[#4FD1C5]">
-                          — {t.name}
-                        </p>
-                        {t.detail && (
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            {t.detail}
+                        <div className="relative">
+                          <svg className="absolute -top-2 -left-1 w-6 h-6 text-[#FF9A8B]/30" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21v-7.391c0-5.704 3.77-9.543 9-10.609-3.585 1.876-6.577 5.117-7.796 10.609v7.391h3.645v-7.391c0-3.714-1.75-6.832-4.543-8.309v-2.97c0-1.022.856-1.84 1.88-1.84h2.65c1.09 0 1.98-.856 1.98-1.977v-2.55c0-1.124-.895-2.024-2.016-2.024-1.09 0-2.016.9-2.016 2.024v2.97c-2.794 1.477-4.544 4.595-4.544 8.309v7.391h3.645z"/>
+                          </svg>
+                          <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed pl-6 mb-2">
+                            "{t.quote}"
                           </p>
-                        )}
-                      </div>
+                        </div>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex-1 h-1 rounded-full bg-gradient-to-r from-[#4FD1C5]/40 to-[#FF9A8B]/40"></div>
+                          <svg className="w-4 h-4 text-[#4FD1C5]/60" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.91 6.88L12 17.77l-6.91 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </div>
+                      </motion.div>
                     ))}
                   </div>
             </div>

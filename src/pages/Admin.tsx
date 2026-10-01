@@ -16,6 +16,18 @@ import { toast } from "sonner";
 import { Link, useLocation } from "react-router-dom";
 import { Story } from "@shared/schema";
 
+interface AssessmentResult {
+  id: number;
+  assessmentId: string;
+  moduleId: string;
+  workshopId: string | null;
+  totalQuestions: number;
+  correctCount: number;
+  score: number;
+  passed: boolean;
+  completedAt: string | null;
+}
+
 interface Message {
   id: number;
   name: string;
@@ -42,6 +54,7 @@ const Admin: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [stories, setStories] = useState<Story[]>([]);
+  const [assessmentResults, setAssessmentResults] = useState<AssessmentResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
@@ -55,25 +68,28 @@ const Admin: React.FC = () => {
     }
 
     try {
-      const [msgRes, appRes, storyRes] = await Promise.all([
+      const [msgRes, appRes, storyRes, analyticsRes] = await Promise.all([
         fetch(`/api/admin/messages?key=${adminKey}`),
         fetch(`/api/admin/applications?key=${adminKey}`),
         fetch(`/api/admin/stories?key=${adminKey}`),
+        fetch(`/api/assessment-analytics?key=${adminKey}`),
       ]);
 
-      if (msgRes.status === 401 || appRes.status === 401 || storyRes.status === 401) {
+      if (msgRes.status === 401 || appRes.status === 401 || storyRes.status === 401 || analyticsRes.status === 401) {
         setAuthError(true);
         return;
       }
 
-      const [msgData, appData, storyData] = await Promise.all([
+      const [msgData, appData, storyData, analyticsData] = await Promise.all([
         msgRes.json(),
         appRes.json(),
         storyRes.json(),
+        analyticsRes.json(),
       ]);
       setMessages(msgData);
       setApplications(appData);
       setStories(storyData);
+      setAssessmentResults(analyticsData);
     } catch (error) {
       console.error("Admin fetch failed", error);
       toast.error("Failed to load admin data");
@@ -307,6 +323,100 @@ const Admin: React.FC = () => {
               ))
             )}
           </div>
+        </section>
+
+        {/* Quiz Results Analytics */}
+        <section className="space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
+              <Shield className="w-6 h-6 text-[#4FD1C5]" />
+              Quiz Results Analytics ({assessmentResults.length})
+            </h2>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              {assessmentResults.length > 0 && (
+                <>
+                  <span className="font-bold text-[#2C7A7B]">
+                    Avg: {(assessmentResults.reduce((s, r) => s + r.score, 0) / assessmentResults.length).toFixed(0)}%
+                  </span>
+                  <span className="w-px h-4 bg-border" />
+                  <span className="font-bold text-green-600">
+                    Passed: {assessmentResults.filter(r => r.passed).length}
+                  </span>
+                  <span className="w-px h-4 bg-border" />
+                  <span className="font-bold text-red-600">
+                    Failed: {assessmentResults.filter(r => !r.passed).length}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+          {assessmentResults.length === 0 ? (
+            <Card className="bg-white/40 dark:bg-white/5 border-dashed">
+              <CardContent className="py-12 text-center text-muted-foreground font-medium">
+                No quiz results yet.
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {assessmentResults.map((result) => {
+                const pct = result.totalQuestions > 0
+                  ? Math.round((result.correctCount / result.totalQuestions) * 100)
+                  : 0;
+                return (
+                  <Card key={result.id} className="bg-white/60 dark:bg-white/5 border-border hover:border-[#4FD1C5]/20 transition-all shadow-lg rounded-2xl overflow-hidden">
+                    <div className="bg-gradient-to-r from-[#4FD1C5]/10 to-[#FF9A8B]/10 h-2 w-full" />
+                    <CardHeader className="p-6 pb-2">
+                      <div className="flex justify-between items-start">
+                        <div className="space-y-1">
+                          <CardTitle className="text-lg font-bold text-foreground">
+                            {result.assessmentId}
+                          </CardTitle>
+                          <CardDescription className="text-sm font-bold text-[#2C7A7B]">
+                            {result.workshopId ? `Workshop: ${result.workshopId}` : `Module: ${result.moduleId}`}
+                          </CardDescription>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Completed {result.completedAt ? new Date(result.completedAt).toLocaleDateString() : '—'}
+                          </p>
+                        </div>
+                        <Badge
+                          variant="secondary"
+                          className={`font-black uppercase text-[10px] ${result.passed
+                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                            : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                          }`}
+                        >
+                          {result.passed ? 'PASSED' : 'FAILED'}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-6 pt-2 space-y-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground font-medium">Score</span>
+                        <span className="text-2xl font-black text-foreground">
+                          {result.score}%
+                        </span>
+                      </div>
+                      <div className="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${pct >= 70
+                            ? "bg-gradient-to-r from-[#4FD1C5] to-[#5EEAD4]"
+                            : pct >= 50
+                            ? "bg-gradient-to-r from-[#FF9A8B] to-[#FBBF24]"
+                            : "bg-gradient-to-r from-red-500 to-red-600"
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="font-medium">{result.correctCount} correct</span>
+                        <span className="font-medium">out of {result.totalQuestions} questions</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         {/* Mentor Applications */}
