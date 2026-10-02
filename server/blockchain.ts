@@ -1,16 +1,17 @@
 import type { FamilyCommitment } from "../shared/schema.js";
 
 /**
- * Minimal ORCA-style ledger bridge for Family Commitments.
+ * Ledger bridge for Family Commitments.
  *
- * Design:
- * - Primary state lives in Neon Postgres via `storage` (same pattern as ORCA DAO).
- * - `ledgerHash` stores an optional on-chain transaction hash or deterministic ledger reference.
- * - `metadataCid` stores an optional IPFS/Pinata CID for richer agreement metadata.
+ * Current implementation:
+ * - Primary state lives in Neon Postgres via `storage`.
+ * - `ledgerHash` stores a SHA-256 hash of the commitment data (tamper-evident fingerprint).
+ * - `metadataCid` stores an IPFS CID when Pinata is configured, or a local SHA-256 hash fallback.
  *
- * Why not full blockchain here:
- * - Adds RPC/key management before Hub71+ pilot.
- * - Postgres-backed ledger is sufficient for accountability + audit UIs.
+ * Future phases:
+ * - Real blockchain testnet/mainnet transactions for immutable proof.
+ * - Smart contract-based enforcement (e.g., automatic milestone verification).
+ * - Cross-platform attestation via browser extensions and mobile apps.
  */
 
 type PinResult = { cid: string; metadata?: Record<string, unknown> };

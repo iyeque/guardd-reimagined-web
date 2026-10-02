@@ -224,7 +224,7 @@ const FamilyCommitments: React.FC = () => {
                       <CardContent className="p-5 flex items-start gap-4">
                         <Hash className="w-5 h-5 text-teal-600 mt-0.5" />
                         <div className="space-y-1">
-                          <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ledger</div>
+                          <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ledger Hash (SHA-256)</div>
                           <div className="text-xs font-mono text-foreground break-all">{selected.item.ledgerHash}</div>
                         </div>
                       </CardContent>
@@ -304,15 +304,93 @@ const FamilyCommitments: React.FC = () => {
           >
             <div className="inline-flex items-center gap-2 bg-teal-500/10 text-teal-700 border border-teal-500/20 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
               <Shield className="w-4 h-4" />
-              ORCA-Style Ledger
+              Auditable Family Agreements
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-foreground tracking-tighter">
               Family <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 via-rose-400 to-purple-500">Commitments</span>
             </h1>
             <p className="text-muted-foreground font-medium max-w-2xl mx-auto">
-              Create, track, and complete family agreements. Backed by an auditable ledger reference and optional IPFS metadata.
+              Create, track, and complete family agreements. Every commitment is recorded on an auditable ledger with optional IPFS metadata pinning.
             </p>
           </motion.header>
+
+          {/* How It Works */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
+              <CardContent className="p-0 space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                  <Hash className="w-5 h-5 text-teal-600" />
+                </div>
+                <h3 className="font-black text-foreground text-sm">1. Database Record</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Every commitment is stored in Neon Postgres with a unique ID, family reference, and immutable timestamp. This is the authoritative source of truth.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
+              <CardContent className="p-0 space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="font-black text-foreground text-sm">2. Ledger Hash</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  A SHA-256 hash is computed from the commitment data (family ID, title, terms, timestamp). This creates a tamper-evident fingerprint that can be independently verified.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
+              <CardContent className="p-0 space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-rose-600" />
+                </div>
+                <h3 className="font-black text-foreground text-sm">3. IPFS Metadata</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  When Pinata is configured, commitment metadata is pinned to IPFS as a JSON document. The CID (content identifier) is stored on the commitment for decentralized retrieval.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Roadmap */}
+          <Card className="bg-gradient-to-br from-teal-500/5 to-purple-500/5 backdrop-blur-xl border border-border rounded-2xl p-6 md:p-8">
+            <CardContent className="p-0 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-purple-500 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-black text-foreground text-lg">The Roadmap: Beyond the Platform</h3>
+                  <p className="text-xs text-muted-foreground">How commitments gain real-world teeth</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-teal-600">School Oversight</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Teachers and administrators get a read-only dashboard showing student/family commitments relevant to digital citizenship classes. Schools can verify completion without seeing private terms.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-purple-600">Parent Oversight</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    A companion mobile app sends push notifications when milestones approach deadlines. Parents can co-sign commitments and receive weekly progress digests.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-rose-600">Government Audit</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Regulators can query a public audit API (read-only, anonymized) to verify that families in their jurisdiction are actively using the platform. Compliance reports exportable as signed PDFs.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-amber-600">Cross-Platform Enforcement</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Browser extensions enforce commitments at the network level (e.g., block sites during agreed hours). Smart home integrations (HomeKit, Google Home) can pause devices when screen-time limits are reached.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card className="bg-white/70 dark:bg-black/50 backdrop-blur-xl border-border rounded-[2rem] shadow-2xl">
             <CardContent className="p-8 md:p-10">
