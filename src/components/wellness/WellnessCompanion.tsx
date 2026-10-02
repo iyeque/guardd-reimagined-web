@@ -270,13 +270,13 @@ export const WellnessCompanion: FC = () => {
       navigate("/family-agreements");
       setIsExpanded(false);
     } else if (tipLabel.includes("video")) {
-      navigate("/video-resources");
+      navigate("/videos");
       setIsExpanded(false);
     } else if (tipLabel.includes("reports") || tipLabel.includes("screen time") || tipLabel.includes("privacy settings") || tipLabel.includes("parental controls")) {
       navigate("/screen-time");
       setIsExpanded(false);
     } else if (tipLabel.includes("quiz") || tipLabel.includes("game") || tipLabel.includes("keyboard")) {
-      navigate("/educational-games");
+      navigate("/games");
       setIsExpanded(false);
     } else if (tipLabel.includes("online safety") || tipLabel.includes("online footprints") || tipLabel.includes("privacy") || tipLabel.includes("digital rules")) {
       navigate("/family-agreements");

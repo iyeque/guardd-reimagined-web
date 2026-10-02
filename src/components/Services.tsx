@@ -26,28 +26,28 @@ export const Services = () => {
       icon: BookOpen,
       title: "Unlock Expert Digital Wisdom",
       description: "Dive into our blog for cutting-edge insights, actionable tips, and research-backed strategies to empower your family's digital journey. Explore our latest articles.",
-      link: "/educational-blog",
+      link: "/blog",
       tags: ['parent', 'child', 'family']
     },
     {
       icon: GamepadIcon,
       title: "Play & Learn Safely Online",
       description: "Engage with fun, interactive games designed to build essential digital citizenship and online safety skills for all ages. Discover our game library!",
-      link: "/educational-games",
+      link: "/games",
       tags: ['child', 'family']
     },
     {
       icon: MessageCircle,
       title: "Visual Guides for Digital Life",
       description: "Access a library of engaging video content, offering clear, concise guidance on key digital wellness topics for both parents and children. Watch and learn.",
-      link: "/video-resources",
+      link: "/videos",
       tags: ['child', 'parent', 'family']
     },
     {
       icon: Heart,
       title: "Your Digital Wellness Community",
       description: "Connect with a supportive network, receive expert guidance, and find the resources you need, exactly when you need them. Join our community.",
-      link: "/community-support",
+      link: "/community",
       tags: ['parent', 'family']
     }
   ];
