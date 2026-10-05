@@ -74,9 +74,9 @@
     },
     {
       "id": 7,
-      "title": "Digital Wellness Seminar: Toronto Chapter",
-      "location": "Toronto, Community Center",
-      "date": "2026-03-03",
+      "title": "Digital Wellness Seminar: Sydney Chapter",
+      "location": "Sydney, Community Center",
+      "date": "2026-03-05",
       "time": "6:00 PM Local",
       "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -86,27 +86,27 @@
     },
     {
       "id": 8,
-      "title": "Digital Wellness Seminar: London Chapter",
+      "title": "Digital Wellness Meetup: London Chapter",
       "location": "London, Community Center",
-      "date": "2026-03-12",
+      "date": "2026-03-09",
+      "time": "6:00 PM Local",
+      "type": "Meetup",
+      "url": "https://www.meetup.com/topics/digital-wellness/",
+      "organizer": "Digital Wellness Community Volunteers",
+      "status": "Scheduled",
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
+    },
+    {
+      "id": 9,
+      "title": "Digital Wellness Seminar: Singapore Chapter",
+      "location": "Singapore, Community Center",
+      "date": "2026-03-16",
       "time": "6:00 PM Local",
       "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
       "description": "A local seminar for families to share experiences and learn practical digital safety tips."
-    },
-    {
-      "id": 9,
-      "title": "Digital Wellness Webinar: Austin Chapter",
-      "location": "Online / Global",
-      "date": "2026-03-15",
-      "time": "6:00 PM Local",
-      "type": "Webinar",
-      "url": "https://www.meetup.com/topics/digital-wellness/",
-      "organizer": "Digital Wellness Community Volunteers",
-      "status": "Scheduled",
-      "description": "A local webinar for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 10,
@@ -134,18 +134,30 @@
     },
     {
       "id": 12,
-      "title": "Digital Wellness Workshop: New York Chapter",
-      "location": "New York, Community Center",
+      "title": "Digital Wellness Meetup: Toronto Chapter",
+      "location": "Toronto, Community Center",
       "date": "2026-03-23",
       "time": "6:00 PM Local",
-      "type": "Workshop",
+      "type": "Meetup",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local workshop for families to share experiences and learn practical digital safety tips."
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 13,
+      "title": "Digital Wellness Meetup: Toronto Chapter",
+      "location": "Toronto, Community Center",
+      "date": "2026-03-29",
+      "time": "6:00 PM Local",
+      "type": "Meetup",
+      "url": "https://www.meetup.com/topics/digital-wellness/",
+      "organizer": "Digital Wellness Community Volunteers",
+      "status": "Scheduled",
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
+    },
+    {
+      "id": 14,
       "title": "IAPP Global Privacy Summit 2026",
       "location": "Washington, D.C.",
       "date": "2026-03-30",
@@ -157,22 +169,10 @@
       "description": "The world's premier privacy and data protection conference, essential for understanding digital rights."
     },
     {
-      "id": 14,
-      "title": "Digital Wellness Seminar: Berlin Chapter",
-      "location": "Berlin, Community Center",
-      "date": "2026-04-02",
-      "time": "6:00 PM Local",
-      "type": "Seminar",
-      "url": "https://www.meetup.com/topics/digital-wellness/",
-      "organizer": "Digital Wellness Community Volunteers",
-      "status": "Scheduled",
-      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
-    },
-    {
       "id": 15,
-      "title": "Digital Wellness Workshop: Austin Chapter",
-      "location": "Austin, Community Center",
-      "date": "2026-04-06",
+      "title": "Digital Wellness Workshop: Sydney Chapter",
+      "location": "Sydney, Community Center",
+      "date": "2026-04-08",
       "time": "6:00 PM Local",
       "type": "Workshop",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -182,39 +182,39 @@
     },
     {
       "id": 16,
-      "title": "Digital Wellness Workshop: Berlin Chapter",
-      "location": "Berlin, Community Center",
+      "title": "Digital Wellness Seminar: Melbourne Chapter",
+      "location": "Melbourne, Community Center",
       "date": "2026-04-13",
       "time": "6:00 PM Local",
-      "type": "Workshop",
+      "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local workshop for families to share experiences and learn practical digital safety tips."
+      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 17,
-      "title": "Digital Wellness Workshop: San Francisco Chapter",
-      "location": "San Francisco, Community Center",
+      "title": "Digital Wellness Meetup: Singapore Chapter",
+      "location": "Singapore, Community Center",
       "date": "2026-04-21",
       "time": "6:00 PM Local",
-      "type": "Workshop",
+      "type": "Meetup",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local workshop for families to share experiences and learn practical digital safety tips."
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 18,
-      "title": "Digital Wellness Workshop: Berlin Chapter",
-      "location": "Berlin, Community Center",
+      "title": "Digital Wellness Seminar: Melbourne Chapter",
+      "location": "Melbourne, Community Center",
       "date": "2026-04-27",
       "time": "6:00 PM Local",
-      "type": "Workshop",
+      "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local workshop for families to share experiences and learn practical digital safety tips."
+      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 19,
@@ -230,27 +230,27 @@
     },
     {
       "id": 20,
-      "title": "Digital Wellness Meetup: Berlin Chapter",
-      "location": "Berlin, Community Center",
-      "date": "2026-05-07",
+      "title": "Digital Wellness Webinar: Dubai Chapter",
+      "location": "Online / Global",
+      "date": "2026-05-04",
       "time": "6:00 PM Local",
-      "type": "Meetup",
+      "type": "Webinar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
+      "description": "A local webinar for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 21,
-      "title": "Digital Wellness Meetup: Melbourne Chapter",
-      "location": "Melbourne, Community Center",
-      "date": "2026-05-10",
+      "title": "Digital Wellness Workshop: San Francisco Chapter",
+      "location": "San Francisco, Community Center",
+      "date": "2026-05-12",
       "time": "6:00 PM Local",
-      "type": "Meetup",
+      "type": "Workshop",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
+      "description": "A local workshop for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 22,
@@ -266,21 +266,33 @@
     },
     {
       "id": 23,
-      "title": "Digital Wellness Seminar: Tokyo Chapter",
-      "location": "Tokyo, Community Center",
+      "title": "Digital Wellness Meetup: Berlin Chapter",
+      "location": "Berlin, Community Center",
       "date": "2026-05-21",
       "time": "6:00 PM Local",
-      "type": "Seminar",
+      "type": "Meetup",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 24,
-      "title": "Digital Wellness Seminar: Berlin Chapter",
-      "location": "Berlin, Community Center",
-      "date": "2026-05-26",
+      "title": "Digital Wellness Webinar: Melbourne Chapter",
+      "location": "Online / Global",
+      "date": "2026-05-24",
+      "time": "6:00 PM Local",
+      "type": "Webinar",
+      "url": "https://www.meetup.com/topics/digital-wellness/",
+      "organizer": "Digital Wellness Community Volunteers",
+      "status": "Scheduled",
+      "description": "A local webinar for families to share experiences and learn practical digital safety tips."
+    },
+    {
+      "id": 25,
+      "title": "Digital Wellness Seminar: Austin Chapter",
+      "location": "Austin, Community Center",
+      "date": "2026-06-02",
       "time": "6:00 PM Local",
       "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -289,34 +301,22 @@
       "description": "A local seminar for families to share experiences and learn practical digital safety tips."
     },
     {
-      "id": 25,
-      "title": "Digital Wellness Meetup: London Chapter",
-      "location": "London, Community Center",
-      "date": "2026-06-03",
-      "time": "6:00 PM Local",
-      "type": "Meetup",
-      "url": "https://www.meetup.com/topics/digital-wellness/",
-      "organizer": "Digital Wellness Community Volunteers",
-      "status": "Scheduled",
-      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
-    },
-    {
       "id": 26,
-      "title": "Digital Wellness Meetup: Toronto Chapter",
-      "location": "Toronto, Community Center",
-      "date": "2026-06-11",
+      "title": "Digital Wellness Seminar: Singapore Chapter",
+      "location": "Singapore, Community Center",
+      "date": "2026-06-09",
       "time": "6:00 PM Local",
-      "type": "Meetup",
+      "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
+      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 27,
-      "title": "Digital Wellness Meetup: Toronto Chapter",
-      "location": "Toronto, Community Center",
-      "date": "2026-06-14",
+      "title": "Digital Wellness Meetup: Melbourne Chapter",
+      "location": "Melbourne, Community Center",
+      "date": "2026-06-18",
       "time": "6:00 PM Local",
       "type": "Meetup",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -326,21 +326,21 @@
     },
     {
       "id": 28,
-      "title": "Digital Wellness Seminar: London Chapter",
-      "location": "London, Community Center",
-      "date": "2026-06-23",
+      "title": "Digital Wellness Meetup: Austin Chapter",
+      "location": "Austin, Community Center",
+      "date": "2026-06-24",
       "time": "6:00 PM Local",
-      "type": "Seminar",
+      "type": "Meetup",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 29,
-      "title": "Digital Wellness Webinar: London Chapter",
+      "title": "Digital Wellness Webinar: New York Chapter",
       "location": "Online / Global",
-      "date": "2026-06-29",
+      "date": "2026-07-02",
       "time": "6:00 PM Local",
       "type": "Webinar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -350,6 +350,18 @@
     },
     {
       "id": 30,
+      "title": "Digital Wellness Workshop: Singapore Chapter",
+      "location": "Singapore, Community Center",
+      "date": "2026-07-05",
+      "time": "6:00 PM Local",
+      "type": "Workshop",
+      "url": "https://www.meetup.com/topics/digital-wellness/",
+      "organizer": "Digital Wellness Community Volunteers",
+      "status": "Scheduled",
+      "description": "A local workshop for families to share experiences and learn practical digital safety tips."
+    },
+    {
+      "id": 31,
       "title": "National Safe Schools Conference 2026",
       "location": "Phoenix, AZ",
       "date": "2026-07-08",
@@ -361,10 +373,10 @@
       "description": "The leading US event for school safety, with a heavy emphasis on cyberbullying prevention and threat assessment."
     },
     {
-      "id": 31,
-      "title": "Digital Wellness Webinar: Berlin Chapter",
+      "id": 32,
+      "title": "Digital Wellness Webinar: Dubai Chapter",
       "location": "Online / Global",
-      "date": "2026-07-09",
+      "date": "2026-07-16",
       "time": "6:00 PM Local",
       "type": "Webinar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -373,22 +385,10 @@
       "description": "A local webinar for families to share experiences and learn practical digital safety tips."
     },
     {
-      "id": 32,
-      "title": "Digital Wellness Seminar: Singapore Chapter",
-      "location": "Singapore, Community Center",
-      "date": "2026-07-14",
-      "time": "6:00 PM Local",
-      "type": "Seminar",
-      "url": "https://www.meetup.com/topics/digital-wellness/",
-      "organizer": "Digital Wellness Community Volunteers",
-      "status": "Scheduled",
-      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
-    },
-    {
       "id": 33,
-      "title": "Digital Wellness Seminar: San Francisco Chapter",
-      "location": "San Francisco, Community Center",
-      "date": "2026-07-21",
+      "title": "Digital Wellness Seminar: Melbourne Chapter",
+      "location": "Melbourne, Community Center",
+      "date": "2026-07-22",
       "time": "6:00 PM Local",
       "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -400,7 +400,7 @@
       "id": 34,
       "title": "Digital Wellness Webinar: Paris Chapter",
       "location": "Online / Global",
-      "date": "2026-07-30",
+      "date": "2026-07-29",
       "time": "6:00 PM Local",
       "type": "Webinar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -410,27 +410,27 @@
     },
     {
       "id": 35,
-      "title": "Digital Wellness Meetup: New York Chapter",
-      "location": "New York, Community Center",
-      "date": "2026-08-03",
-      "time": "6:00 PM Local",
-      "type": "Meetup",
-      "url": "https://www.meetup.com/topics/digital-wellness/",
-      "organizer": "Digital Wellness Community Volunteers",
-      "status": "Scheduled",
-      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
-    },
-    {
-      "id": 36,
-      "title": "Digital Wellness Seminar: Austin Chapter",
-      "location": "Austin, Community Center",
-      "date": "2026-08-09",
+      "title": "Digital Wellness Seminar: Dubai Chapter",
+      "location": "Dubai, Community Center",
+      "date": "2026-08-06",
       "time": "6:00 PM Local",
       "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
       "description": "A local seminar for families to share experiences and learn practical digital safety tips."
+    },
+    {
+      "id": 36,
+      "title": "Digital Wellness Meetup: San Francisco Chapter",
+      "location": "San Francisco, Community Center",
+      "date": "2026-08-13",
+      "time": "6:00 PM Local",
+      "type": "Meetup",
+      "url": "https://www.meetup.com/topics/digital-wellness/",
+      "organizer": "Digital Wellness Community Volunteers",
+      "status": "Scheduled",
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 37,
@@ -446,9 +446,21 @@
     },
     {
       "id": 38,
-      "title": "Digital Wellness Seminar: Austin Chapter",
-      "location": "Austin, Community Center",
-      "date": "2026-08-16",
+      "title": "Digital Wellness Meetup: Sydney Chapter",
+      "location": "Sydney, Community Center",
+      "date": "2026-08-20",
+      "time": "6:00 PM Local",
+      "type": "Meetup",
+      "url": "https://www.meetup.com/topics/digital-wellness/",
+      "organizer": "Digital Wellness Community Volunteers",
+      "status": "Scheduled",
+      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
+    },
+    {
+      "id": 39,
+      "title": "Digital Wellness Seminar: Dubai Chapter",
+      "location": "Dubai, Community Center",
+      "date": "2026-08-23",
       "time": "6:00 PM Local",
       "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -457,22 +469,22 @@
       "description": "A local seminar for families to share experiences and learn practical digital safety tips."
     },
     {
-      "id": 39,
-      "title": "Digital Wellness Meetup: Berlin Chapter",
-      "location": "Berlin, Community Center",
-      "date": "2026-08-25",
+      "id": 40,
+      "title": "Digital Wellness Seminar: Austin Chapter",
+      "location": "Austin, Community Center",
+      "date": "2026-08-31",
       "time": "6:00 PM Local",
-      "type": "Meetup",
+      "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
+      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
     },
     {
-      "id": 40,
-      "title": "Digital Wellness Workshop: New York Chapter",
-      "location": "New York, Community Center",
-      "date": "2026-09-01",
+      "id": 41,
+      "title": "Digital Wellness Workshop: Austin Chapter",
+      "location": "Austin, Community Center",
+      "date": "2026-09-07",
       "time": "6:00 PM Local",
       "type": "Workshop",
       "url": "https://www.meetup.com/topics/digital-wellness/",
@@ -481,31 +493,7 @@
       "description": "A local workshop for families to share experiences and learn practical digital safety tips."
     },
     {
-      "id": 41,
-      "title": "Digital Wellness Webinar: Dubai Chapter",
-      "location": "Online / Global",
-      "date": "2026-09-09",
-      "time": "6:00 PM Local",
-      "type": "Webinar",
-      "url": "https://www.meetup.com/topics/digital-wellness/",
-      "organizer": "Digital Wellness Community Volunteers",
-      "status": "Scheduled",
-      "description": "A local webinar for families to share experiences and learn practical digital safety tips."
-    },
-    {
       "id": 42,
-      "title": "Digital Wellness Meetup: Dubai Chapter",
-      "location": "Dubai, Community Center",
-      "date": "2026-09-13",
-      "time": "6:00 PM Local",
-      "type": "Meetup",
-      "url": "https://www.meetup.com/topics/digital-wellness/",
-      "organizer": "Digital Wellness Community Volunteers",
-      "status": "Scheduled",
-      "description": "A local meetup for families to share experiences and learn practical digital safety tips."
-    },
-    {
-      "id": 43,
       "title": "ICBCF 2026",
       "location": "Rome, Italy",
       "date": "2026-09-16",
@@ -517,16 +505,28 @@
       "description": "International Conference on Bullying, Cyberbullying, and Family, focusing on family dynamics in the digital age."
     },
     {
-      "id": 44,
-      "title": "Digital Wellness Workshop: Singapore Chapter",
-      "location": "Singapore, Community Center",
-      "date": "2026-09-21",
+      "id": 43,
+      "title": "Digital Wellness Seminar: Paris Chapter",
+      "location": "Paris, Community Center",
+      "date": "2026-09-17",
       "time": "6:00 PM Local",
-      "type": "Workshop",
+      "type": "Seminar",
       "url": "https://www.meetup.com/topics/digital-wellness/",
       "organizer": "Digital Wellness Community Volunteers",
       "status": "Scheduled",
-      "description": "A local workshop for families to share experiences and learn practical digital safety tips."
+      "description": "A local seminar for families to share experiences and learn practical digital safety tips."
+    },
+    {
+      "id": 44,
+      "title": "Digital Wellness Webinar: Toronto Chapter",
+      "location": "Online / Global",
+      "date": "2026-09-22",
+      "time": "6:00 PM Local",
+      "type": "Webinar",
+      "url": "https://www.meetup.com/topics/digital-wellness/",
+      "organizer": "Digital Wellness Community Volunteers",
+      "status": "Scheduled",
+      "description": "A local webinar for families to share experiences and learn practical digital safety tips."
     },
     {
       "id": 45,
@@ -653,6 +653,6 @@
       "online": true
     }
   ],
-  "lastSync": "2026-03-03T00:13:37.437Z",
-  "activeUsers": 2233
+  "lastSync": "2026-10-05T17:35:06.636Z",
+  "activeUsers": 2191
 }
