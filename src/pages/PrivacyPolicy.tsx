@@ -161,6 +161,34 @@ const PrivacyPolicy = () => {
             We aim to keep data secure using reasonable safeguards, but no digital system can be guaranteed
             to be 100% secure. If you believe something is wrong, please contact us.
           </p>
+          <div className="mt-6 space-y-4">
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">Cloud Database (Neon Postgres)</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                Family commitments, workshop progress, and assessment results are stored in a cloud-hosted
+                PostgreSQL database (Neon). Sensitive fields including commitment terms and member names are
+                encrypted before storage using AES-256-GCM. The encryption key is managed separately from
+                the database.
+              </p>
+            </div>
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">IPFS Metadata Pinning</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                When IPFS pinning is enabled (via Pinata), commitment metadata is pinned to the InterPlanetary
+                File System for decentralized storage. This data is publicly accessible to anyone with the
+                content identifier (CID). Families can opt out of IPFS pinning — when disabled, only a local
+                cryptographic hash is stored.
+              </p>
+            </div>
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">Data Retention & Deletion</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                You may request deletion of your family's commitment data at any time. Deletion requests
+                remove all associated records from the database. IPFS-pinned content cannot be deleted from
+                the decentralized network once pinned, but the on-platform reference to it will be removed.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Choices */}

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useMemo, useRef, useEffect } from "react"
+import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 import { STORAGE_KEY, resumeOnboardingTour } from "@/lib/onboarding";
 import { workshops } from "@/data/workshops";
@@ -60,26 +61,35 @@ export const Workshops = () => {
     workshops.find(w => w.id === "parents-digital-leadership") ?? workshops[5],
   ].filter((w): w is NonNullable<typeof w> => w != null), [workshops])
 
-  const handleStorySubmit = (e: React.FormEvent) => {
+  const handleStorySubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!storyName || !storyMessage) return
     const workshopsList = storyWorkshops.join(", ")
     const payload = { name: storyName, message: storyMessage, workshops: workshopsList, page: "workshops", timestamp: new Date().toISOString() }
-    fetch("/api/stories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).then(() => {
+    try {
+      const res = await fetch("/api/stories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) throw new Error("Failed to submit story")
       setSubmittedStory(true)
       setStoryName("")
       setStoryMessage("")
-    }).catch(() => {
-      // silently fail — story still submitted from client perspective
-      setSubmittedStory(true)
-      setStoryName("")
-      setStoryMessage("")
-    })
+      setStoryWorkshops([])
+    } catch {
+      toast.error("Failed to submit story. Please try again.")
+    }
   }
+
+  const [approvedStories, setApprovedStories] = useState<Array<{ id: number; name: string; message: string; workshops: string; status: string; createdAt: string | null }>>([])
+
+  useEffect(() => {
+    fetch("/api/stories?status=approved")
+      .then(res => res.ok ? res.json() : [])
+      .then(data => setApprovedStories(data))
+      .catch(() => {})
+  }, [])
   useEffect(() => {
     try {
       setShowReplay(localStorage.getItem(STORAGE_KEY) === "true")
@@ -298,7 +308,7 @@ export const Workshops = () => {
               {/* Testimonials horizontal scroll row */}
               <div className="relative">
                 <div className="flex gap-5 overflow-x-auto overflow-y-hidden pb-3 scrollbar-thin">
-                    {TESTIMONIALS.map((t, i) => (
+                    {[...approvedStories.map(s => ({ name: s.name, quote: s.message, detail: s.workshops, avatar: s.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() })), ...TESTIMONIALS].map((t, i) => (
                       <motion.div
                         key={t.name}
                         className="flex-shrink-0 p-5 rounded-2xl bg-white/80 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 w-[320px] shadow-md hover:shadow-xl transition-shadow"

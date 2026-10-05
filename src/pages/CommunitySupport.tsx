@@ -116,17 +116,46 @@ const CommunitySupport: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/community/data');
-      if (!res.ok) {
-        throw new Error(`API returned ${res.status}`);
+      const [communityRes, curatedRes] = await Promise.all([
+        fetch('/api/community/data'),
+        fetch('/api/admin/curated-content'),
+      ]);
+      if (!communityRes.ok) {
+        throw new Error(`API returned ${communityRes.status}`);
       }
-      const contentType = res.headers.get("content-type");
+      const contentType = communityRes.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("API returned non-JSON response");
       }
-      const data = await res.json();
-      setEvents(data.events || []);
-      setDiscussions(data.discussions || []);
+      const data = await communityRes.json();
+      const curated = curatedRes.ok ? await curatedRes.json() : [];
+      
+      // Merge curated content with synced content
+      const curatedDiscussions = curated.filter((c: any) => c.type === 'discussion' && c.isActive).map((c: any) => ({
+        id: c.id,
+        platform: c.platform || 'Community',
+        community: c.community || 'General',
+        title: c.title,
+        url: c.url || '#',
+        hotness: c.hotness || 'Trending',
+        replies: 0,
+        postedAt: c.postedAt || 'Recent',
+      }));
+      const curatedEvents = curated.filter((c: any) => c.type === 'event' && c.isActive).map((c: any) => ({
+        id: c.id,
+        title: c.title,
+        location: c.description || 'See listing',
+        date: c.postedAt || '2026',
+        time: 'See listing',
+        type: 'Community Event',
+        url: c.url || '#',
+        status: 'Live',
+        organizer: c.platform || 'Community',
+        description: c.description || '',
+      }));
+      
+      setEvents([...curatedEvents, ...(data.events || [])]);
+      setDiscussions([...curatedDiscussions, ...(data.discussions || [])]);
       setMentors(data.mentors || []);
       setLiveUsers(data.activeUsers || 720);
       setLastSync(new Date(data.lastSync).toLocaleTimeString());

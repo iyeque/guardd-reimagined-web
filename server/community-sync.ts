@@ -5,13 +5,13 @@ function toText(v: number | string | undefined): string { return typeof v === 'n
 
 const rssParser = new Parser();
 
-// Default reputable RSS feeds
+// Default reputable RSS feeds (verified working)
 const RSS_FEEDS = [
-  { platform: "Digital Wellness", community: "News", url: "https://digitalwellnessinstitute.com/feed/" },
-  { platform: "ConnectSafely", community: "Online Safety", url: "https://staysafeonline.org/feed/" },
-  { platform: "Common Sense", community: "Family Media", url: "https://www.commonsensemedia.org/rss/articles.xml" },
-  { platform: "ChildNet", community: "Youth Safety", url: "https://www.childnet.com/feed/" },
-  { platform: "Psychology Today", community: "Tech Habits", url: "https://www.psychologytoday.com/intl/taxonomy/term/1057/feed" }
+  { platform: "Family Online Safety Institute", community: "Online Safety", url: "https://www.fosi.org/feed/" },
+  { platform: "Safer Internet", community: "Youth Safety", url: "https://www.saferinternet.org.uk/feed" },
+  { platform: "Internet Matters", community: "Family Media", url: "https://www.internetmatters.org/feed/" },
+  { platform: "ChildNet", community: "Youth Safety", url: "https://www.childnet.com/blog/rss" },
+  { platform: "Get Safe Online", community: "Online Safety", url: "https://www.getsafeonline.org/feed/" }
 ];
 
 // Optional custom RSS from env: "platform|community|url,platform|community|url"
@@ -32,23 +32,6 @@ interface RedditChild {
     num_comments: number;
     created_utc: number;
   };
-}
-
-interface SerpEventResult {
-  title: string;
-  address?: string[];
-  event_location_map?: {
-    location: string;
-  };
-  date?: {
-    start_date?: string;
-    when?: string;
-  };
-  link?: string;
-  venue?: {
-    name: string;
-  };
-  description?: string;
 }
 
 // --- Real World Events (Sourced from Research) ---
@@ -227,6 +210,13 @@ async function getLiveRedditTrends() {
 }
 
 // --- SerpApi Event Discovery ---
+interface SerpOrganicResult {
+  title: string;
+  link: string;
+  snippet: string;
+  position: number;
+}
+
 async function fetchLiveEventsFromSerp() {
   const apiKey = process.env.SERP_API_KEY;
   if (!apiKey) {
@@ -235,7 +225,6 @@ async function fetchLiveEventsFromSerp() {
   }
 
   try {
-    // Highly targeted queries for DigitalGuard's audience
     const queries = [
       'digital wellness conferences 2026',
       'digital parenting workshops 2026',
@@ -246,7 +235,7 @@ async function fetchLiveEventsFromSerp() {
     const results = await Promise.all(queries.map(q =>
       axios.get('https://serpapi.com/search.json', {
         params: {
-          engine: "google_events",
+          engine: "google_search",
           q: q,
           api_key: apiKey,
           hl: "en",
@@ -255,19 +244,18 @@ async function fetchLiveEventsFromSerp() {
       })
     ));
 
-    const events = results.flatMap(r => (r.data.events_results as SerpEventResult[]) || []).map((e: SerpEventResult) => ({
+    const events = results.flatMap(r => (r.data.organic_results as SerpOrganicResult[]) || []).map((e: SerpOrganicResult) => ({
       title: e.title,
-      location: e.address?.join(', ') || (e.event_location_map?.location || 'Global / Online'),
-      date: e.date?.start_date || (e.date?.when?.split(',')[0] || '2026-Q3'),
-      time: e.date?.when || 'Check Listing',
+      location: "See listing for details",
+      date: "2026",
+      time: "See listing",
       type: "Community Event",
       url: e.link || `https://www.google.com/search?q=${encodeURIComponent(e.title)}`,
-      organizer: e.venue?.name || "Community Partner",
+      organizer: "Community Partner",
       status: "Live Discovery",
-      description: e.description || "Interactive session covering modern digital risks and family safety strategies."
+      description: e.snippet || "Interactive session covering modern digital risks and family safety strategies."
     }));
 
-    // Filter out duplicates by title
     const uniqueEvents = Array.from(new Map(events.map(item => [item['title'], item])).values());
     
     return uniqueEvents.length > 0 ? uniqueEvents.slice(0, 25) : null;

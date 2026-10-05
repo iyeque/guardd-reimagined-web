@@ -377,9 +377,9 @@ const FamilyCommitments: React.FC = () => {
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-rose-600">Government Audit</h4>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-rose-600">Compliance Verification</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Regulators can query a public audit API (read-only, anonymized) to verify that families in their jurisdiction are actively using the platform. Compliance reports exportable as signed PDFs.
+                    Regulators receive anonymized, aggregated proof that the platform is being used effectively (e.g., "1,247 families in District X have active commitments"). Zero-knowledge proofs verify compliance without exposing individual family data. Full records accessible only with legal authorization.
                   </p>
                 </div>
                 <div className="space-y-2">

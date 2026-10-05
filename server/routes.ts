@@ -1,12 +1,13 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage.js";
-import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema } from "../shared/schema.js";
+import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema, insertCuratedContentSchema, insertStorySchema } from "../shared/schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import axios from "axios";
 import { z } from "zod";
 import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { faqChunks, familyCommitments, familyCommitmentMilestones } from "../shared/schema.js";
+import { encryptField, decryptField } from "./crypto.js";
 
 // Helper function to verify reCAPTCHA
 async function verifyRecaptcha(token: string) {
@@ -405,7 +406,14 @@ export function registerRoutes(app: Express) {
     try {
       const familyId = String(req.query.familyId || "default-family");
       const items = await storage.listFamilyCommitments(familyId);
-      res.json(items);
+      const decrypted = await Promise.all(
+        items.map(async (item) => ({
+          ...item,
+          terms: await decryptField(item.terms),
+          members: await decryptField(item.members),
+        }))
+      );
+      res.json(decrypted);
     } catch (err) {
       console.error("/api/family/commitments failed:", err);
       res.status(500).json({ error: "Failed to fetch commitments" });
@@ -418,7 +426,11 @@ export function registerRoutes(app: Express) {
       const item = await storage.getFamilyCommitment(id);
       if (!item) return res.status(404).json({ error: "Not found" });
       const milestones = await storage.listFamilyCommitmentMilestones(id);
-      res.json({ ...item, milestones });
+      const [terms, members] = await Promise.all([
+        decryptField(item.terms),
+        decryptField(item.members),
+      ]);
+      res.json({ ...item, terms, members, milestones });
     } catch (err) {
       console.error("/api/family/commitments/:id failed:", err);
       res.status(500).json({ error: "Failed to fetch commitment" });
@@ -432,11 +444,15 @@ export function registerRoutes(app: Express) {
         .safeParse(req.body);
       if (!body.success) return res.status(400).json({ error: body.error.message });
 
+      const [encTerms, encMembers] = await Promise.all([
+        encryptField(body.data.terms),
+        encryptField(body.data.members),
+      ]);
       const created = await storage.createFamilyCommitment({
         familyId: body.data.familyId,
         title: body.data.title,
-        terms: body.data.terms,
-        members: body.data.members,
+        terms: encTerms,
+        members: encMembers,
         status: "pending",
       });
 
@@ -485,6 +501,101 @@ export function registerRoutes(app: Express) {
     } catch (err) {
       console.error("/api/family/commitments/:id/milestones failed:", err);
       res.status(500).json({ error: "Failed to create milestone" });
+    }
+  });
+
+  // Curated Content (admin-managed discussions and events)
+  app.get("/api/admin/curated-content", async (req, res) => {
+    try {
+      const items = await storage.listCuratedContent();
+      res.json(items);
+    } catch (err) {
+      console.error("/api/admin/curated-content failed:", err);
+      res.status(500).json({ error: "Failed to fetch curated content" });
+    }
+  });
+
+  app.post("/api/admin/curated-content", async (req, res) => {
+    try {
+      const body = insertCuratedContentSchema.safeParse(req.body);
+      if (!body.success) return res.status(400).json({ error: body.error.message });
+      const created = await storage.createCuratedContent(body.data);
+      res.status(201).json(created);
+    } catch (err) {
+      console.error("/api/admin/curated-content POST failed:", err);
+      res.status(500).json({ error: "Failed to create curated content" });
+    }
+  });
+
+  app.patch("/api/admin/curated-content/:id", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const body = insertCuratedContentSchema.partial().safeParse(req.body);
+      if (!body.success) return res.status(400).json({ error: body.error.message });
+      const updated = await storage.updateCuratedContent(id, body.data);
+      res.json(updated);
+    } catch (err) {
+      console.error("/api/admin/curated-content/:id PATCH failed:", err);
+      res.status(500).json({ error: "Failed to update curated content" });
+    }
+  });
+
+  app.delete("/api/admin/curated-content/:id", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      await storage.deleteCuratedContent(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("/api/admin/curated-content/:id DELETE failed:", err);
+      res.status(500).json({ error: "Failed to delete curated content" });
+    }
+  });
+
+  // Stories (public submit, admin manage)
+  app.post("/api/stories", async (req, res) => {
+    try {
+      const body = insertStorySchema.safeParse(req.body);
+      if (!body.success) return res.status(400).json({ error: body.error.message });
+      const created = await storage.createStory(body.data);
+      res.status(201).json(created);
+    } catch (err) {
+      console.error("/api/stories POST failed:", err);
+      res.status(500).json({ error: "Failed to create story" });
+    }
+  });
+
+  app.get("/api/stories", async (req, res) => {
+    try {
+      const status = req.query.status as string | undefined;
+      const stories = await storage.getStories();
+      const filtered = status ? stories.filter(s => s.status === status) : stories;
+      res.json(filtered);
+    } catch (err) {
+      console.error("/api/stories GET failed:", err);
+      res.status(500).json({ error: "Failed to fetch stories" });
+    }
+  });
+
+  app.get("/api/admin/stories", validateAdmin, async (_req, res) => {
+    try {
+      const stories = await storage.getStories();
+      res.json(stories);
+    } catch (err) {
+      console.error("/api/admin/stories failed:", err);
+      res.status(500).json({ error: "Failed to fetch stories" });
+    }
+  });
+
+  app.patch("/api/admin/stories/:id", validateAdmin, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const body = z.object({ status: z.string() }).safeParse(req.body);
+      if (!body.success) return res.status(400).json({ error: body.error.message });
+      const updated = await storage.updateStoryStatus(id, body.data.status);
+      res.json(updated);
+    } catch (err) {
+      console.error("/api/admin/stories/:id PATCH failed:", err);
+      res.status(500).json({ error: "Failed to update story" });
     }
   });
 }

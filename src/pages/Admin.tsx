@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { toast } from "sonner";
 import { Link, useLocation } from "react-router-dom";
-import { Story } from "@shared/schema";
+import { Story, CuratedContent } from "@shared/schema";
 
 interface AssessmentResult {
   id: number;
@@ -55,6 +55,17 @@ const Admin: React.FC = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [stories, setStories] = useState<Story[]>([]);
   const [assessmentResults, setAssessmentResults] = useState<AssessmentResult[]>([]);
+  const [curatedContent, setCuratedContent] = useState<CuratedContent[]>([]);
+  const [showCuratedForm, setShowCuratedForm] = useState(false);
+  const [curatedType, setCuratedType] = useState<"discussion" | "event">("discussion");
+  const [curatedTitle, setCuratedTitle] = useState("");
+  const [curatedUrl, setCuratedUrl] = useState("");
+  const [curatedDescription, setCuratedDescription] = useState("");
+  const [curatedPlatform, setCuratedPlatform] = useState("");
+  const [curatedCommunity, setCuratedCommunity] = useState("");
+  const [curatedHotness, setCuratedHotness] = useState("Trending");
+  const [curatedPostedAt, setCuratedPostedAt] = useState("Recent");
+  const [isCreatingCurated, setIsCreatingCurated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
@@ -68,11 +79,12 @@ const Admin: React.FC = () => {
     }
 
     try {
-      const [msgRes, appRes, storyRes, analyticsRes] = await Promise.all([
+      const [msgRes, appRes, storyRes, analyticsRes, curatedRes] = await Promise.all([
         fetch(`/api/admin/messages?key=${adminKey}`),
         fetch(`/api/admin/applications?key=${adminKey}`),
         fetch(`/api/admin/stories?key=${adminKey}`),
         fetch(`/api/assessment-analytics?key=${adminKey}`),
+        fetch(`/api/admin/curated-content?key=${adminKey}`),
       ]);
 
       if (msgRes.status === 401 || appRes.status === 401 || storyRes.status === 401 || analyticsRes.status === 401) {
@@ -80,16 +92,18 @@ const Admin: React.FC = () => {
         return;
       }
 
-      const [msgData, appData, storyData, analyticsData] = await Promise.all([
+      const [msgData, appData, storyData, analyticsData, curatedData] = await Promise.all([
         msgRes.json(),
         appRes.json(),
         storyRes.json(),
         analyticsRes.json(),
+        curatedRes.json(),
       ]);
       setMessages(msgData);
       setApplications(appData);
       setStories(storyData);
       setAssessmentResults(analyticsData);
+      setCuratedContent(curatedData);
     } catch (error) {
       console.error("Admin fetch failed", error);
       toast.error("Failed to load admin data");
@@ -150,6 +164,84 @@ const Admin: React.FC = () => {
       setIsUpdating(null);
     }
   };
+  const handleCreateCurated = async () => {
+    if (!curatedTitle.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+    setIsCreatingCurated(true);
+    try {
+      const res = await fetch(`/api/admin/curated-content?key=${adminKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: curatedType,
+          title: curatedTitle.trim(),
+          url: curatedUrl.trim() || null,
+          description: curatedDescription.trim() || null,
+          platform: curatedPlatform.trim() || null,
+          community: curatedCommunity.trim() || null,
+          hotness: curatedHotness,
+          postedAt: curatedPostedAt,
+        }),
+      });
+      if (res.ok) {
+        toast.success("Content added");
+        setCuratedTitle("");
+        setCuratedUrl("");
+        setCuratedDescription("");
+        setCuratedPlatform("");
+        setCuratedCommunity("");
+        setShowCuratedForm(false);
+        fetchAdminData();
+      } else {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to create");
+      }
+    } catch (error) {
+      toast.error("Failed to add content");
+      console.error(error);
+    } finally {
+      setIsCreatingCurated(false);
+    }
+  };
+
+  const handleToggleCurated = async (id: number, isActive: boolean) => {
+    try {
+      const res = await fetch(`/api/admin/curated-content/${id}?key=${adminKey}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !isActive }),
+      });
+      if (res.ok) {
+        toast.success(isActive ? "Content hidden" : "Content visible");
+        fetchAdminData();
+      } else {
+        throw new Error("Update failed");
+      }
+    } catch (error) {
+      toast.error("Failed to update content");
+      console.error(error);
+    }
+  };
+
+  const handleDeleteCurated = async (id: number) => {
+    try {
+      const res = await fetch(`/api/admin/curated-content/${id}?key=${adminKey}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        toast.success("Content deleted");
+        fetchAdminData();
+      } else {
+        throw new Error("Delete failed");
+      }
+    } catch (error) {
+      toast.error("Failed to delete content");
+      console.error(error);
+    }
+  };
+
   const handleSync = async () => {
     setIsSyncing(true);
     try {
@@ -472,6 +564,186 @@ const Admin: React.FC = () => {
                         className="text-red-600 border-red-200 hover:bg-red-50 rounded-lg flex items-center gap-1 font-bold"
                       >
                         <Trash2 className="w-4 h-4" /> {app.status === 'rejected' ? 'Rejected' : 'Reject'}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* Content Curation Queue */}
+        <section className="space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
+              <RefreshCw className="w-6 h-6 text-blue-600" />
+              Content Curation Queue ({curatedContent.length})
+            </h2>
+            <Button
+              onClick={() => setShowCuratedForm(!showCuratedForm)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl"
+            >
+              {showCuratedForm ? "Cancel" : "+ Add Content"}
+            </Button>
+          </div>
+
+          {showCuratedForm && (
+            <Card className="bg-white/60 dark:bg-white/5 border-border shadow-lg rounded-2xl">
+              <CardContent className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Type</label>
+                    <select
+                      value={curatedType}
+                      onChange={(e) => setCuratedType(e.target.value as "discussion" | "event")}
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="discussion">Discussion</option>
+                      <option value="event">Event</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Title *</label>
+                    <input
+                      type="text"
+                      value={curatedTitle}
+                      onChange={(e) => setCuratedTitle(e.target.value)}
+                      placeholder="Enter title"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">URL</label>
+                    <input
+                      type="url"
+                      value={curatedUrl}
+                      onChange={(e) => setCuratedUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Platform</label>
+                    <input
+                      type="text"
+                      value={curatedPlatform}
+                      onChange={(e) => setCuratedPlatform(e.target.value)}
+                      placeholder="e.g., Reddit, Twitter"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Community</label>
+                    <input
+                      type="text"
+                      value={curatedCommunity}
+                      onChange={(e) => setCuratedCommunity(e.target.value)}
+                      placeholder="e.g., r/parenting"
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Hotness</label>
+                    <select
+                      value={curatedHotness}
+                      onChange={(e) => setCuratedHotness(e.target.value)}
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="Trending">Trending</option>
+                      <option value="High">High</option>
+                      <option value="Critical">Critical</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Description</label>
+                  <textarea
+                    value={curatedDescription}
+                    onChange={(e) => setCuratedDescription(e.target.value)}
+                    placeholder="Enter description"
+                    rows={3}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleCreateCurated}
+                    disabled={isCreatingCurated}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl"
+                  >
+                    {isCreatingCurated ? "Adding..." : "Add Content"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCuratedForm(false)}
+                    className="rounded-xl"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="space-y-4">
+            {curatedContent.length === 0 ? (
+              <Card className="bg-white/40 dark:bg-white/5 border-dashed">
+                <CardContent className="py-12 text-center text-muted-foreground font-medium">
+                  No curated content yet. Add discussions and events manually.
+                </CardContent>
+              </Card>
+            ) : (
+              curatedContent.map((item) => (
+                <Card key={item.id} className="bg-white/60 dark:bg-white/5 border-border hover:border-blue-500/20 transition-all shadow-lg rounded-2xl overflow-hidden">
+                  <div className={`h-2 w-full ${item.type === "event" ? "bg-blue-600" : "bg-green-600"}`} />
+                  <CardHeader className="p-6 pb-2">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-black uppercase text-[10px]">
+                            {item.type}
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px] font-black uppercase">
+                            {item.hotness}
+                          </Badge>
+                        </div>
+                        <CardTitle className="text-lg font-bold mt-2">{item.title}</CardTitle>
+                        {item.platform && (
+                          <CardDescription className="text-xs text-slate-500 dark:text-slate-400">
+                            {item.platform} {item.community && `• ${item.community}`}
+                          </CardDescription>
+                        )}
+                      </div>
+                      <Badge variant="secondary" className="font-black uppercase text-[10px]">
+                        {item.isActive ? "Active" : "Hidden"}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-6 pt-2 space-y-4">
+                    {item.description && (
+                      <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+                    )}
+                    {item.url && (
+                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">
+                        View Source →
+                      </a>
+                    )}
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleToggleCurated(item.id, !!item.isActive)}
+                        className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg flex items-center gap-1 font-bold"
+                      >
+                        {item.isActive ? "Hide" : "Show"}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteCurated(item.id)}
+                        className="text-red-600 border-red-200 hover:bg-red-50 rounded-lg flex items-center gap-1 font-bold"
+                      >
+                        <Trash2 className="w-4 h-4" /> Delete
                       </Button>
                     </div>
                   </CardContent>

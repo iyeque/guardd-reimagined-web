@@ -26,6 +26,9 @@ import {
   stories,
   type Story,
   type InsertStory,
+  curatedContent,
+  type CuratedContent,
+  type InsertCuratedContent,
 } from "../shared/schema.js";
 import { db } from "./db.js";
 import { desc, eq } from "drizzle-orm";
@@ -69,6 +72,12 @@ export interface IStorage {
   createStory(insert: InsertStory): Promise<Story>;
   getStories(): Promise<Story[]>;
   updateStoryStatus(id: number, status: string): Promise<Story>;
+
+  // Curated Content
+  createCuratedContent(item: InsertCuratedContent): Promise<CuratedContent>;
+  listCuratedContent(): Promise<CuratedContent[]>;
+  updateCuratedContent(id: number, updates: Partial<InsertCuratedContent>): Promise<CuratedContent>;
+  deleteCuratedContent(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -220,6 +229,26 @@ export class DatabaseStorage implements IStorage {
       .returning();
     if (!row) throw new Error(`Story with ID ${id} not found`);
     return row;
+  }
+
+  // Curated Content
+  async createCuratedContent(item: InsertCuratedContent): Promise<CuratedContent> {
+    const [row] = await db.insert(curatedContent).values(item).returning();
+    return row;
+  }
+
+  async listCuratedContent(): Promise<CuratedContent[]> {
+    return db.select().from(curatedContent).orderBy(desc(curatedContent.createdAt));
+  }
+
+  async updateCuratedContent(id: number, updates: Partial<InsertCuratedContent>): Promise<CuratedContent> {
+    const [row] = await db.update(curatedContent).set(updates).where(eq(curatedContent.id, id)).returning();
+    if (!row) throw new Error(`Curated content ${id} not found`);
+    return row;
+  }
+
+  async deleteCuratedContent(id: number): Promise<void> {
+    await db.delete(curatedContent).where(eq(curatedContent.id, id));
   }
 }
 

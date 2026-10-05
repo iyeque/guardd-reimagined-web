@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -109,6 +109,24 @@ export const insertAssessmentAnalyticsSchema = createInsertSchema(assessmentAnal
   id: true,
   completedAt: true,
 });
+
+export const curatedContent = pgTable("curated_content", {
+  id: serial("id").primaryKey(),
+  type: text("type").notNull(), // "discussion" | "event"
+  title: text("title").notNull(),
+  url: text("url"),
+  description: text("description"),
+  platform: text("platform"),
+  community: text("community"),
+  hotness: text("hotness"),
+  postedAt: text("posted_at"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCuratedContentSchema = createInsertSchema(curatedContent);
+export type CuratedContent = typeof curatedContent.$inferSelect;
+export type InsertCuratedContent = typeof curatedContent.$inferInsert;
 
 export const stories = pgTable("stories", {
   id: serial("id").primaryKey(),
