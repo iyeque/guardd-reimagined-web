@@ -146,7 +146,54 @@ async function fetchRSSNews() {
 }
 
 // --- Reddit Integration ---
+// --- Data Synchronization ---
 
+export async function syncCommunityData() {
+  console.log("Starting data synchronization...");
+
+  // 1. Fetch live events (SerpApi + RSS)
+  const liveEvents = await fetchLiveEventsFromSerp();
+  const rssEvents = await fetchRSSEvents();
+
+  // Filter out events without titles (uniqueness baseline)
+  const withTitles = (events: any[]) => events.filter((e): e is { title: string; url: string } => Boolean(e?.title));
+
+  // Combine all real events, using URL + title as the unique key
+  const allEvents = withTitles(liveEvents || []);
+  const allRSSEvents = withTitles(rssEvents || []);
+  const uniqueEvents = Array.from(new Map<string, any>([
+    ...allEvents.map((e): [string, any] => [`${e.url ?? ''}-${e.title}`, e]),
+    ...allRSSEvents.map((e): [string, any] => [`${e.url ?? ''}-${e.title}`, e])
+  ]).values()).slice(0, 25);
+
+  // If no real events found, use curated events only
+  const sourceEvents = uniqueEvents.length > 0
+    ? uniqueEvents
+    : CURATED_EVENTS;
+
+  // 2. Fetch live discussions (Reddit + RSS news)
+  const [liveReddit, liveRSS] = await Promise.all([
+    getLiveRedditTrends(),
+    fetchRSSNews()
+  ]);
+
+  let combinedDiscussions = [...liveRSS];
+  if (liveReddit) combinedDiscussions = [...liveReddit, ...combinedDiscussions];
+
+  // Final fallback if everything is empty
+  const finalDiscussions = combinedDiscussions.length > 0
+    ? combinedDiscussions.slice(0, 12)
+    : FALLBACK_DISCUSSIONS;
+
+  await storage.setEvents(sourceEvents);
+  await storage.setDiscussions(finalDiscussions);
+
+  const lastSync = new Date().toISOString();
+  await storage.setSyncMetadata("last_sync", lastSync);
+
+  console.log(`Sync complete: ${sourceEvents.length} events, ${finalDiscussions.length} discussions.`);
+  return { lastSync };
+}
 async function getRedditAccessToken() {
   const { REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } = process.env;
   if (!REDDIT_CLIENT_ID || !REDDIT_CLIENT_SECRET) return null;
@@ -210,6 +257,7 @@ async function getLiveRedditTrends() {
 }
 
 // --- SerpApi Event Discovery ---
+// Uses Google Search with event-related operators to find real events
 interface SerpOrganicResult {
   title: string;
   link: string;
@@ -225,12 +273,13 @@ async function fetchLiveEventsFromSerp() {
   }
 
   try {
+    // Use event-focused queries with site operators to find real events
     const queries = [
-      'digital wellness conferences 2026',
-      'digital parenting workshops 2026',
-      'online safety for families events',
-      'mindful technology seminars',
-      'digital citizenship education summits'
+      '"digital wellness" conference 2026',
+      '"online safety" workshop 2026',
+      '"digital citizenship" summit 2026',
+      '"family tech" safety week 2026',
+      'digital parenting "workshop" OR "seminar" 2026'
     ];
     const results = await Promise.all(queries.map(q =>
       axios.get('https://serpapi.com/search.json', {
@@ -257,7 +306,6 @@ async function fetchLiveEventsFromSerp() {
     }));
 
     const uniqueEvents = Array.from(new Map(events.map(item => [item['title'], item])).values());
-    
     return uniqueEvents.length > 0 ? uniqueEvents.slice(0, 25) : null;
   } catch (error) {
     console.error('Failed to fetch events from SerpApi:', error);
@@ -265,33 +313,67 @@ async function fetchLiveEventsFromSerp() {
   }
 }
 
-export async function syncCommunityData() {
-  console.log("Starting data synchronization...");
-  
-  // 1. Fetch live events
-  const liveEvents = await fetchLiveEventsFromSerp();
-  const allEvents = liveEvents || [...CURATED_EVENTS, ...generateLocalEvents()];
-  
-  // 2. Fetch live discussions (Reddit + RSS)
-  const [liveReddit, liveRSS] = await Promise.all([
-    getLiveRedditTrends(),
-    fetchRSSNews()
-  ]);
-  
-  let combinedDiscussions = [...liveRSS];
-  if (liveReddit) combinedDiscussions = [...liveReddit, ...combinedDiscussions];
-  
-  // Final fallback if everything is empty
-  const finalDiscussions = combinedDiscussions.length > 0 
-    ? combinedDiscussions.slice(0, 12) 
-    : FALLBACK_DISCUSSIONS;
-  
-  await storage.setEvents(allEvents);
-  await storage.setDiscussions(finalDiscussions);
+// Event keywords used to identify event items from RSS feeds
+const EVENT_KEYWORDS = ['conference', 'workshop', 'webinar', 'seminar', 'summit', 'meetup', 'event', 'training', 'bootcamp', 'symposium'];
 
-  const lastSync = new Date().toISOString();
-  await storage.setSyncMetadata("last_sync", lastSync);
-  
-  console.log(`Sync complete: ${allEvents.length} events, ${finalDiscussions.length} discussions.`);
-  return { lastSync };
+// Filter RSS items for actual events (items with dates, locations, or event keywords)
+function isEventItem(item: any): boolean {
+  const title = (item?.title || '').toLowerCase();
+  const description = (item?.description || '').toLowerCase();
+  const content = (item?.content || '').toLowerCase();
+
+  // Event indicators
+  const datePatterns = /\d{4}-\d{2}-\d{2}|2026|2027|january|february|march|april|may|june|july|august|september|october|november|december/i;
+
+  return EVENT_KEYWORDS.some(k => title.includes(k) || description.includes(k) || content.includes(k)) ||
+         datePatterns.test(title + description + content);
 }
+
+async function fetchRSSEvents() {
+  try {
+    const events: any[] = [];
+
+    for (const feedInfo of ALL_RSS_FEEDS) {
+      try {
+        const feed = await rssParser.parseURL(feedInfo.url);
+        for (const item of feed.items) {
+          const title = (item.title || '').toLowerCase();
+          const description = (item.description || '').toLowerCase();
+          const content = (item.content || '').toLowerCase();
+
+          // Only include items that look like events
+          const isEvent = isEventItem(item);
+
+          if (isEvent) {
+            const existing = events.find(e => `${e.url}-${e.title}` === `${item.link || ''}-${item.title}`);
+            if (!existing) {
+              events.push({
+                platform: feedInfo.platform,
+                community: feedInfo.community,
+                title: item.title || "Untitled Event",
+                url: item.link || "#",
+                location: "Online", // Estimate from content
+                date: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Upcoming",
+                type: "Event",
+                hotness: "Trending",
+                replies: 0,
+                postedAt: item.pubDate ? new Date(item.pubDate).toLocaleDateString() : "Recent"
+              });
+            }
+          }
+          if (events.length >= 10) break;
+        }
+        if (events.length >= 10) break;
+      } catch (err) {
+        console.error(`Failed to parse RSS from ${feedInfo.platform}:`, err);
+      }
+    }
+
+    return events;
+  } catch (error) {
+    console.error("RSS event fetch error:", error);
+    return [];
+  }
+}
+
+
