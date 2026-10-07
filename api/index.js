@@ -37,364 +37,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// node_modules/dotenv/package.json
-var require_package = __commonJS({
-  "node_modules/dotenv/package.json"(exports, module) {
-    module.exports = {
-      name: "dotenv",
-      version: "16.6.1",
-      description: "Loads environment variables from .env file",
-      main: "lib/main.js",
-      types: "lib/main.d.ts",
-      exports: {
-        ".": {
-          types: "./lib/main.d.ts",
-          require: "./lib/main.js",
-          default: "./lib/main.js"
-        },
-        "./config": "./config.js",
-        "./config.js": "./config.js",
-        "./lib/env-options": "./lib/env-options.js",
-        "./lib/env-options.js": "./lib/env-options.js",
-        "./lib/cli-options": "./lib/cli-options.js",
-        "./lib/cli-options.js": "./lib/cli-options.js",
-        "./package.json": "./package.json"
-      },
-      scripts: {
-        "dts-check": "tsc --project tests/types/tsconfig.json",
-        lint: "standard",
-        pretest: "npm run lint && npm run dts-check",
-        test: "tap run --allow-empty-coverage --disable-coverage --timeout=60000",
-        "test:coverage": "tap run --show-full-coverage --timeout=60000 --coverage-report=text --coverage-report=lcov",
-        prerelease: "npm test",
-        release: "standard-version"
-      },
-      repository: {
-        type: "git",
-        url: "git://github.com/motdotla/dotenv.git"
-      },
-      homepage: "https://github.com/motdotla/dotenv#readme",
-      funding: "https://dotenvx.com",
-      keywords: [
-        "dotenv",
-        "env",
-        ".env",
-        "environment",
-        "variables",
-        "config",
-        "settings"
-      ],
-      readmeFilename: "README.md",
-      license: "BSD-2-Clause",
-      devDependencies: {
-        "@types/node": "^18.11.3",
-        decache: "^4.6.2",
-        sinon: "^14.0.1",
-        standard: "^17.0.0",
-        "standard-version": "^9.5.0",
-        tap: "^19.2.0",
-        typescript: "^4.8.4"
-      },
-      engines: {
-        node: ">=12"
-      },
-      browser: {
-        fs: false
-      }
-    };
-  }
-});
-
-// node_modules/dotenv/lib/main.js
-var require_main = __commonJS({
-  "node_modules/dotenv/lib/main.js"(exports, module) {
-    var fs = __require("fs");
-    var path = __require("path");
-    var os = __require("os");
-    var crypto4 = __require("crypto");
-    var packageJson = require_package();
-    var version2 = packageJson.version;
-    var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
-    function parse(src) {
-      const obj = {};
-      let lines = src.toString();
-      lines = lines.replace(/\r\n?/mg, "\n");
-      let match;
-      while ((match = LINE.exec(lines)) != null) {
-        const key = match[1];
-        let value = match[2] || "";
-        value = value.trim();
-        const maybeQuote = value[0];
-        value = value.replace(/^(['"`])([\s\S]*)\1$/mg, "$2");
-        if (maybeQuote === '"') {
-          value = value.replace(/\\n/g, "\n");
-          value = value.replace(/\\r/g, "\r");
-        }
-        obj[key] = value;
-      }
-      return obj;
-    }
-    function _parseVault(options) {
-      options = options || {};
-      const vaultPath = _vaultPath(options);
-      options.path = vaultPath;
-      const result = DotenvModule.configDotenv(options);
-      if (!result.parsed) {
-        const err = new Error(`MISSING_DATA: Cannot parse ${vaultPath} for an unknown reason`);
-        err.code = "MISSING_DATA";
-        throw err;
-      }
-      const keys = _dotenvKey(options).split(",");
-      const length = keys.length;
-      let decrypted;
-      for (let i = 0; i < length; i++) {
-        try {
-          const key = keys[i].trim();
-          const attrs = _instructions(result, key);
-          decrypted = DotenvModule.decrypt(attrs.ciphertext, attrs.key);
-          break;
-        } catch (error) {
-          if (i + 1 >= length) {
-            throw error;
-          }
-        }
-      }
-      return DotenvModule.parse(decrypted);
-    }
-    function _warn(message) {
-      console.log(`[dotenv@${version2}][WARN] ${message}`);
-    }
-    function _debug(message) {
-      console.log(`[dotenv@${version2}][DEBUG] ${message}`);
-    }
-    function _log(message) {
-      console.log(`[dotenv@${version2}] ${message}`);
-    }
-    function _dotenvKey(options) {
-      if (options && options.DOTENV_KEY && options.DOTENV_KEY.length > 0) {
-        return options.DOTENV_KEY;
-      }
-      if (process.env.DOTENV_KEY && process.env.DOTENV_KEY.length > 0) {
-        return process.env.DOTENV_KEY;
-      }
-      return "";
-    }
-    function _instructions(result, dotenvKey) {
-      let uri;
-      try {
-        uri = new URL(dotenvKey);
-      } catch (error) {
-        if (error.code === "ERR_INVALID_URL") {
-          const err = new Error("INVALID_DOTENV_KEY: Wrong format. Must be in valid uri format like dotenv://:key_1234@dotenvx.com/vault/.env.vault?environment=development");
-          err.code = "INVALID_DOTENV_KEY";
-          throw err;
-        }
-        throw error;
-      }
-      const key = uri.password;
-      if (!key) {
-        const err = new Error("INVALID_DOTENV_KEY: Missing key part");
-        err.code = "INVALID_DOTENV_KEY";
-        throw err;
-      }
-      const environment = uri.searchParams.get("environment");
-      if (!environment) {
-        const err = new Error("INVALID_DOTENV_KEY: Missing environment part");
-        err.code = "INVALID_DOTENV_KEY";
-        throw err;
-      }
-      const environmentKey = `DOTENV_VAULT_${environment.toUpperCase()}`;
-      const ciphertext = result.parsed[environmentKey];
-      if (!ciphertext) {
-        const err = new Error(`NOT_FOUND_DOTENV_ENVIRONMENT: Cannot locate environment ${environmentKey} in your .env.vault file.`);
-        err.code = "NOT_FOUND_DOTENV_ENVIRONMENT";
-        throw err;
-      }
-      return { ciphertext, key };
-    }
-    function _vaultPath(options) {
-      let possibleVaultPath = null;
-      if (options && options.path && options.path.length > 0) {
-        if (Array.isArray(options.path)) {
-          for (const filepath of options.path) {
-            if (fs.existsSync(filepath)) {
-              possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
-            }
-          }
-        } else {
-          possibleVaultPath = options.path.endsWith(".vault") ? options.path : `${options.path}.vault`;
-        }
-      } else {
-        possibleVaultPath = path.resolve(process.cwd(), ".env.vault");
-      }
-      if (fs.existsSync(possibleVaultPath)) {
-        return possibleVaultPath;
-      }
-      return null;
-    }
-    function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path.join(os.homedir(), envPath.slice(1)) : envPath;
-    }
-    function _configVault(options) {
-      const debug = Boolean(options && options.debug);
-      const quiet = options && "quiet" in options ? options.quiet : true;
-      if (debug || !quiet) {
-        _log("Loading env from encrypted .env.vault");
-      }
-      const parsed = DotenvModule._parseVault(options);
-      let processEnv = process.env;
-      if (options && options.processEnv != null) {
-        processEnv = options.processEnv;
-      }
-      DotenvModule.populate(processEnv, parsed, options);
-      return { parsed };
-    }
-    function configDotenv(options) {
-      const dotenvPath = path.resolve(process.cwd(), ".env");
-      let encoding = "utf8";
-      const debug = Boolean(options && options.debug);
-      const quiet = options && "quiet" in options ? options.quiet : true;
-      if (options && options.encoding) {
-        encoding = options.encoding;
-      } else {
-        if (debug) {
-          _debug("No encoding is specified. UTF-8 is used by default");
-        }
-      }
-      let optionPaths = [dotenvPath];
-      if (options && options.path) {
-        if (!Array.isArray(options.path)) {
-          optionPaths = [_resolveHome(options.path)];
-        } else {
-          optionPaths = [];
-          for (const filepath of options.path) {
-            optionPaths.push(_resolveHome(filepath));
-          }
-        }
-      }
-      let lastError;
-      const parsedAll = {};
-      for (const path2 of optionPaths) {
-        try {
-          const parsed = DotenvModule.parse(fs.readFileSync(path2, { encoding }));
-          DotenvModule.populate(parsedAll, parsed, options);
-        } catch (e) {
-          if (debug) {
-            _debug(`Failed to load ${path2} ${e.message}`);
-          }
-          lastError = e;
-        }
-      }
-      let processEnv = process.env;
-      if (options && options.processEnv != null) {
-        processEnv = options.processEnv;
-      }
-      DotenvModule.populate(processEnv, parsedAll, options);
-      if (debug || !quiet) {
-        const keysCount = Object.keys(parsedAll).length;
-        const shortPaths = [];
-        for (const filePath of optionPaths) {
-          try {
-            const relative = path.relative(process.cwd(), filePath);
-            shortPaths.push(relative);
-          } catch (e) {
-            if (debug) {
-              _debug(`Failed to load ${filePath} ${e.message}`);
-            }
-            lastError = e;
-          }
-        }
-        _log(`injecting env (${keysCount}) from ${shortPaths.join(",")}`);
-      }
-      if (lastError) {
-        return { parsed: parsedAll, error: lastError };
-      } else {
-        return { parsed: parsedAll };
-      }
-    }
-    function config2(options) {
-      if (_dotenvKey(options).length === 0) {
-        return DotenvModule.configDotenv(options);
-      }
-      const vaultPath = _vaultPath(options);
-      if (!vaultPath) {
-        _warn(`You set DOTENV_KEY but you are missing a .env.vault file at ${vaultPath}. Did you forget to build it?`);
-        return DotenvModule.configDotenv(options);
-      }
-      return DotenvModule._configVault(options);
-    }
-    function decrypt(encrypted, keyStr) {
-      const key = Buffer.from(keyStr.slice(-64), "hex");
-      let ciphertext = Buffer.from(encrypted, "base64");
-      const nonce = ciphertext.subarray(0, 12);
-      const authTag = ciphertext.subarray(-16);
-      ciphertext = ciphertext.subarray(12, -16);
-      try {
-        const aesgcm = crypto4.createDecipheriv("aes-256-gcm", key, nonce);
-        aesgcm.setAuthTag(authTag);
-        return `${aesgcm.update(ciphertext)}${aesgcm.final()}`;
-      } catch (error) {
-        const isRange = error instanceof RangeError;
-        const invalidKeyLength = error.message === "Invalid key length";
-        const decryptionFailed = error.message === "Unsupported state or unable to authenticate data";
-        if (isRange || invalidKeyLength) {
-          const err = new Error("INVALID_DOTENV_KEY: It must be 64 characters long (or more)");
-          err.code = "INVALID_DOTENV_KEY";
-          throw err;
-        } else if (decryptionFailed) {
-          const err = new Error("DECRYPTION_FAILED: Please check your DOTENV_KEY");
-          err.code = "DECRYPTION_FAILED";
-          throw err;
-        } else {
-          throw error;
-        }
-      }
-    }
-    function populate(processEnv, parsed, options = {}) {
-      const debug = Boolean(options && options.debug);
-      const override = Boolean(options && options.override);
-      if (typeof parsed !== "object") {
-        const err = new Error("OBJECT_REQUIRED: Please check the processEnv argument being passed to populate");
-        err.code = "OBJECT_REQUIRED";
-        throw err;
-      }
-      for (const key of Object.keys(parsed)) {
-        if (Object.prototype.hasOwnProperty.call(processEnv, key)) {
-          if (override === true) {
-            processEnv[key] = parsed[key];
-          }
-          if (debug) {
-            if (override === true) {
-              _debug(`"${key}" is already defined and WAS overwritten`);
-            } else {
-              _debug(`"${key}" is already defined and was NOT overwritten`);
-            }
-          }
-        } else {
-          processEnv[key] = parsed[key];
-        }
-      }
-    }
-    var DotenvModule = {
-      configDotenv,
-      _configVault,
-      _parseVault,
-      config: config2,
-      decrypt,
-      parse,
-      populate
-    };
-    module.exports.configDotenv = DotenvModule.configDotenv;
-    module.exports._configVault = DotenvModule._configVault;
-    module.exports._parseVault = DotenvModule._parseVault;
-    module.exports.config = DotenvModule.config;
-    module.exports.decrypt = DotenvModule.decrypt;
-    module.exports.parse = DotenvModule.parse;
-    module.exports.populate = DotenvModule.populate;
-    module.exports = DotenvModule;
-  }
-});
-
 // node_modules/depd/index.js
 var require_depd = __commonJS({
   "node_modules/depd/index.js"(exports, module) {
@@ -32979,9 +32621,6 @@ var init_blockchain = __esm({
   }
 });
 
-// server/api/index.ts
-var import_dotenv = __toESM(require_main(), 1);
-
 // server/index.ts
 var import_express = __toESM(require_express2(), 1);
 
@@ -33042,24 +32681,24 @@ function is(value, type) {
 
 // node_modules/drizzle-orm/column.js
 var Column = class {
-  constructor(table, config2) {
+  constructor(table, config) {
     this.table = table;
-    this.config = config2;
-    this.name = config2.name;
-    this.keyAsName = config2.keyAsName;
-    this.notNull = config2.notNull;
-    this.default = config2.default;
-    this.defaultFn = config2.defaultFn;
-    this.onUpdateFn = config2.onUpdateFn;
-    this.hasDefault = config2.hasDefault;
-    this.primary = config2.primaryKey;
-    this.isUnique = config2.isUnique;
-    this.uniqueName = config2.uniqueName;
-    this.uniqueType = config2.uniqueType;
-    this.dataType = config2.dataType;
-    this.columnType = config2.columnType;
-    this.generated = config2.generated;
-    this.generatedIdentity = config2.generatedIdentity;
+    this.config = config;
+    this.name = config.name;
+    this.keyAsName = config.keyAsName;
+    this.notNull = config.notNull;
+    this.default = config.default;
+    this.defaultFn = config.defaultFn;
+    this.onUpdateFn = config.onUpdateFn;
+    this.hasDefault = config.hasDefault;
+    this.primary = config.primaryKey;
+    this.isUnique = config.isUnique;
+    this.uniqueName = config.uniqueName;
+    this.uniqueType = config.uniqueType;
+    this.dataType = config.dataType;
+    this.columnType = config.columnType;
+    this.generated = config.generated;
+    this.generatedIdentity = config.generatedIdentity;
   }
   static [entityKind] = "Column";
   name;
@@ -33207,9 +32846,9 @@ var ForeignKeyBuilder = class {
   _onUpdate = "no action";
   /** @internal */
   _onDelete = "no action";
-  constructor(config2, actions) {
+  constructor(config, actions) {
     this.reference = () => {
-      const { name, columns, foreignColumns } = config2();
+      const { name, columns, foreignColumns } = config();
       return { name, columns, foreignTable: foreignColumns[0].table, foreignColumns };
     };
     if (actions) {
@@ -33397,10 +33036,10 @@ var PgColumnBuilder = class extends ColumnBuilder {
     this.foreignKeyConfigs.push({ ref, actions });
     return this;
   }
-  unique(name, config2) {
+  unique(name, config) {
     this.config.isUnique = true;
     this.config.uniqueName = name;
-    this.config.uniqueType = config2?.nulls;
+    this.config.uniqueType = config?.nulls;
     return this;
   }
   generatedAlwaysAs(as) {
@@ -33439,11 +33078,11 @@ var PgColumnBuilder = class extends ColumnBuilder {
   }
 };
 var PgColumn = class extends Column {
-  constructor(table, config2) {
-    if (!config2.uniqueName) {
-      config2.uniqueName = uniqueKeyName(table, [config2.name]);
+  constructor(table, config) {
+    if (!config.uniqueName) {
+      config.uniqueName = uniqueKeyName(table, [config.name]);
     }
-    super(table, config2);
+    super(table, config);
     this.table = table;
   }
   static [entityKind] = "PgColumn";
@@ -33544,11 +33183,11 @@ var PgArrayBuilder = class extends PgColumnBuilder {
   }
 };
 var PgArray = class _PgArray extends PgColumn {
-  constructor(table, config2, baseColumn, range) {
-    super(table, config2);
+  constructor(table, config, baseColumn, range) {
+    super(table, config);
     this.baseColumn = baseColumn;
     this.range = range;
-    this.size = config2.size;
+    this.size = config.size;
   }
   size;
   static [entityKind] = "PgArray";
@@ -33594,9 +33233,9 @@ var PgEnumColumn = class extends PgColumn {
   static [entityKind] = "PgEnumColumn";
   enum = this.config.enum;
   enumValues = this.config.enum.enumValues;
-  constructor(table, config2) {
-    super(table, config2);
-    this.enum = config2.enum;
+  constructor(table, config) {
+    super(table, config);
+    this.enum = config.enum;
   }
   getSQLType() {
     return this.enum.enumName;
@@ -33772,9 +33411,9 @@ var SQL = class _SQL {
     this.queryChunks.push(...query.queryChunks);
     return this;
   }
-  toQuery(config2) {
+  toQuery(config) {
     return tracer.startActiveSpan("drizzle.buildSQL", (span) => {
-      const query = this.buildQueryFromSourceParams(this.queryChunks, config2);
+      const query = this.buildQueryFromSourceParams(this.queryChunks, config);
       span?.setAttributes({
         "drizzle.query.text": query.sql,
         "drizzle.query.params": JSON.stringify(query.params)
@@ -33783,7 +33422,7 @@ var SQL = class _SQL {
     });
   }
   buildQueryFromSourceParams(chunks, _config) {
-    const config2 = Object.assign({}, _config, {
+    const config = Object.assign({}, _config, {
       inlineParams: _config.inlineParams || this.shouldInlineParams,
       paramStartIndex: _config.paramStartIndex || { value: 0 }
     });
@@ -33794,7 +33433,7 @@ var SQL = class _SQL {
       prepareTyping,
       inlineParams,
       paramStartIndex
-    } = config2;
+    } = config;
     return mergeQueries(chunks.map((chunk) => {
       if (is(chunk, StringChunk)) {
         return { sql: chunk.value.join(""), params: [] };
@@ -33814,11 +33453,11 @@ var SQL = class _SQL {
           }
         }
         result.push(new StringChunk(")"));
-        return this.buildQueryFromSourceParams(result, config2);
+        return this.buildQueryFromSourceParams(result, config);
       }
       if (is(chunk, _SQL)) {
         return this.buildQueryFromSourceParams(chunk.queryChunks, {
-          ...config2,
+          ...config,
           inlineParams: inlineParams || chunk.shouldInlineParams
         });
       }
@@ -33855,10 +33494,10 @@ var SQL = class _SQL {
         }
         const mappedValue = chunk.value === null ? null : chunk.encoder.mapToDriverValue(chunk.value);
         if (is(mappedValue, _SQL)) {
-          return this.buildQueryFromSourceParams([mappedValue], config2);
+          return this.buildQueryFromSourceParams([mappedValue], config);
         }
         if (inlineParams) {
-          return { sql: this.mapInlineParam(mappedValue, config2), params: [] };
+          return { sql: this.mapInlineParam(mappedValue, config), params: [] };
         }
         let typings = ["none"];
         if (prepareTyping) {
@@ -33881,7 +33520,7 @@ var SQL = class _SQL {
           chunk._.sql,
           new StringChunk(") "),
           new Name(chunk._.alias)
-        ], config2);
+        ], config);
       }
       if (isPgEnum(chunk)) {
         if (chunk.schema) {
@@ -33891,16 +33530,16 @@ var SQL = class _SQL {
       }
       if (isSQLWrapper(chunk)) {
         if (chunk.shouldOmitSQLParens?.()) {
-          return this.buildQueryFromSourceParams([chunk.getSQL()], config2);
+          return this.buildQueryFromSourceParams([chunk.getSQL()], config);
         }
         return this.buildQueryFromSourceParams([
           new StringChunk("("),
           chunk.getSQL(),
           new StringChunk(")")
-        ], config2);
+        ], config);
       }
       if (inlineParams) {
-        return { sql: this.mapInlineParam(chunk, config2), params: [] };
+        return { sql: this.mapInlineParam(chunk, config), params: [] };
       }
       return { sql: escapeParam(paramStartIndex.value++, chunk), params: [chunk], typings: ["none"] };
     }));
@@ -34459,8 +34098,8 @@ var PgBigInt64 = class extends PgColumn {
   }
 };
 function bigint(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  if (config2.mode === "number") {
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  if (config.mode === "number") {
     return new PgBigInt53Builder(name);
   }
   return new PgBigInt64Builder(name);
@@ -34519,8 +34158,8 @@ var PgBigSerial64 = class extends PgColumn {
   }
 };
 function bigserial(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  if (config2.mode === "number") {
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  if (config.mode === "number") {
     return new PgBigSerial53Builder(name);
   }
   return new PgBigSerial64Builder(name);
@@ -34550,10 +34189,10 @@ function boolean(name) {
 // node_modules/drizzle-orm/pg-core/columns/char.js
 var PgCharBuilder = class extends PgColumnBuilder {
   static [entityKind] = "PgCharBuilder";
-  constructor(name, config2) {
+  constructor(name, config) {
     super(name, "string", "PgChar");
-    this.config.length = config2.length;
-    this.config.enumValues = config2.enum;
+    this.config.length = config.length;
+    this.config.enumValues = config.enum;
   }
   /** @internal */
   build(table) {
@@ -34572,8 +34211,8 @@ var PgChar = class extends PgColumn {
   }
 };
 function char(a2, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgCharBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgCharBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/cidr.js
@@ -34618,11 +34257,11 @@ var PgCustomColumn = class extends PgColumn {
   sqlName;
   mapTo;
   mapFrom;
-  constructor(table, config2) {
-    super(table, config2);
-    this.sqlName = config2.customTypeParams.dataType(config2.fieldConfig);
-    this.mapTo = config2.customTypeParams.toDriver;
-    this.mapFrom = config2.customTypeParams.fromDriver;
+  constructor(table, config) {
+    super(table, config);
+    this.sqlName = config.customTypeParams.dataType(config.fieldConfig);
+    this.mapTo = config.customTypeParams.toDriver;
+    this.mapFrom = config.customTypeParams.fromDriver;
   }
   getSQLType() {
     return this.sqlName;
@@ -34636,8 +34275,8 @@ var PgCustomColumn = class extends PgColumn {
 };
 function customType(customTypeParams) {
   return (a2, b) => {
-    const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-    return new PgCustomColumnBuilder(name, config2, customTypeParams);
+    const { name, config } = getColumnNameAndConfig(a2, b);
+    return new PgCustomColumnBuilder(name, config, customTypeParams);
   };
 }
 
@@ -34692,8 +34331,8 @@ var PgDateString = class extends PgColumn {
   }
 };
 function date(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  if (config2?.mode === "date") {
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  if (config?.mode === "date") {
     return new PgDateBuilder(name);
   }
   return new PgDateStringBuilder(name);
@@ -34800,8 +34439,8 @@ var PgInterval = class extends PgColumn {
   }
 };
 function interval(a2, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgIntervalBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgIntervalBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/json.js
@@ -34817,8 +34456,8 @@ var PgJsonBuilder = class extends PgColumnBuilder {
 };
 var PgJson = class extends PgColumn {
   static [entityKind] = "PgJson";
-  constructor(table, config2) {
-    super(table, config2);
+  constructor(table, config) {
+    super(table, config);
   }
   getSQLType() {
     return "json";
@@ -34854,8 +34493,8 @@ var PgJsonbBuilder = class extends PgColumnBuilder {
 };
 var PgJsonb = class extends PgColumn {
   static [entityKind] = "PgJsonb";
-  constructor(table, config2) {
-    super(table, config2);
+  constructor(table, config) {
+    super(table, config);
   }
   getSQLType() {
     return "jsonb";
@@ -34932,8 +34571,8 @@ var PgLineABC = class extends PgColumn {
   }
 };
 function line(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  if (!config2?.mode || config2.mode === "tuple") {
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  if (!config?.mode || config.mode === "tuple") {
     return new PgLineBuilder(name);
   }
   return new PgLineABCBuilder(name);
@@ -34998,10 +34637,10 @@ var PgNumeric = class extends PgColumn {
   static [entityKind] = "PgNumeric";
   precision;
   scale;
-  constructor(table, config2) {
-    super(table, config2);
-    this.precision = config2.precision;
-    this.scale = config2.scale;
+  constructor(table, config) {
+    super(table, config);
+    this.precision = config.precision;
+    this.scale = config.scale;
   }
   getSQLType() {
     if (this.precision !== void 0 && this.scale !== void 0) {
@@ -35014,8 +34653,8 @@ var PgNumeric = class extends PgColumn {
   }
 };
 function numeric(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgNumericBuilder(name, config2?.precision, config2?.scale);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgNumericBuilder(name, config?.precision, config?.scale);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/point.js
@@ -35078,8 +34717,8 @@ var PgPointObject = class extends PgColumn {
   }
 };
 function point(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  if (!config2?.mode || config2.mode === "tuple") {
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  if (!config?.mode || config.mode === "tuple") {
     return new PgPointTupleBuilder(name);
   }
   return new PgPointObjectBuilder(name);
@@ -35177,8 +34816,8 @@ var PgGeometryObject = class extends PgColumn {
   }
 };
 function geometry(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  if (!config2?.mode || config2.mode === "tuple") {
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  if (!config?.mode || config.mode === "tuple") {
     return new PgGeometryBuilder(name);
   }
   return new PgGeometryObjectBuilder(name);
@@ -35198,8 +34837,8 @@ var PgRealBuilder = class extends PgColumnBuilder {
 };
 var PgReal = class extends PgColumn {
   static [entityKind] = "PgReal";
-  constructor(table, config2) {
-    super(table, config2);
+  constructor(table, config) {
+    super(table, config);
   }
   getSQLType() {
     return "real";
@@ -35294,9 +34933,9 @@ function smallserial(name) {
 // node_modules/drizzle-orm/pg-core/columns/text.js
 var PgTextBuilder = class extends PgColumnBuilder {
   static [entityKind] = "PgTextBuilder";
-  constructor(name, config2) {
+  constructor(name, config) {
     super(name, "string", "PgText");
-    this.config.enumValues = config2.enum;
+    this.config.enumValues = config.enum;
   }
   /** @internal */
   build(table) {
@@ -35311,8 +34950,8 @@ var PgText = class extends PgColumn {
   }
 };
 function text(a2, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgTextBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgTextBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/time.js
@@ -35334,10 +34973,10 @@ var PgTime = class extends PgColumn {
   static [entityKind] = "PgTime";
   withTimezone;
   precision;
-  constructor(table, config2) {
-    super(table, config2);
-    this.withTimezone = config2.withTimezone;
-    this.precision = config2.precision;
+  constructor(table, config) {
+    super(table, config);
+    this.withTimezone = config.withTimezone;
+    this.precision = config.precision;
   }
   getSQLType() {
     const precision = this.precision === void 0 ? "" : `(${this.precision})`;
@@ -35345,8 +34984,8 @@ var PgTime = class extends PgColumn {
   }
 };
 function time(a2, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgTimeBuilder(name, config2.withTimezone ?? false, config2.precision);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgTimeBuilder(name, config.withTimezone ?? false, config.precision);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/timestamp.js
@@ -35366,10 +35005,10 @@ var PgTimestamp = class extends PgColumn {
   static [entityKind] = "PgTimestamp";
   withTimezone;
   precision;
-  constructor(table, config2) {
-    super(table, config2);
-    this.withTimezone = config2.withTimezone;
-    this.precision = config2.precision;
+  constructor(table, config) {
+    super(table, config);
+    this.withTimezone = config.withTimezone;
+    this.precision = config.precision;
   }
   getSQLType() {
     const precision = this.precision === void 0 ? "" : ` (${this.precision})`;
@@ -35401,10 +35040,10 @@ var PgTimestampString = class extends PgColumn {
   static [entityKind] = "PgTimestampString";
   withTimezone;
   precision;
-  constructor(table, config2) {
-    super(table, config2);
-    this.withTimezone = config2.withTimezone;
-    this.precision = config2.precision;
+  constructor(table, config) {
+    super(table, config);
+    this.withTimezone = config.withTimezone;
+    this.precision = config.precision;
   }
   getSQLType() {
     const precision = this.precision === void 0 ? "" : `(${this.precision})`;
@@ -35412,11 +35051,11 @@ var PgTimestampString = class extends PgColumn {
   }
 };
 function timestamp(a2, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  if (config2?.mode === "string") {
-    return new PgTimestampStringBuilder(name, config2.withTimezone ?? false, config2.precision);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  if (config?.mode === "string") {
+    return new PgTimestampStringBuilder(name, config.withTimezone ?? false, config.precision);
   }
-  return new PgTimestampBuilder(name, config2?.withTimezone ?? false, config2?.precision);
+  return new PgTimestampBuilder(name, config?.withTimezone ?? false, config?.precision);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/uuid.js
@@ -35449,10 +35088,10 @@ function uuid(name) {
 // node_modules/drizzle-orm/pg-core/columns/varchar.js
 var PgVarcharBuilder = class extends PgColumnBuilder {
   static [entityKind] = "PgVarcharBuilder";
-  constructor(name, config2) {
+  constructor(name, config) {
     super(name, "string", "PgVarchar");
-    this.config.length = config2.length;
-    this.config.enumValues = config2.enum;
+    this.config.length = config.length;
+    this.config.enumValues = config.enum;
   }
   /** @internal */
   build(table) {
@@ -35471,16 +35110,16 @@ var PgVarchar = class extends PgColumn {
   }
 };
 function varchar(a2, b = {}) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgVarcharBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgVarcharBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/vector_extension/bit.js
 var PgBinaryVectorBuilder = class extends PgColumnBuilder {
   static [entityKind] = "PgBinaryVectorBuilder";
-  constructor(name, config2) {
+  constructor(name, config) {
     super(name, "string", "PgBinaryVector");
-    this.config.dimensions = config2.dimensions;
+    this.config.dimensions = config.dimensions;
   }
   /** @internal */
   build(table) {
@@ -35498,16 +35137,16 @@ var PgBinaryVector = class extends PgColumn {
   }
 };
 function bit(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgBinaryVectorBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgBinaryVectorBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/vector_extension/halfvec.js
 var PgHalfVectorBuilder = class extends PgColumnBuilder {
   static [entityKind] = "PgHalfVectorBuilder";
-  constructor(name, config2) {
+  constructor(name, config) {
     super(name, "array", "PgHalfVector");
-    this.config.dimensions = config2.dimensions;
+    this.config.dimensions = config.dimensions;
   }
   /** @internal */
   build(table) {
@@ -35531,16 +35170,16 @@ var PgHalfVector = class extends PgColumn {
   }
 };
 function halfvec(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgHalfVectorBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgHalfVectorBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/vector_extension/sparsevec.js
 var PgSparseVectorBuilder = class extends PgColumnBuilder {
   static [entityKind] = "PgSparseVectorBuilder";
-  constructor(name, config2) {
+  constructor(name, config) {
     super(name, "string", "PgSparseVector");
-    this.config.dimensions = config2.dimensions;
+    this.config.dimensions = config.dimensions;
   }
   /** @internal */
   build(table) {
@@ -35558,16 +35197,16 @@ var PgSparseVector = class extends PgColumn {
   }
 };
 function sparsevec(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgSparseVectorBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgSparseVectorBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/pg-core/columns/vector_extension/vector.js
 var PgVectorBuilder = class extends PgColumnBuilder {
   static [entityKind] = "PgVectorBuilder";
-  constructor(name, config2) {
+  constructor(name, config) {
     super(name, "array", "PgVector");
-    this.config.dimensions = config2.dimensions;
+    this.config.dimensions = config.dimensions;
   }
   /** @internal */
   build(table) {
@@ -35591,8 +35230,8 @@ var PgVector = class extends PgColumn {
   }
 };
 function vector(a2, b) {
-  const { name, config: config2 } = getColumnNameAndConfig(a2, b);
-  return new PgVectorBuilder(name, config2);
+  const { name, config } = getColumnNameAndConfig(a2, b);
+  return new PgVectorBuilder(name, config);
 }
 
 // node_modules/drizzle-orm/query-promise.js
@@ -35623,8 +35262,8 @@ var QueryPromise = class {
 var SelectionProxyHandler = class _SelectionProxyHandler {
   static [entityKind] = "SelectionProxyHandler";
   config;
-  constructor(config2) {
-    this.config = { ...config2 };
+  constructor(config) {
+    this.config = { ...config };
   }
   get(subquery, prop) {
     if (prop === "_") {
@@ -36106,16 +35745,16 @@ var Relation = class {
   fieldName;
 };
 var Relations = class {
-  constructor(table, config2) {
+  constructor(table, config) {
     this.table = table;
-    this.config = config2;
+    this.config = config;
   }
   static [entityKind] = "Relations";
 };
 var One = class _One extends Relation {
-  constructor(sourceTable, referencedTable, config2, isNullable) {
-    super(sourceTable, referencedTable, config2?.relationName);
-    this.config = config2;
+  constructor(sourceTable, referencedTable, config, isNullable) {
+    super(sourceTable, referencedTable, config?.relationName);
+    this.config = config;
     this.isNullable = isNullable;
   }
   static [entityKind] = "One";
@@ -36131,9 +35770,9 @@ var One = class _One extends Relation {
   }
 };
 var Many = class _Many extends Relation {
-  constructor(sourceTable, referencedTable, config2) {
-    super(sourceTable, referencedTable, config2?.relationName);
-    this.config = config2;
+  constructor(sourceTable, referencedTable, config) {
+    super(sourceTable, referencedTable, config?.relationName);
+    this.config = config;
   }
   static [entityKind] = "Many";
   withFieldName(fieldName) {
@@ -36243,18 +35882,18 @@ function extractTablesRelationalConfig(schema, configHelpers) {
   return { tables: tablesConfig, tableNamesMap };
 }
 function createOne(sourceTable) {
-  return function one(table, config2) {
+  return function one(table, config) {
     return new One(
       sourceTable,
       table,
-      config2,
-      config2?.fields.reduce((res, f) => res && f.notNull, true) ?? false
+      config,
+      config?.fields.reduce((res, f) => res && f.notNull, true) ?? false
     );
   };
 }
 function createMany(sourceTable) {
-  return function many(referencedTable, config2) {
-    return new Many(sourceTable, referencedTable, config2);
+  return function many(referencedTable, config) {
+    return new Many(sourceTable, referencedTable, config);
   };
 }
 function normalizeRelation(schema, tableNamesMap, relation) {
@@ -36364,12 +36003,12 @@ var PgDialect = class {
   static [entityKind] = "PgDialect";
   /** @internal */
   casing;
-  constructor(config2) {
-    this.casing = new CasingCache(config2?.casing);
+  constructor(config) {
+    this.casing = new CasingCache(config?.casing);
   }
-  async migrate(migrations, session, config2) {
-    const migrationsTable = typeof config2 === "string" ? "__drizzle_migrations" : config2.migrationsTable ?? "__drizzle_migrations";
-    const migrationsSchema = typeof config2 === "string" ? "drizzle" : config2.migrationsSchema ?? "drizzle";
+  async migrate(migrations, session, config) {
+    const migrationsTable = typeof config === "string" ? "__drizzle_migrations" : config.migrationsTable ?? "__drizzle_migrations";
+    const migrationsSchema = typeof config === "string" ? "drizzle" : config.migrationsSchema ?? "drizzle";
     const migrationTableCreate = sql`
 			CREATE TABLE IF NOT EXISTS ${sql.identifier(migrationsSchema)}.${sql.identifier(migrationsTable)} (
 				id SERIAL PRIMARY KEY,
@@ -37237,7 +36876,7 @@ var PgDialect = class {
     tableNamesMap,
     table,
     tableConfig,
-    queryConfig: config2,
+    queryConfig: config,
     tableAlias,
     nestedQueryRelation,
     joinOn
@@ -37245,7 +36884,7 @@ var PgDialect = class {
     let selection = [];
     let limit, offset, orderBy = [], where;
     const joins = [];
-    if (config2 === true) {
+    if (config === true) {
       const selectionEntries = Object.entries(tableConfig.columns);
       selection = selectionEntries.map(([key, value]) => ({
         dbKey: value.name,
@@ -37259,15 +36898,15 @@ var PgDialect = class {
       const aliasedColumns = Object.fromEntries(
         Object.entries(tableConfig.columns).map(([key, value]) => [key, aliasedTableColumn(value, tableAlias)])
       );
-      if (config2.where) {
-        const whereSql = typeof config2.where === "function" ? config2.where(aliasedColumns, getOperators()) : config2.where;
+      if (config.where) {
+        const whereSql = typeof config.where === "function" ? config.where(aliasedColumns, getOperators()) : config.where;
         where = whereSql && mapColumnsInSQLToAlias(whereSql, tableAlias);
       }
       const fieldsSelection = [];
       let selectedColumns = [];
-      if (config2.columns) {
+      if (config.columns) {
         let isIncludeMode = false;
-        for (const [field, value] of Object.entries(config2.columns)) {
+        for (const [field, value] of Object.entries(config.columns)) {
           if (value === void 0) {
             continue;
           }
@@ -37279,7 +36918,7 @@ var PgDialect = class {
           }
         }
         if (selectedColumns.length > 0) {
-          selectedColumns = isIncludeMode ? selectedColumns.filter((c) => config2.columns?.[c] === true) : Object.keys(tableConfig.columns).filter((key) => !selectedColumns.includes(key));
+          selectedColumns = isIncludeMode ? selectedColumns.filter((c) => config.columns?.[c] === true) : Object.keys(tableConfig.columns).filter((key) => !selectedColumns.includes(key));
         }
       } else {
         selectedColumns = Object.keys(tableConfig.columns);
@@ -37289,12 +36928,12 @@ var PgDialect = class {
         fieldsSelection.push({ tsKey: field, value: column });
       }
       let selectedRelations = [];
-      if (config2.with) {
-        selectedRelations = Object.entries(config2.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig2]) => ({ tsKey, queryConfig: queryConfig2, relation: tableConfig.relations[tsKey] }));
+      if (config.with) {
+        selectedRelations = Object.entries(config.with).filter((entry) => !!entry[1]).map(([tsKey, queryConfig2]) => ({ tsKey, queryConfig: queryConfig2, relation: tableConfig.relations[tsKey] }));
       }
       let extras;
-      if (config2.extras) {
-        extras = typeof config2.extras === "function" ? config2.extras(aliasedColumns, { sql }) : config2.extras;
+      if (config.extras) {
+        extras = typeof config.extras === "function" ? config.extras(aliasedColumns, { sql }) : config.extras;
         for (const [tsKey, value] of Object.entries(extras)) {
           fieldsSelection.push({
             tsKey,
@@ -37312,7 +36951,7 @@ var PgDialect = class {
           selection: []
         });
       }
-      let orderByOrig = typeof config2.orderBy === "function" ? config2.orderBy(aliasedColumns, getOrderByOperators()) : config2.orderBy ?? [];
+      let orderByOrig = typeof config.orderBy === "function" ? config.orderBy(aliasedColumns, getOrderByOperators()) : config.orderBy ?? [];
       if (!Array.isArray(orderByOrig)) {
         orderByOrig = [orderByOrig];
       }
@@ -37322,8 +36961,8 @@ var PgDialect = class {
         }
         return mapColumnsInSQLToAlias(orderByValue, tableAlias);
       });
-      limit = config2.limit;
-      offset = config2.offset;
+      limit = config.limit;
+      offset = config.offset;
       for (const {
         tsKey: selectedRelationTsKey,
         queryConfig: selectedRelationConfigValue,
@@ -37470,14 +37109,14 @@ var PgSelectBuilder = class {
   dialect;
   withList = [];
   distinct;
-  constructor(config2) {
-    this.fields = config2.fields;
-    this.session = config2.session;
-    this.dialect = config2.dialect;
-    if (config2.withList) {
-      this.withList = config2.withList;
+  constructor(config) {
+    this.fields = config.fields;
+    this.session = config.session;
+    this.dialect = config.dialect;
+    if (config.withList) {
+      this.withList = config.withList;
     }
-    this.distinct = config2.distinct;
+    this.distinct = config.distinct;
   }
   authToken;
   /** @internal */
@@ -38091,8 +37730,8 @@ var PgSelectQueryBuilderBase = class extends TypedQueryBuilder {
    * @param strength the lock strength.
    * @param config the lock configuration.
    */
-  for(strength, config2 = {}) {
-    this.config.lockingClause = { strength, config: config2 };
+  for(strength, config = {}) {
+    this.config.lockingClause = { strength, config };
     return this;
   }
   /** @internal */
@@ -38124,12 +37763,12 @@ var PgSelectBase = class extends PgSelectQueryBuilderBase {
   static [entityKind] = "PgSelect";
   /** @internal */
   _prepare(name) {
-    const { session, config: config2, dialect, joinsNotNullableMap, authToken } = this;
+    const { session, config, dialect, joinsNotNullableMap, authToken } = this;
     if (!session) {
       throw new Error("Cannot execute a query on a query builder. Please use a database instance instead.");
     }
     return tracer.startActiveSpan("drizzle.prepareQuery", () => {
-      const fieldsList = orderSelectedFields(config2.fields);
+      const fieldsList = orderSelectedFields(config.fields);
       const query = session.prepareQuery(dialect.sqlToQuery(this.getSQL()), fieldsList, name, true);
       query.joinsNotNullableMap = joinsNotNullableMap;
       return query.setToken(authToken);
@@ -38367,13 +38006,13 @@ var PgInsertBase = class extends QueryPromise {
    *   .onConflictDoNothing({ target: cars.id });
    * ```
    */
-  onConflictDoNothing(config2 = {}) {
-    if (config2.target === void 0) {
+  onConflictDoNothing(config = {}) {
+    if (config.target === void 0) {
       this.config.onConflict = sql`do nothing`;
     } else {
       let targetColumn = "";
-      targetColumn = Array.isArray(config2.target) ? config2.target.map((it) => this.dialect.escapeName(this.dialect.casing.getColumnCasing(it))).join(",") : this.dialect.escapeName(this.dialect.casing.getColumnCasing(config2.target));
-      const whereSql = config2.where ? sql` where ${config2.where}` : void 0;
+      targetColumn = Array.isArray(config.target) ? config.target.map((it) => this.dialect.escapeName(this.dialect.casing.getColumnCasing(it))).join(",") : this.dialect.escapeName(this.dialect.casing.getColumnCasing(config.target));
+      const whereSql = config.where ? sql` where ${config.where}` : void 0;
       this.config.onConflict = sql`(${sql.raw(targetColumn)})${whereSql} do nothing`;
     }
     return this;
@@ -38407,18 +38046,18 @@ var PgInsertBase = class extends QueryPromise {
    *   });
    * ```
    */
-  onConflictDoUpdate(config2) {
-    if (config2.where && (config2.targetWhere || config2.setWhere)) {
+  onConflictDoUpdate(config) {
+    if (config.where && (config.targetWhere || config.setWhere)) {
       throw new Error(
         'You cannot use both "where" and "targetWhere"/"setWhere" at the same time - "where" is deprecated, use "targetWhere" or "setWhere" instead.'
       );
     }
-    const whereSql = config2.where ? sql` where ${config2.where}` : void 0;
-    const targetWhereSql = config2.targetWhere ? sql` where ${config2.targetWhere}` : void 0;
-    const setWhereSql = config2.setWhere ? sql` where ${config2.setWhere}` : void 0;
-    const setSql = this.dialect.buildUpdateSet(this.config.table, mapUpdateSet(this.config.table, config2.set));
+    const whereSql = config.where ? sql` where ${config.where}` : void 0;
+    const targetWhereSql = config.targetWhere ? sql` where ${config.targetWhere}` : void 0;
+    const setWhereSql = config.setWhere ? sql` where ${config.setWhere}` : void 0;
+    const setSql = this.dialect.buildUpdateSet(this.config.table, mapUpdateSet(this.config.table, config.set));
     let targetColumn = "";
-    targetColumn = Array.isArray(config2.target) ? config2.target.map((it) => this.dialect.escapeName(this.dialect.casing.getColumnCasing(it))).join(",") : this.dialect.escapeName(this.dialect.casing.getColumnCasing(config2.target));
+    targetColumn = Array.isArray(config.target) ? config.target.map((it) => this.dialect.escapeName(this.dialect.casing.getColumnCasing(it))).join(",") : this.dialect.escapeName(this.dialect.casing.getColumnCasing(config.target));
     this.config.onConflict = sql`(${sql.raw(targetColumn)})${targetWhereSql} do update set ${setSql}${whereSql}${setWhereSql}`;
     return this;
   }
@@ -38791,7 +38430,7 @@ var RelationalQueryBuilder = class {
     this.session = session;
   }
   static [entityKind] = "PgRelationalQueryBuilder";
-  findMany(config2) {
+  findMany(config) {
     return new PgRelationalQuery(
       this.fullSchema,
       this.schema,
@@ -38800,11 +38439,11 @@ var RelationalQueryBuilder = class {
       this.tableConfig,
       this.dialect,
       this.session,
-      config2 ? config2 : {},
+      config ? config : {},
       "many"
     );
   }
-  findFirst(config2) {
+  findFirst(config) {
     return new PgRelationalQuery(
       this.fullSchema,
       this.schema,
@@ -38813,13 +38452,13 @@ var RelationalQueryBuilder = class {
       this.tableConfig,
       this.dialect,
       this.session,
-      config2 ? { ...config2, limit: 1 } : { limit: 1 },
+      config ? { ...config, limit: 1 } : { limit: 1 },
       "first"
     );
   }
 };
 var PgRelationalQuery = class extends QueryPromise {
-  constructor(fullSchema, schema, tableNamesMap, table, tableConfig, dialect, session, config2, mode) {
+  constructor(fullSchema, schema, tableNamesMap, table, tableConfig, dialect, session, config, mode) {
     super();
     this.fullSchema = fullSchema;
     this.schema = schema;
@@ -38828,7 +38467,7 @@ var PgRelationalQuery = class extends QueryPromise {
     this.tableConfig = tableConfig;
     this.dialect = dialect;
     this.session = session;
-    this.config = config2;
+    this.config = config;
     this.mode = mode;
   }
   static [entityKind] = "PgRelationalQuery";
@@ -39192,8 +38831,8 @@ var PgDatabase = class {
       (result) => prepared.mapResult(result, true)
     );
   }
-  transaction(transaction, config2) {
-    return this.session.transaction(transaction, config2);
+  transaction(transaction, config) {
+    return this.session.transaction(transaction, config);
   }
 };
 
@@ -39264,21 +38903,21 @@ var PgTransaction = class extends PgDatabase {
     throw new TransactionRollbackError();
   }
   /** @internal */
-  getTransactionConfigSQL(config2) {
+  getTransactionConfigSQL(config) {
     const chunks = [];
-    if (config2.isolationLevel) {
-      chunks.push(`isolation level ${config2.isolationLevel}`);
+    if (config.isolationLevel) {
+      chunks.push(`isolation level ${config.isolationLevel}`);
     }
-    if (config2.accessMode) {
-      chunks.push(config2.accessMode);
+    if (config.accessMode) {
+      chunks.push(config.accessMode);
     }
-    if (typeof config2.deferrable === "boolean") {
-      chunks.push(config2.deferrable ? "deferrable" : "not deferrable");
+    if (typeof config.deferrable === "boolean") {
+      chunks.push(config.deferrable ? "deferrable" : "not deferrable");
     }
     return sql.raw(chunks.join(" "));
   }
-  setTransaction(config2) {
-    return this.session.execute(sql`set transaction ${this.getTransactionConfigSQL(config2)}`);
+  setTransaction(config) {
+    return this.session.execute(sql`set transaction ${this.getTransactionConfigSQL(config)}`);
   }
 };
 
@@ -43333,8 +42972,8 @@ var ConsoleLogWriter = class {
 var DefaultLogger = class {
   static [entityKind] = "DefaultLogger";
   writer;
-  constructor(config2) {
-    this.writer = config2?.writer ?? new ConsoleLogWriter();
+  constructor(config) {
+    this.writer = config?.writer ?? new ConsoleLogWriter();
   }
   logQuery(query, params) {
     const stringifiedParams = params.map((p2) => {
@@ -49329,22 +48968,22 @@ var NeonHttpDatabase = class extends PgDatabase {
     return this.session.batch(batch);
   }
 };
-function construct(client, config2 = {}) {
-  const dialect = new PgDialect({ casing: config2.casing });
+function construct(client, config = {}) {
+  const dialect = new PgDialect({ casing: config.casing });
   let logger;
-  if (config2.logger === true) {
+  if (config.logger === true) {
     logger = new DefaultLogger();
-  } else if (config2.logger !== false) {
-    logger = config2.logger;
+  } else if (config.logger !== false) {
+    logger = config.logger;
   }
   let schema;
-  if (config2.schema) {
+  if (config.schema) {
     const tablesConfig = extractTablesRelationalConfig(
-      config2.schema,
+      config.schema,
       createTableRelationsHelpers
     );
     schema = {
-      fullSchema: config2.schema,
+      fullSchema: config.schema,
       schema: tablesConfig.tables,
       tableNamesMap: tablesConfig.tableNamesMap
     };
@@ -49379,8 +49018,8 @@ function drizzle(...params) {
   return construct(params[0], params[1]);
 }
 ((drizzle2) => {
-  function mock(config2) {
-    return construct({}, config2);
+  function mock(config) {
+    return construct({}, config);
   }
   drizzle2.mock = mock;
 })(drizzle || (drizzle = {}));
@@ -49972,8 +49611,8 @@ var utils_default = {
 
 // node_modules/axios/lib/core/AxiosError.js
 var AxiosError = class _AxiosError extends Error {
-  static from(error, code, config2, request, response, customProps) {
-    const axiosError = new _AxiosError(error.message, code || error.code, config2, request, response);
+  static from(error, code, config, request, response, customProps) {
+    const axiosError = new _AxiosError(error.message, code || error.code, config, request, response);
     axiosError.cause = error;
     axiosError.name = error.name;
     if (error.status != null && axiosError.status == null) {
@@ -49993,7 +49632,7 @@ var AxiosError = class _AxiosError extends Error {
    *
    * @returns {Error} The created error.
    */
-  constructor(message, code, config2, request, response) {
+  constructor(message, code, config, request, response) {
     super(message);
     Object.defineProperty(this, "message", {
       value: message,
@@ -50004,7 +49643,7 @@ var AxiosError = class _AxiosError extends Error {
     this.name = "AxiosError";
     this.isAxiosError = true;
     code && (this.code = code);
-    config2 && (this.config = config2);
+    config && (this.config = config);
     request && (this.request = request);
     if (response) {
       this.response = response;
@@ -50851,12 +50490,12 @@ var AxiosHeaders_default = AxiosHeaders;
 
 // node_modules/axios/lib/core/transformData.js
 function transformData(fns, response) {
-  const config2 = this || defaults_default;
-  const context = response || config2;
+  const config = this || defaults_default;
+  const context = response || config;
   const headers = AxiosHeaders_default.from(context.headers);
   let data = context.data;
   utils_default.forEach(fns, function transform(fn) {
-    data = fn.call(config2, data, headers.normalize(), response ? response.status : void 0);
+    data = fn.call(config, data, headers.normalize(), response ? response.status : void 0);
   });
   headers.normalize();
   return data;
@@ -50878,8 +50517,8 @@ var CanceledError = class extends AxiosError_default {
    *
    * @returns {CanceledError} The created error.
    */
-  constructor(message, config2, request) {
-    super(message == null ? "canceled" : message, AxiosError_default.ERR_CANCELED, config2, request);
+  constructor(message, config, request) {
+    super(message == null ? "canceled" : message, AxiosError_default.ERR_CANCELED, config, request);
     this.name = "CanceledError";
     this.__CANCEL__ = true;
   }
@@ -51741,17 +51380,17 @@ var http2Transport = {
     return req;
   }
 };
-var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
+var http_default = isHttpAdapterSupported && function httpAdapter(config) {
   return wrapAsync(async function dispatchHttpRequest(resolve, reject, onDone) {
-    let { data, lookup, family, httpVersion = 1, http2Options } = config2;
-    const { responseType, responseEncoding } = config2;
-    const method = config2.method.toUpperCase();
+    let { data, lookup, family, httpVersion = 1, http2Options } = config;
+    const { responseType, responseEncoding } = config;
+    const method = config.method.toUpperCase();
     let isDone;
     let rejected = false;
     let req;
     httpVersion = +httpVersion;
     if (Number.isNaN(httpVersion)) {
-      throw TypeError(`Invalid protocol version: '${config2.httpVersion}' is not a number`);
+      throw TypeError(`Invalid protocol version: '${config.httpVersion}' is not a number`);
     }
     if (httpVersion !== 1 && httpVersion !== 2) {
       throw TypeError(`Unsupported protocol version '${httpVersion}'`);
@@ -51774,7 +51413,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       try {
         abortEmitter.emit(
           "abort",
-          !reason || reason.type ? new CanceledError_default(null, config2, req) : reason
+          !reason || reason.type ? new CanceledError_default(null, config, req) : reason
         );
       } catch (err) {
         console.warn("emit error", err);
@@ -51782,18 +51421,18 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
     }
     abortEmitter.once("abort", reject);
     const onFinished = () => {
-      if (config2.cancelToken) {
-        config2.cancelToken.unsubscribe(abort);
+      if (config.cancelToken) {
+        config.cancelToken.unsubscribe(abort);
       }
-      if (config2.signal) {
-        config2.signal.removeEventListener("abort", abort);
+      if (config.signal) {
+        config.signal.removeEventListener("abort", abort);
       }
       abortEmitter.removeAllListeners();
     };
-    if (config2.cancelToken || config2.signal) {
-      config2.cancelToken && config2.cancelToken.subscribe(abort);
-      if (config2.signal) {
-        config2.signal.aborted ? abort() : config2.signal.addEventListener("abort", abort);
+    if (config.cancelToken || config.signal) {
+      config.cancelToken && config.cancelToken.subscribe(abort);
+      if (config.signal) {
+        config.signal.aborted ? abort() : config.signal.addEventListener("abort", abort);
       }
     }
     onDone((response, isRejected) => {
@@ -51813,19 +51452,19 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
         onFinished();
       }
     });
-    const fullPath = buildFullPath(config2.baseURL, config2.url, config2.allowAbsoluteUrls);
+    const fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
     const parsed = new URL(fullPath, platform_default.hasBrowserEnv ? platform_default.origin : void 0);
     const protocol = parsed.protocol || supportedProtocols[0];
     if (protocol === "data:") {
-      if (config2.maxContentLength > -1) {
-        const dataUrl = String(config2.url || fullPath || "");
+      if (config.maxContentLength > -1) {
+        const dataUrl = String(config.url || fullPath || "");
         const estimated = estimateDataURLDecodedBytes(dataUrl);
-        if (estimated > config2.maxContentLength) {
+        if (estimated > config.maxContentLength) {
           return reject(
             new AxiosError_default(
-              "maxContentLength size of " + config2.maxContentLength + " exceeded",
+              "maxContentLength size of " + config.maxContentLength + " exceeded",
               AxiosError_default.ERR_BAD_RESPONSE,
-              config2
+              config
             )
           );
         }
@@ -51836,15 +51475,15 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
           status: 405,
           statusText: "method not allowed",
           headers: {},
-          config: config2
+          config
         });
       }
       try {
-        convertedData = fromDataURI(config2.url, responseType === "blob", {
-          Blob: config2.env && config2.env.Blob
+        convertedData = fromDataURI(config.url, responseType === "blob", {
+          Blob: config.env && config.env.Blob
         });
       } catch (err) {
-        throw AxiosError_default.from(err, AxiosError_default.ERR_BAD_REQUEST, config2);
+        throw AxiosError_default.from(err, AxiosError_default.ERR_BAD_REQUEST, config);
       }
       if (responseType === "text") {
         convertedData = convertedData.toString(responseEncoding);
@@ -51859,18 +51498,18 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
         status: 200,
         statusText: "OK",
         headers: new AxiosHeaders_default(),
-        config: config2
+        config
       });
     }
     if (supportedProtocols.indexOf(protocol) === -1) {
       return reject(
-        new AxiosError_default("Unsupported protocol " + protocol, AxiosError_default.ERR_BAD_REQUEST, config2)
+        new AxiosError_default("Unsupported protocol " + protocol, AxiosError_default.ERR_BAD_REQUEST, config)
       );
     }
-    const headers = AxiosHeaders_default.from(config2.headers).normalize();
+    const headers = AxiosHeaders_default.from(config.headers).normalize();
     headers.set("User-Agent", "axios/" + VERSION, false);
-    const { onUploadProgress, onDownloadProgress } = config2;
-    const maxRate = config2.maxRate;
+    const { onUploadProgress, onDownloadProgress } = config;
+    const maxRate = config.maxRate;
     let maxUploadRate = void 0;
     let maxDownloadRate = void 0;
     if (utils_default.isSpecCompliantForm(data)) {
@@ -51909,17 +51548,17 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
           new AxiosError_default(
             "Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream",
             AxiosError_default.ERR_BAD_REQUEST,
-            config2
+            config
           )
         );
       }
       headers.setContentLength(data.length, false);
-      if (config2.maxBodyLength > -1 && data.length > config2.maxBodyLength) {
+      if (config.maxBodyLength > -1 && data.length > config.maxBodyLength) {
         return reject(
           new AxiosError_default(
             "Request body larger than maxBodyLength limit",
             AxiosError_default.ERR_BAD_REQUEST,
-            config2
+            config
           )
         );
       }
@@ -51956,9 +51595,9 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       );
     }
     let auth = void 0;
-    if (config2.auth) {
-      const username = config2.auth.username || "";
-      const password = config2.auth.password || "";
+    if (config.auth) {
+      const username = config.auth.username || "";
+      const password = config.auth.password || "";
       auth = username + ":" + password;
     }
     if (!auth && parsed.username) {
@@ -51971,13 +51610,13 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
     try {
       path = buildURL(
         parsed.pathname + parsed.search,
-        config2.params,
-        config2.paramsSerializer
+        config.params,
+        config.paramsSerializer
       ).replace(/^\?/, "");
     } catch (err) {
       const customErr = new Error(err.message);
-      customErr.config = config2;
-      customErr.url = config2.url;
+      customErr.config = config;
+      customErr.url = config.url;
       customErr.exists = true;
       return reject(customErr);
     }
@@ -51990,7 +51629,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       path,
       method,
       headers: headers.toJSON(),
-      agents: { http: config2.httpAgent, https: config2.httpsAgent },
+      agents: { http: config.httpAgent, https: config.httpsAgent },
       auth,
       protocol,
       family,
@@ -51999,44 +51638,44 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       http2Options
     };
     !utils_default.isUndefined(lookup) && (options.lookup = lookup);
-    if (config2.socketPath) {
-      options.socketPath = config2.socketPath;
+    if (config.socketPath) {
+      options.socketPath = config.socketPath;
     } else {
       options.hostname = parsed.hostname.startsWith("[") ? parsed.hostname.slice(1, -1) : parsed.hostname;
       options.port = parsed.port;
       setProxy(
         options,
-        config2.proxy,
+        config.proxy,
         protocol + "//" + parsed.hostname + (parsed.port ? ":" + parsed.port : "") + options.path
       );
     }
     let transport;
     const isHttpsRequest = isHttps.test(options.protocol);
-    options.agent = isHttpsRequest ? config2.httpsAgent : config2.httpAgent;
+    options.agent = isHttpsRequest ? config.httpsAgent : config.httpAgent;
     if (isHttp2) {
       transport = http2Transport;
     } else {
-      if (config2.transport) {
-        transport = config2.transport;
-      } else if (config2.maxRedirects === 0) {
+      if (config.transport) {
+        transport = config.transport;
+      } else if (config.maxRedirects === 0) {
         transport = isHttpsRequest ? https : http;
       } else {
-        if (config2.maxRedirects) {
-          options.maxRedirects = config2.maxRedirects;
+        if (config.maxRedirects) {
+          options.maxRedirects = config.maxRedirects;
         }
-        if (config2.beforeRedirect) {
-          options.beforeRedirects.config = config2.beforeRedirect;
+        if (config.beforeRedirect) {
+          options.beforeRedirects.config = config.beforeRedirect;
         }
         transport = isHttpsRequest ? httpsFollow : httpFollow;
       }
     }
-    if (config2.maxBodyLength > -1) {
-      options.maxBodyLength = config2.maxBodyLength;
+    if (config.maxBodyLength > -1) {
+      options.maxBodyLength = config.maxBodyLength;
     } else {
       options.maxBodyLength = Infinity;
     }
-    if (config2.insecureHTTPParser) {
-      options.insecureHTTPParser = config2.insecureHTTPParser;
+    if (config.insecureHTTPParser) {
+      options.insecureHTTPParser = config.insecureHTTPParser;
     }
     req = transport.request(options, function handleResponse(res) {
       if (req.destroyed) return;
@@ -52060,7 +51699,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       }
       let responseStream = res;
       const lastRequest = res.req || req;
-      if (config2.decompress !== false && res.headers["content-encoding"]) {
+      if (config.decompress !== false && res.headers["content-encoding"]) {
         if (method === "HEAD" || res.statusCode === 204) {
           delete res.headers["content-encoding"];
         }
@@ -52090,7 +51729,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
         status: res.statusCode,
         statusText: res.statusMessage,
         headers: new AxiosHeaders_default(res.headers),
-        config: config2,
+        config,
         request: lastRequest
       };
       if (responseType === "stream") {
@@ -52102,14 +51741,14 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
         responseStream.on("data", function handleStreamData(chunk) {
           responseBuffer.push(chunk);
           totalResponseBytes += chunk.length;
-          if (config2.maxContentLength > -1 && totalResponseBytes > config2.maxContentLength) {
+          if (config.maxContentLength > -1 && totalResponseBytes > config.maxContentLength) {
             rejected = true;
             responseStream.destroy();
             abort(
               new AxiosError_default(
-                "maxContentLength size of " + config2.maxContentLength + " exceeded",
+                "maxContentLength size of " + config.maxContentLength + " exceeded",
                 AxiosError_default.ERR_BAD_RESPONSE,
-                config2,
+                config,
                 lastRequest
               )
             );
@@ -52122,7 +51761,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
           const err = new AxiosError_default(
             "stream has been aborted",
             AxiosError_default.ERR_BAD_RESPONSE,
-            config2,
+            config,
             lastRequest
           );
           responseStream.destroy(err);
@@ -52130,7 +51769,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
         });
         responseStream.on("error", function handleStreamError(err) {
           if (req.destroyed) return;
-          reject(AxiosError_default.from(err, null, config2, lastRequest));
+          reject(AxiosError_default.from(err, null, config, lastRequest));
         });
         responseStream.on("end", function handleStreamEnd() {
           try {
@@ -52143,7 +51782,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
             }
             response.data = responseData;
           } catch (err) {
-            return reject(AxiosError_default.from(err, null, config2, response.request, response));
+            return reject(AxiosError_default.from(err, null, config, response.request, response));
           }
           settle(resolve, reject, response);
         });
@@ -52163,19 +51802,19 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       }
     });
     req.on("error", function handleRequestError(err) {
-      reject(AxiosError_default.from(err, null, config2, req));
+      reject(AxiosError_default.from(err, null, config, req));
     });
     req.on("socket", function handleRequestSocket(socket) {
       socket.setKeepAlive(true, 1e3 * 60);
     });
-    if (config2.timeout) {
-      const timeout = parseInt(config2.timeout, 10);
+    if (config.timeout) {
+      const timeout = parseInt(config.timeout, 10);
       if (Number.isNaN(timeout)) {
         abort(
           new AxiosError_default(
             "error trying to parse `config.timeout` to int",
             AxiosError_default.ERR_BAD_OPTION_VALUE,
-            config2,
+            config,
             req
           )
         );
@@ -52183,16 +51822,16 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       }
       req.setTimeout(timeout, function handleRequestTimeout() {
         if (isDone) return;
-        let timeoutErrorMessage = config2.timeout ? "timeout of " + config2.timeout + "ms exceeded" : "timeout exceeded";
-        const transitional2 = config2.transitional || transitional_default;
-        if (config2.timeoutErrorMessage) {
-          timeoutErrorMessage = config2.timeoutErrorMessage;
+        let timeoutErrorMessage = config.timeout ? "timeout of " + config.timeout + "ms exceeded" : "timeout exceeded";
+        const transitional2 = config.transitional || transitional_default;
+        if (config.timeoutErrorMessage) {
+          timeoutErrorMessage = config.timeoutErrorMessage;
         }
         abort(
           new AxiosError_default(
             timeoutErrorMessage,
             transitional2.clarifyTimeoutError ? AxiosError_default.ETIMEDOUT : AxiosError_default.ECONNABORTED,
-            config2,
+            config,
             req
           )
         );
@@ -52212,7 +51851,7 @@ var http_default = isHttpAdapterSupported && function httpAdapter(config2) {
       });
       data.on("close", () => {
         if (!ended && !errored) {
-          abort(new CanceledError_default("Request stream has been aborted", config2, req));
+          abort(new CanceledError_default("Request stream has been aborted", config, req));
         }
       });
       data.pipe(req);
@@ -52282,7 +51921,7 @@ var cookies_default = platform_default.hasStandardBrowserEnv ? (
 var headersToObject = (thing) => thing instanceof AxiosHeaders_default ? { ...thing } : thing;
 function mergeConfig(config1, config2) {
   config2 = config2 || {};
-  const config3 = {};
+  const config = {};
   function getMergedValue(target, source, prop, caseless) {
     if (utils_default.isPlainObject(target) && utils_default.isPlainObject(source)) {
       return utils_default.merge.call({ caseless }, target, source);
@@ -52354,20 +51993,20 @@ function mergeConfig(config1, config2) {
     if (prop === "__proto__" || prop === "constructor" || prop === "prototype") return;
     const merge2 = utils_default.hasOwnProp(mergeMap, prop) ? mergeMap[prop] : mergeDeepProperties;
     const configValue = merge2(config1[prop], config2[prop], prop);
-    utils_default.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config3[prop] = configValue);
+    utils_default.isUndefined(configValue) && merge2 !== mergeDirectKeys || (config[prop] = configValue);
   });
-  return config3;
+  return config;
 }
 
 // node_modules/axios/lib/helpers/resolveConfig.js
-var resolveConfig_default = (config2) => {
-  const newConfig = mergeConfig({}, config2);
+var resolveConfig_default = (config) => {
+  const newConfig = mergeConfig({}, config);
   let { data, withXSRFToken, xsrfHeaderName, xsrfCookieName, headers, auth } = newConfig;
   newConfig.headers = headers = AxiosHeaders_default.from(headers);
   newConfig.url = buildURL(
     buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls),
-    config2.params,
-    config2.paramsSerializer
+    config.params,
+    config.paramsSerializer
   );
   if (auth) {
     headers.set(
@@ -52404,9 +52043,9 @@ var resolveConfig_default = (config2) => {
 
 // node_modules/axios/lib/adapters/xhr.js
 var isXHRAdapterSupported = typeof XMLHttpRequest !== "undefined";
-var xhr_default = isXHRAdapterSupported && function(config2) {
+var xhr_default = isXHRAdapterSupported && function(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
-    const _config = resolveConfig_default(config2);
+    const _config = resolveConfig_default(config);
     let requestData = _config.data;
     const requestHeaders = AxiosHeaders_default.from(_config.headers).normalize();
     let { responseType, onUploadProgress, onDownloadProgress } = _config;
@@ -52435,7 +52074,7 @@ var xhr_default = isXHRAdapterSupported && function(config2) {
         status: request.status,
         statusText: request.statusText,
         headers: responseHeaders,
-        config: config2,
+        config,
         request
       };
       settle(
@@ -52468,12 +52107,12 @@ var xhr_default = isXHRAdapterSupported && function(config2) {
       if (!request) {
         return;
       }
-      reject(new AxiosError_default("Request aborted", AxiosError_default.ECONNABORTED, config2, request));
+      reject(new AxiosError_default("Request aborted", AxiosError_default.ECONNABORTED, config, request));
       request = null;
     };
     request.onerror = function handleError(event) {
       const msg = event && event.message ? event.message : "Network Error";
-      const err = new AxiosError_default(msg, AxiosError_default.ERR_NETWORK, config2, request);
+      const err = new AxiosError_default(msg, AxiosError_default.ERR_NETWORK, config, request);
       err.event = event || null;
       reject(err);
       request = null;
@@ -52488,7 +52127,7 @@ var xhr_default = isXHRAdapterSupported && function(config2) {
         new AxiosError_default(
           timeoutErrorMessage,
           transitional2.clarifyTimeoutError ? AxiosError_default.ETIMEDOUT : AxiosError_default.ECONNABORTED,
-          config2,
+          config,
           request
         )
       );
@@ -52520,7 +52159,7 @@ var xhr_default = isXHRAdapterSupported && function(config2) {
         if (!request) {
           return;
         }
-        reject(!cancel || cancel.type ? new CanceledError_default(null, config2, request) : cancel);
+        reject(!cancel || cancel.type ? new CanceledError_default(null, config, request) : cancel);
         request.abort();
         request = null;
       };
@@ -52535,7 +52174,7 @@ var xhr_default = isXHRAdapterSupported && function(config2) {
         new AxiosError_default(
           "Unsupported protocol " + protocol + ":",
           AxiosError_default.ERR_BAD_REQUEST,
-          config2
+          config
         )
       );
       return;
@@ -52714,7 +52353,7 @@ var factory = (env) => {
   };
   isFetchSupported && (() => {
     ["text", "arrayBuffer", "blob", "formData", "stream"].forEach((type) => {
-      !resolvers[type] && (resolvers[type] = (res, config2) => {
+      !resolvers[type] && (resolvers[type] = (res, config) => {
         let method = res && res[type];
         if (method) {
           return method.call(res);
@@ -52722,7 +52361,7 @@ var factory = (env) => {
         throw new AxiosError_default(
           `Response type '${type}' is not supported`,
           AxiosError_default.ERR_NOT_SUPPORT,
-          config2
+          config
         );
       });
     });
@@ -52755,7 +52394,7 @@ var factory = (env) => {
     const length = utils_default.toFiniteNumber(headers.getContentLength());
     return length == null ? getBodyLength(body) : length;
   };
-  return async (config2) => {
+  return async (config) => {
     let {
       url: url2,
       method,
@@ -52769,7 +52408,7 @@ var factory = (env) => {
       headers,
       withCredentials = "same-origin",
       fetchOptions
-    } = resolveConfig_default(config2);
+    } = resolveConfig_default(config);
     let _fetch = envFetch || fetch;
     responseType = responseType ? (responseType + "").toLowerCase() : "text";
     let composedSignal = composeSignals_default(
@@ -52837,7 +52476,7 @@ var factory = (env) => {
       responseType = responseType || "text";
       let responseData = await resolvers[utils_default.findKey(resolvers, responseType) || "text"](
         response,
-        config2
+        config
       );
       !isStreamResponse && unsubscribe && unsubscribe();
       return await new Promise((resolve, reject) => {
@@ -52846,7 +52485,7 @@ var factory = (env) => {
           headers: AxiosHeaders_default.from(response.headers),
           status: response.status,
           statusText: response.statusText,
-          config: config2,
+          config,
           request
         });
       });
@@ -52857,7 +52496,7 @@ var factory = (env) => {
           new AxiosError_default(
             "Network Error",
             AxiosError_default.ERR_NETWORK,
-            config2,
+            config,
             request,
             err && err.response
           ),
@@ -52866,13 +52505,13 @@ var factory = (env) => {
           }
         );
       }
-      throw AxiosError_default.from(err, err && err.code, config2, request, err && err.response);
+      throw AxiosError_default.from(err, err && err.code, config, request, err && err.response);
     }
   };
 };
 var seedCache = /* @__PURE__ */ new Map();
-var getFetch = (config2) => {
-  let env = config2 && config2.env || {};
+var getFetch = (config) => {
+  let env = config && config.env || {};
   const { fetch: fetch2, Request, Response: Response2 } = env;
   const seeds = [Request, Response2, fetch2];
   let len = seeds.length, i = len, seed, target, map = seedCache;
@@ -52905,7 +52544,7 @@ utils_default.forEach(knownAdapters, (fn, value) => {
 });
 var renderReason = (reason) => `- ${reason}`;
 var isResolvedHandle = (adapter2) => utils_default.isFunction(adapter2) || adapter2 === null || adapter2 === false;
-function getAdapter(adapters, config2) {
+function getAdapter(adapters, config) {
   adapters = utils_default.isArray(adapters) ? adapters : [adapters];
   const { length } = adapters;
   let nameOrAdapter;
@@ -52921,7 +52560,7 @@ function getAdapter(adapters, config2) {
         throw new AxiosError_default(`Unknown adapter '${id}'`);
       }
     }
-    if (adapter2 && (utils_default.isFunction(adapter2) || (adapter2 = adapter2.get(config2)))) {
+    if (adapter2 && (utils_default.isFunction(adapter2) || (adapter2 = adapter2.get(config)))) {
       break;
     }
     rejectedReasons[id || "#" + i] = adapter2;
@@ -52952,36 +52591,36 @@ var adapters_default = {
 };
 
 // node_modules/axios/lib/core/dispatchRequest.js
-function throwIfCancellationRequested(config2) {
-  if (config2.cancelToken) {
-    config2.cancelToken.throwIfRequested();
+function throwIfCancellationRequested(config) {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
   }
-  if (config2.signal && config2.signal.aborted) {
-    throw new CanceledError_default(null, config2);
+  if (config.signal && config.signal.aborted) {
+    throw new CanceledError_default(null, config);
   }
 }
-function dispatchRequest(config2) {
-  throwIfCancellationRequested(config2);
-  config2.headers = AxiosHeaders_default.from(config2.headers);
-  config2.data = transformData.call(config2, config2.transformRequest);
-  if (["post", "put", "patch"].indexOf(config2.method) !== -1) {
-    config2.headers.setContentType("application/x-www-form-urlencoded", false);
+function dispatchRequest(config) {
+  throwIfCancellationRequested(config);
+  config.headers = AxiosHeaders_default.from(config.headers);
+  config.data = transformData.call(config, config.transformRequest);
+  if (["post", "put", "patch"].indexOf(config.method) !== -1) {
+    config.headers.setContentType("application/x-www-form-urlencoded", false);
   }
-  const adapter2 = adapters_default.getAdapter(config2.adapter || defaults_default.adapter, config2);
-  return adapter2(config2).then(
+  const adapter2 = adapters_default.getAdapter(config.adapter || defaults_default.adapter, config);
+  return adapter2(config).then(
     function onAdapterResolution(response) {
-      throwIfCancellationRequested(config2);
-      response.data = transformData.call(config2, config2.transformResponse, response);
+      throwIfCancellationRequested(config);
+      response.data = transformData.call(config, config.transformResponse, response);
       response.headers = AxiosHeaders_default.from(response.headers);
       return response;
     },
     function onAdapterRejection(reason) {
       if (!isCancel(reason)) {
-        throwIfCancellationRequested(config2);
+        throwIfCancellationRequested(config);
         if (reason && reason.response) {
           reason.response.data = transformData.call(
-            config2,
-            config2.transformResponse,
+            config,
+            config.transformResponse,
             reason.response
           );
           reason.response.headers = AxiosHeaders_default.from(reason.response.headers);
@@ -53077,9 +52716,9 @@ var Axios = class {
    *
    * @returns {Promise} The Promise to be fulfilled
    */
-  async request(configOrUrl, config2) {
+  async request(configOrUrl, config) {
     try {
-      return await this._request(configOrUrl, config2);
+      return await this._request(configOrUrl, config);
     } catch (err) {
       if (err instanceof Error) {
         let dummy = {};
@@ -53108,15 +52747,15 @@ var Axios = class {
       throw err;
     }
   }
-  _request(configOrUrl, config2) {
+  _request(configOrUrl, config) {
     if (typeof configOrUrl === "string") {
-      config2 = config2 || {};
-      config2.url = configOrUrl;
+      config = config || {};
+      config.url = configOrUrl;
     } else {
-      config2 = configOrUrl || {};
+      config = configOrUrl || {};
     }
-    config2 = mergeConfig(this.defaults, config2);
-    const { transitional: transitional2, paramsSerializer, headers } = config2;
+    config = mergeConfig(this.defaults, config);
+    const { transitional: transitional2, paramsSerializer, headers } = config;
     if (transitional2 !== void 0) {
       validator_default.assertOptions(
         transitional2,
@@ -53131,7 +52770,7 @@ var Axios = class {
     }
     if (paramsSerializer != null) {
       if (utils_default.isFunction(paramsSerializer)) {
-        config2.paramsSerializer = {
+        config.paramsSerializer = {
           serialize: paramsSerializer
         };
       } else {
@@ -53145,34 +52784,34 @@ var Axios = class {
         );
       }
     }
-    if (config2.allowAbsoluteUrls !== void 0) {
+    if (config.allowAbsoluteUrls !== void 0) {
     } else if (this.defaults.allowAbsoluteUrls !== void 0) {
-      config2.allowAbsoluteUrls = this.defaults.allowAbsoluteUrls;
+      config.allowAbsoluteUrls = this.defaults.allowAbsoluteUrls;
     } else {
-      config2.allowAbsoluteUrls = true;
+      config.allowAbsoluteUrls = true;
     }
     validator_default.assertOptions(
-      config2,
+      config,
       {
         baseUrl: validators2.spelling("baseURL"),
         withXsrfToken: validators2.spelling("withXSRFToken")
       },
       true
     );
-    config2.method = (config2.method || this.defaults.method || "get").toLowerCase();
-    let contextHeaders = headers && utils_default.merge(headers.common, headers[config2.method]);
+    config.method = (config.method || this.defaults.method || "get").toLowerCase();
+    let contextHeaders = headers && utils_default.merge(headers.common, headers[config.method]);
     headers && utils_default.forEach(["delete", "get", "head", "post", "put", "patch", "common"], (method) => {
       delete headers[method];
     });
-    config2.headers = AxiosHeaders_default.concat(contextHeaders, headers);
+    config.headers = AxiosHeaders_default.concat(contextHeaders, headers);
     const requestInterceptorChain = [];
     let synchronousRequestInterceptors = true;
     this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
-      if (typeof interceptor.runWhen === "function" && interceptor.runWhen(config2) === false) {
+      if (typeof interceptor.runWhen === "function" && interceptor.runWhen(config) === false) {
         return;
       }
       synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
-      const transitional3 = config2.transitional || transitional_default;
+      const transitional3 = config.transitional || transitional_default;
       const legacyInterceptorReqResOrdering = transitional3 && transitional3.legacyInterceptorReqResOrdering;
       if (legacyInterceptorReqResOrdering) {
         requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
@@ -53192,14 +52831,14 @@ var Axios = class {
       chain.unshift(...requestInterceptorChain);
       chain.push(...responseInterceptorChain);
       len = chain.length;
-      promise = Promise.resolve(config2);
+      promise = Promise.resolve(config);
       while (i < len) {
         promise = promise.then(chain[i++], chain[i++]);
       }
       return promise;
     }
     len = requestInterceptorChain.length;
-    let newConfig = config2;
+    let newConfig = config;
     while (i < len) {
       const onFulfilled = requestInterceptorChain[i++];
       const onRejected = requestInterceptorChain[i++];
@@ -53222,28 +52861,28 @@ var Axios = class {
     }
     return promise;
   }
-  getUri(config2) {
-    config2 = mergeConfig(this.defaults, config2);
-    const fullPath = buildFullPath(config2.baseURL, config2.url, config2.allowAbsoluteUrls);
-    return buildURL(fullPath, config2.params, config2.paramsSerializer);
+  getUri(config) {
+    config = mergeConfig(this.defaults, config);
+    const fullPath = buildFullPath(config.baseURL, config.url, config.allowAbsoluteUrls);
+    return buildURL(fullPath, config.params, config.paramsSerializer);
   }
 };
 utils_default.forEach(["delete", "get", "head", "options"], function forEachMethodNoData(method) {
-  Axios.prototype[method] = function(url2, config2) {
+  Axios.prototype[method] = function(url2, config) {
     return this.request(
-      mergeConfig(config2 || {}, {
+      mergeConfig(config || {}, {
         method,
         url: url2,
-        data: (config2 || {}).data
+        data: (config || {}).data
       })
     );
   };
 });
 utils_default.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
   function generateHTTPMethod(isForm) {
-    return function httpMethod(url2, data, config2) {
+    return function httpMethod(url2, data, config) {
       return this.request(
-        mergeConfig(config2 || {}, {
+        mergeConfig(config || {}, {
           method,
           headers: isForm ? {
             "Content-Type": "multipart/form-data"
@@ -53289,11 +52928,11 @@ var CancelToken = class _CancelToken {
       };
       return promise;
     };
-    executor(function cancel(message, config2, request) {
+    executor(function cancel(message, config, request) {
       if (token.reason) {
         return;
       }
-      token.reason = new CanceledError_default(message, config2, request);
+      token.reason = new CanceledError_default(message, config, request);
       resolvePromise(token.reason);
     });
   }
@@ -54014,7 +53653,6 @@ function registerRoutes(app2) {
     }
   });
   app2.get("/api/community/data", async (_req, res) => {
-    res.setHeader("Cache-Control", "no-store");
     try {
       const [events, discussions, lastSync] = await Promise.all([
         storage.getEvents(),
@@ -54458,7 +54096,6 @@ app.use((err, _req, res, _next) => {
 });
 
 // server/api/index.ts
-(0, import_dotenv.config)();
 var handler = async (req, res) => {
   app(req, res);
 };

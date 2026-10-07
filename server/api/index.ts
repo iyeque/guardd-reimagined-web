@@ -1,7 +1,4 @@
-// Load env vars BEFORE importing app (db.ts checks DATABASE_URL at import time)
-import { config } from "dotenv";
-config();
-
+// Vercel provides env vars via process.env — no dotenv needed in serverless
 import { app } from "../index.js";
 
 // Vercel serverless function handler
