@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server/start.ts",
-    "build": "npm run db:push && vite build && esbuild server/start.ts --platform=node --packages=external --bundle --format=esm --outdir=dist && esbuild server/api/index.ts --platform=node --bundle --format=esm --outdir=api",
+    "build": "npm run db:push && vite build && esbuild server/start.ts --platform=node --packages=external --bundle --format=esm --outdir=dist && esbuild server/api/index.ts --platform=node --bundle --format=cjs --outdir=api",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
