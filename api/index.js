@@ -54014,6 +54014,7 @@ function registerRoutes(app2) {
     }
   });
   app2.get("/api/community/data", async (_req, res) => {
+    res.setHeader("Cache-Control", "no-store");
     try {
       const [events, discussions, lastSync] = await Promise.all([
         storage.getEvents(),
@@ -54425,6 +54426,7 @@ var app = (0, import_express.default)();
 app.use(import_express.default.json());
 app.use(import_express.default.urlencoded({ extended: false }));
 app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "no-store");
   const start = Date.now();
   const path = req.path;
   let capturedJsonResponse = void 0;

@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: false }));
 
 // Middleware for logging /api requests
 app.use((req, res, next) => {
+  // Prevent Vercel CDN from caching API responses
+  res.setHeader("Cache-Control", "no-store");
+
   const start = Date.now();
   const path = req.path;
   let capturedJsonResponse: Record<string, unknown> | undefined = undefined;
