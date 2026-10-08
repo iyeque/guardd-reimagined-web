@@ -33,3 +33,6 @@ api/index.cjs
 *.njsproj
 *.sln
 *.sw?
+
+# local build probe
+tmp/
