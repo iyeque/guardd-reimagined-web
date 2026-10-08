@@ -8,6 +8,32 @@ import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { faqChunks, familyCommitments, familyCommitmentMilestones } from "../shared/schema.js";
 import { encryptField, decryptField } from "./crypto.js";
+import { timingSafeEqual } from "node:crypto";
+
+/** Constant-time compare so the admin key cannot be recovered by timing. */
+function secretsMatch(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
+
+/**
+ * True only for a genuine Vercel Cron call.
+ *
+ * Vercel Cron sends `Authorization: Bearer <CRON_SECRET>`. This deliberately
+ * does NOT trust `x-vercel-cron`, `x-vercel-cron-schedule`, or a
+ * `vercel-cron/` user-agent — a client can set all three and Vercel does not
+ * strip them, so trusting them handed unauthenticated access to every route
+ * that used them (verified against the live API). With no CRON_SECRET
+ * configured this returns false, so cron traffic is rejected loudly rather
+ * than silently admitted.
+ */
+function isCronRequest(req: Request): boolean {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) return false;
+  return req.headers["authorization"] === `Bearer ${cronSecret}`;
+}
 
 // Helper function to verify reCAPTCHA
 async function verifyRecaptcha(token: string) {
@@ -64,13 +90,22 @@ export function registerRoutes(app: Express) {
       return res.status(500).json({ error: "Server Configuration Error" });
     }
 
-    // Bypass auth for Vercel Cron requests
-    if (req.headers["x-vercel-cron"] === "true") {
+    // Vercel Cron authenticates with CRON_SECRET as an Authorization: Bearer
+    // token — that is the documented, unforgeable mechanism.
+    //
+    // This deliberately does NOT trust the `x-vercel-cron` request header. An
+    // external caller can set that header and Vercel does not strip it, so
+    // trusting it handed full admin access to anyone on the internet (verified:
+    // `curl -H "x-vercel-cron: true" /api/admin/messages` returned real
+    // contact PII). Fail closed instead — with no CRON_SECRET configured, cron
+    // traffic gets a 401 and the daily sync fails loudly rather than silently
+    // running unauthenticated.
+    if (isCronRequest(req)) {
       return next();
     }
 
     const providedKey = req.headers["x-admin-key"] || req.query.key;
-    if (providedKey !== adminSecret) {
+    if (typeof providedKey !== "string" || !secretsMatch(providedKey, adminSecret)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     next();
@@ -186,11 +221,12 @@ export function registerRoutes(app: Express) {
   });
 
   // Sync Trigger (Protected)
+  // Genuine Vercel Cron is verified by CRON_SECRET bearer token. The previous
+  // check trusted `x-vercel-cron-schedule` and a `vercel-cron/` user-agent,
+  // both of which any client can set — that was an unauthenticated sync.
   app.get("/api/community/sync", (req, res, next) => {
-    const isVercelCron = Boolean(req.headers["x-vercel-cron-schedule"])
-      || String(req.headers["user-agent"] || "").includes("vercel-cron/");
-    if (!isVercelCron) return validateAdmin(req, res, next);
-    return runCommunitySync(req, res);
+    if (isCronRequest(req)) return runCommunitySync(req, res);
+    return validateAdmin(req, res, next);
   });
 
   app.post("/api/community/sync", validateAdmin, runCommunitySync);
