@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState, useMemo, useRef, useEffect } from "react"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
-import { STORAGE_KEY, resumeOnboardingTour } from "@/lib/onboarding";
+import { STORAGE_KEY, resumeOnboardingTour, resumeOnboardingTourAfterConsent } from "@/lib/onboarding";
 import { workshops } from "@/data/workshops";
 import { WorkshopCard } from "@/components/workshops/WorkshopCard";
 import { useWorkshopProgress } from "@/hooks/useWorkshopProgress";
@@ -103,6 +103,9 @@ export const Workshops = () => {
       const pending = localStorage.getItem('dg_onboarding_pending_step')
       if (pending === '6') {
         localStorage.removeItem('dg_onboarding_pending_step')
+        // Deliberately NOT consent-gated: this resumes a tour already in
+        // progress (step 6 navigated here), so consent was given long ago and
+        // the event has already fired. Gating it would strand the tour here.
         resumeOnboardingTour(6)
       }
     } catch {
@@ -176,7 +179,7 @@ export const Workshops = () => {
 
           {showReplay && (
             <button
-              onClick={() => resumeOnboardingTour(7)}
+              onClick={() => resumeOnboardingTourAfterConsent(7)}
               className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-600 dark:text-slate-300 hover:border-[#4FD1C5] transition-colors"
             >
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

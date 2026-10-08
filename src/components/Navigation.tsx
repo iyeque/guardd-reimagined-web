@@ -1,16 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, Sun, Moon, GraduationCap, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "@/context/useTheme";
 import ProfileSwitcher from "@/components/ProfileSwitcher";
-import { resumeOnboardingTour, resetOnboardingSeen, restartOnboardingTour } from "@/lib/onboarding";
+import {
+  restartOnboardingTour,
+  isCookieConsentResolved,
+  COOKIE_CONSENT_RESOLVED_EVENT,
+} from "@/lib/onboarding";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  // Drives the replay button's label: while the cookie choice is outstanding
+  // the tour is queued rather than shown, so say so instead of looking dead.
+  const [consentPending, setConsentPending] = useState(
+    () => !isCookieConsentResolved(),
+  );
+
+  useEffect(() => {
+    const sync = () => setConsentPending(!isCookieConsentResolved());
+    window.addEventListener(COOKIE_CONSENT_RESOLVED_EVENT, sync);
+    return () => window.removeEventListener(COOKIE_CONSENT_RESOLVED_EVENT, sync);
+  }, []);
+
+  const replayTourTitle = consentPending
+    ? "Replay tour (after you answer the cookie prompt)"
+    : "Replay tour";
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -81,7 +100,7 @@ export const Navigation = () => {
                 location.pathname !== "/" ? "hidden" : ""
               }`}
               aria-label="Replay onboarding tour"
-              title="Replay tour"
+              title={replayTourTitle}
             >
               <RefreshCw className="h-5 w-5" />
             </Button>
@@ -109,7 +128,7 @@ export const Navigation = () => {
                 location.pathname !== "/" ? "hidden" : ""
               }`}
               aria-label="Replay onboarding tour"
-              title="Replay tour"
+              title={replayTourTitle}
             >
               <RefreshCw className="h-5 w-5" />
             </Button>

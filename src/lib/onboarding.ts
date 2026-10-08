@@ -37,7 +37,9 @@ export function resetOnboardingSeen() {
 
 export function restartOnboardingTour(navigate?: NavigateFunction) {
   resetOnboardingSeen()
-  startOnboardingTour(navigate)
+  // Gated like the auto-start: clicking "replay tour" before the cookie
+  // choice must not drop the tour overlay over the banner.
+  runWhenConsentResolved(() => startOnboardingTour(navigate))
 }
 
 const DRIVER_OPTIONS = {
@@ -217,6 +219,61 @@ function createTourSteps(navigate?: NavigateFunction): DriveStep[] {
 
 let onboardingDriver: ReturnType<typeof driver> | null = null
 
+/**
+ * Runs `start` once the cookie banner has been answered. Every tour entry
+ * point goes through here so the tour overlay never covers the banner and
+ * traps the visitor before they can consent. Accepting and rejecting both
+ * resolve the choice, so either answer releases the tour.
+ *
+ * Only one listener is ever attached: if the visitor clicks "replay tour"
+ * again while waiting, the latest intent replaces the queued one instead of
+ * stacking listeners that would each start a tour.
+ */
+function runWhenConsentResolved(start: () => void): () => void {
+  if (typeof window === 'undefined') return () => {}
+  if (isCookieConsentResolved()) {
+    start()
+    return () => {}
+  }
+
+  queuedStart = start
+
+  if (consentListener) return () => {}
+
+  const detach = () => {
+    window.removeEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
+    consentListener = null
+  }
+  const onResolved = () => {
+    detach()
+    const run = queuedStart
+    queuedStart = null
+    run?.()
+  }
+
+  consentListener = onResolved
+  window.addEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
+  return () => {}
+}
+
+let queuedStart: (() => void) | null = null
+let consentListener: ((event: Event) => void) | null = null
+
+/**
+ * First-visit auto-start. Waits for the cookie banner so the two overlays
+ * never compete. Returns a disposer (no-op once released).
+ */
+export function startOnboardingTourAfterConsent(
+  navigate?: NavigateFunction,
+): () => void {
+  return runWhenConsentResolved(() => startOnboardingTour(navigate))
+}
+
+/** Explicit "replay tour" clicks from the nav — also waits for consent. */
+export function resumeOnboardingTourAfterConsent(stepIndex: number): void {
+  runWhenConsentResolved(() => resumeOnboardingTour(stepIndex))
+}
+
 export function startOnboardingTour(navigate?: NavigateFunction) {
   if (typeof window === 'undefined') return
   if (localStorage.getItem(STORAGE_KEY) === 'true') return
@@ -226,28 +283,6 @@ export function startOnboardingTour(navigate?: NavigateFunction) {
   })
   onboardingDriver = d
   d.drive()
-}
-
-/**
- * First-visit auto-start only — waits for the cookie banner to be answered
- * before showing the tour, so the two overlays never compete. Accepting and
- * rejecting both resolve the choice, so either answer releases the tour.
- * Returns a disposer for the pending listener (no-op once released).
- */
-export function startOnboardingTourAfterConsent(
-  navigate?: NavigateFunction,
-): () => void {
-  if (typeof window === 'undefined') return () => {}
-  if (isCookieConsentResolved()) {
-    startOnboardingTour(navigate)
-    return () => {}
-  }
-  const onResolved = () => {
-    window.removeEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
-    startOnboardingTour(navigate)
-  }
-  window.addEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
-  return () => window.removeEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
 }
 
 export function resumeOnboardingTour(stepIndex: number) {
