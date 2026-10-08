@@ -112,11 +112,48 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(communityEvents).orderBy(communityEvents.date);
   }
 
+  // community_events / trending_discussions mark every text column NOT NULL,
+  // but sync sources (RSS, SerpApi) routinely omit fields. A single null used
+  // to abort the whole sync with a constraint violation, so coerce missing
+  // values to safe defaults here at the sink — covers every source at once.
+  private normalizeEvent(event: InsertEvent): InsertEvent {
+    const str = (value: unknown, fallback: string): string =>
+      typeof value === "string" && value.trim() !== "" ? value : fallback;
+    return {
+      ...event,
+      title: str(event.title, "Untitled event"),
+      location: str(event.location, "Online"),
+      date: str(event.date, "TBD"),
+      time: str(event.time, "TBD"),
+      type: str(event.type, "Event"),
+      url: str(event.url, ""),
+      organizer: str(event.organizer, "Unknown organizer"),
+      status: str(event.status, "Upcoming"),
+      description: str(event.description, ""),
+    };
+  }
+
+  private normalizeDiscussion(discussion: InsertDiscussion): InsertDiscussion {
+    const str = (value: unknown, fallback: string): string =>
+      typeof value === "string" && value.trim() !== "" ? value : fallback;
+    return {
+      ...discussion,
+      platform: str(discussion.platform, "Community"),
+      community: str(discussion.community, "Digital Wellness"),
+      title: str(discussion.title, "Untitled discussion"),
+      url: str(discussion.url, ""),
+      hotness: str(discussion.hotness, "Trending"),
+      replies: str(discussion.replies, "0"),
+      postedAt: str(discussion.postedAt, "Recently"),
+    };
+  }
+
   async setEvents(events: InsertEvent[]): Promise<void> {
     await db.delete(communityEvents);
-    if (events.length > 0) {
-      for (let i = 0; i < events.length; i += 10) {
-        await db.insert(communityEvents).values(events.slice(i, i + 10));
+    const rows = events.map((event) => this.normalizeEvent(event));
+    if (rows.length > 0) {
+      for (let i = 0; i < rows.length; i += 10) {
+        await db.insert(communityEvents).values(rows.slice(i, i + 10));
       }
     }
   }
@@ -127,8 +164,11 @@ export class DatabaseStorage implements IStorage {
 
   async setDiscussions(discussions: InsertDiscussion[]): Promise<void> {
     await db.delete(trendingDiscussions);
-    if (discussions.length > 0) {
-      await db.insert(trendingDiscussions).values(discussions);
+    const rows = discussions.map((discussion) =>
+      this.normalizeDiscussion(discussion),
+    );
+    if (rows.length > 0) {
+      await db.insert(trendingDiscussions).values(rows);
     }
   }
 
