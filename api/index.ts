@@ -1,15 +1,18 @@
 // Vercel Serverless Function.
 //
-// MUST use a STATIC top-level import. A dynamic import("../server/index")
-// is left unbundled by Vercel's builder, so server/ is never deployed and the
-// function dies with ERR_MODULE_NOT_FOUND at /var/task/server/index.
+// Two hard-won constraints:
 //
-// Vercel's @vercel/node runtime compiles this file, bundles to CommonJS and
-// installs dependencies from package.json, so Express needs no module-type
-// workarounds. The file must live in git as SOURCE — a bundle written to api/
-// during `npm run build` was never registered as a function, so every /api/*
-// request fell through to the SPA rewrite and returned index.html.
-import { app } from "../server/index";
+// 1. The import MUST carry an explicit `.js` extension. The root package.json
+//    declares "type": "module", so Vercel emits this function as ESM. An
+//    extensionless `../server/index` is unresolvable in ESM and the function
+//    died with ERR_MODULE_NOT_FOUND at /var/task/server/index. TypeScript's
+//    NodeNext convention maps `.js` -> `.ts`, which the rest of server/
+//    already follows (./routes.js, ../shared/schema.js).
+//
+// 2. This file must live in git as SOURCE. A bundle written to api/ during
+//    `npm run build` was never registered as a function, so every /api/*
+//    request fell through to the SPA rewrite and returned index.html.
+import { app } from "../server/index.js";
 import type { IncomingMessage, ServerResponse } from "http";
 
 export default function handler(
