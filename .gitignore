@@ -20,7 +20,6 @@ dist-ssr
 *.local
 
 # Vercel serverless function (build artifact)
-api/index.js
 api/index.cjs
 
 # Editor directories and files
