@@ -36,3 +36,6 @@ api/index.cjs
 
 # local build probe
 tmp/
+
+# Local planning docs
+.hermes/
