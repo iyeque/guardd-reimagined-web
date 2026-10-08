@@ -12,6 +12,8 @@
     "start": "NODE_ENV=production node dist/start.js",
     "update-data": "tsx scripts/update-community-data.ts",
     "check": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:push": "drizzle-kit push",
     "db:migrate": "tsx scripts/migrate.ts"
   },
@@ -89,6 +91,7 @@
     "tsx": "^4.19.1",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vitest": "^2.1.9"
   }
 }

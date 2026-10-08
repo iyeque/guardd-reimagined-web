@@ -446,6 +446,31 @@ export function registerRoutes(app: Express) {
   });
 
   // Family commitments: list by family
+  // Shared validator for a commitment's enforcement rules. Nullable so
+  // commitments created before rules existed stay valid, and null must keep
+  // meaning "enforce nothing" (see shared/commitment-rules.ts).
+  const commitmentRulesSchema = z
+    .object({
+      timezone: z.string().min(1),
+      entries: z
+        .array(
+          z.object({
+            domains: z.array(z.string().min(1)),
+            windows: z.array(
+              z.object({
+                days: z.array(z.number().int().min(0).max(6)),
+                start: z.string().regex(/^\d{1,2}:\d{2}$/),
+                end: z.string().regex(/^\d{1,2}:\d{2}$/),
+              }),
+            ),
+            appliesTo: z.array(z.string()),
+            action: z.enum(["block", "remind"]),
+          }),
+        )
+        .min(1),
+    })
+    .nullable();
+
   app.get("/api/family/commitments", async (req, res) => {
     try {
       const familyId = String(req.query.familyId || "default-family");
@@ -455,6 +480,7 @@ export function registerRoutes(app: Express) {
           ...item,
           terms: await decryptField(item.terms),
           members: await decryptField(item.members),
+          rules: item.rules ?? null,
         }))
       );
       res.json(decrypted);
@@ -484,7 +510,13 @@ export function registerRoutes(app: Express) {
   app.post("/api/family/commitments", async (req, res) => {
     try {
       const body = z
-        .object({ familyId: z.string(), title: z.string(), terms: z.string(), members: z.string() })
+        .object({
+          familyId: z.string(),
+          title: z.string(),
+          terms: z.string(),
+          members: z.string(),
+          rules: commitmentRulesSchema.optional(),
+        })
         .safeParse(req.body);
       if (!body.success) return res.status(400).json({ error: body.error.message });
 
@@ -498,6 +530,7 @@ export function registerRoutes(app: Express) {
         terms: encTerms,
         members: encMembers,
         status: "pending",
+        rules: body.data.rules ?? null,
       });
 
       const { writeLedger, pinCommitmentMetadata } = await import("./blockchain.js");

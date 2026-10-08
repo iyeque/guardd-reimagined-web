@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -72,6 +72,24 @@ export const faqChunks = pgTable("faq_chunks", {
   category: text("category").notNull(),
 });
 
+export type TimeWindow = {
+  days: number[];
+  start: string;
+  end: string;
+};
+
+export type RuleEntry = {
+  domains: string[];
+  windows: TimeWindow[];
+  appliesTo: string[];
+  action: "block" | "remind";
+};
+
+export type CommitmentRules = {
+  timezone: string;
+  entries: RuleEntry[];
+};
+
 export const familyCommitments = pgTable("family_commitments", {
   id: serial("id").primaryKey(),
   familyId: text("family_id").notNull(),
@@ -81,6 +99,9 @@ export const familyCommitments = pgTable("family_commitments", {
   status: text("status").notNull().default("pending"),
   ledgerHash: text("ledger_hash"),
   metadataCid: text("metadata_cid"),
+  // Structured enforcement rules read by the Commitment Extension. Null on
+  // every pre-existing row, and null must mean "enforce nothing".
+  rules: jsonb("rules").$type<CommitmentRules | null>(),
   startedAt: timestamp("started_at").defaultNow(),
   completedAt: timestamp("completed_at"),
 });
@@ -161,7 +182,14 @@ export type InsertDiscussion = z.infer<typeof insertDiscussionSchema>;
 export type FaqChunk = typeof faqChunks.$inferSelect;
 export type InsertFaqChunk = z.infer<typeof insertFaqChunkSchema>;
 
-export const insertFamilyCommitmentSchema = createInsertSchema(familyCommitments);
+export const insertFamilyCommitmentSchema = createInsertSchema(familyCommitments).extend({
+  // drizzle-zod does not narrow a `$type`d jsonb column, so the inferred type
+  // widens to drizzle's base `Json` (which includes `string`/`number`) and no
+  // longer satisfies drizzle's insert signature. Pin it here so the whole
+  // codebase sees the real type instead of every call site needing a cast.
+  // Runtime validation lives in routes.ts's `commitmentRulesSchema`.
+  rules: z.custom<CommitmentRules | null>(),
+});
 export const insertFamilyMilestoneSchema = createInsertSchema(familyCommitmentMilestones);
 
 export type FamilyCommitment = typeof familyCommitments.$inferSelect;

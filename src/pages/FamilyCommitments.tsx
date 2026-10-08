@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
+import type { CommitmentRules } from "@shared/schema";
 
 type Commitment = {
   id: number;
@@ -30,6 +31,7 @@ type Commitment = {
   terms: string;
   members: string;
   status: string;
+  rules: CommitmentRules | null;
   ledgerHash: string | null;
   metadataCid: string | null;
   startedAt: string | Date;
