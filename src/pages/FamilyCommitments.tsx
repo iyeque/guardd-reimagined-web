@@ -156,6 +156,15 @@ const FamilyCommitments: React.FC = () => {
     }
   };
 
+  const openCommitment = async (id: number) => {
+    try {
+      const detail = await api.get(id);
+      setSelected(detail);
+    } catch {
+      toast.error("Could not load commitment details.");
+    }
+  };
+
   const statusBadge = (status: string) => {
     const base =
       "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border";
@@ -426,7 +435,7 @@ const FamilyCommitments: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-foreground tracking-tighter">Current Commitments</h2>
-              <Button onClick={() => setSelected(null)} variant="ghost" className="text-xs font-black uppercase tracking-widest">
+              <Button onClick={load} variant="ghost" className="text-xs font-black uppercase tracking-widest">
                 Refresh
               </Button>
             </div>
@@ -436,7 +445,7 @@ const FamilyCommitments: React.FC = () => {
                 <Card
                   key={it.id}
                   className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-[2rem] p-6 hover:border-teal-500/40 transition-colors cursor-pointer group"
-                  onClick={() => setSelected({ item: it, milestones: [] })}
+                  onClick={() => openCommitment(it.id)}
                 >
                   <CardContent className="p-0 space-y-3">
                     <div className="flex items-start justify-between gap-4">

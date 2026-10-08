@@ -76,6 +76,16 @@ export function registerRoutes(app: Express) {
     next();
   };
 
+  const runCommunitySync = async (_req: Request, res: Response) => {
+    try {
+      const result = await syncCommunityData();
+      res.json({ message: "Sync successful", lastSync: result.lastSync });
+    } catch (error: unknown) {
+      console.error("Community sync error:", error);
+      res.status(500).json({ error: error instanceof Error ? error.message : "Sync failed" });
+    }
+  };
+
   // Claims: public read, admin write/delete
   app.get("/api/claims", async (_req, res) => {
     try {
@@ -176,16 +186,14 @@ export function registerRoutes(app: Express) {
   });
 
   // Sync Trigger (Protected)
-  app.post("/api/community/sync", validateAdmin, async (_req, res) => {
-    try {
-      // For manual sync, we DO await it so the admin knows if it worked
-      const result = await syncCommunityData();
-      res.json({ message: "Sync successful", lastSync: result.lastSync });
-    } catch (error: unknown) {
-      console.error("Manual sync error:", error);
-      res.status(500).json({ error: error instanceof Error ? error.message : "Sync failed" });
-    }
+  app.get("/api/community/sync", (req, res, next) => {
+    const isVercelCron = Boolean(req.headers["x-vercel-cron-schedule"])
+      || String(req.headers["user-agent"] || "").includes("vercel-cron/");
+    if (!isVercelCron) return validateAdmin(req, res, next);
+    return runCommunitySync(req, res);
   });
+
+  app.post("/api/community/sync", validateAdmin, runCommunitySync);
 
   // Contact Form
   app.post("/api/contact", async (req, res) => {
@@ -505,7 +513,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Curated Content (admin-managed discussions and events)
-  app.get("/api/admin/curated-content", async (req, res) => {
+  app.get("/api/admin/curated-content", validateAdmin, async (req, res) => {
     try {
       const items = await storage.listCuratedContent();
       res.json(items);
@@ -515,7 +523,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/admin/curated-content", async (req, res) => {
+  app.post("/api/admin/curated-content", validateAdmin, async (req, res) => {
     try {
       const body = insertCuratedContentSchema.safeParse(req.body);
       if (!body.success) return res.status(400).json({ error: body.error.message });
@@ -527,7 +535,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.patch("/api/admin/curated-content/:id", async (req, res) => {
+  app.patch("/api/admin/curated-content/:id", validateAdmin, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const body = insertCuratedContentSchema.partial().safeParse(req.body);
@@ -540,7 +548,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.delete("/api/admin/curated-content/:id", async (req, res) => {
+  app.delete("/api/admin/curated-content/:id", validateAdmin, async (req, res) => {
     try {
       const id = Number(req.params.id);
       await storage.deleteCuratedContent(id);

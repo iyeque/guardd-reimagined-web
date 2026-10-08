@@ -71,6 +71,8 @@ const Admin: React.FC = () => {
   const [isUpdating, setIsUpdating] = useState<number | null>(null);
   const [authError, setAuthError] = useState(false);
 
+  const adminHeaders = adminKey ? { "x-admin-key": adminKey } : undefined;
+
   const fetchAdminData = async () => {
     if (!adminKey) {
       setAuthError(true);
@@ -80,14 +82,14 @@ const Admin: React.FC = () => {
 
     try {
       const [msgRes, appRes, storyRes, analyticsRes, curatedRes] = await Promise.all([
-        fetch(`/api/admin/messages?key=${adminKey}`),
-        fetch(`/api/admin/applications?key=${adminKey}`),
-        fetch(`/api/admin/stories?key=${adminKey}`),
-        fetch(`/api/assessment-analytics?key=${adminKey}`),
-        fetch(`/api/admin/curated-content?key=${adminKey}`),
+        fetch(`/api/admin/messages`, { headers: adminHeaders }),
+        fetch(`/api/admin/applications`, { headers: adminHeaders }),
+        fetch(`/api/admin/stories`, { headers: adminHeaders }),
+        fetch(`/api/assessment-analytics`, { headers: adminHeaders }),
+        fetch(`/api/admin/curated-content`, { headers: adminHeaders }),
       ]);
 
-      if (msgRes.status === 401 || appRes.status === 401 || storyRes.status === 401 || analyticsRes.status === 401) {
+      if ([msgRes, appRes, storyRes, analyticsRes, curatedRes].some((res) => res.status === 401)) {
         setAuthError(true);
         return;
       }
@@ -115,9 +117,9 @@ const Admin: React.FC = () => {
   const handleUpdateStatus = async (id: number, status: string) => {
     setIsUpdating(id);
     try {
-      const res = await fetch(`/api/admin/applications/${id}?key=${adminKey}`, {
+      const res = await fetch(`/api/admin/applications/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...adminHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       });
 
@@ -142,9 +144,9 @@ const Admin: React.FC = () => {
   const handleUpdateStoryStatus = async (id: number, status: string) => {
     setIsUpdating(id);
     try {
-      const res = await fetch(`/api/admin/stories/${id}?key=${adminKey}`, {
+      const res = await fetch(`/api/admin/stories/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...adminHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       });
 
@@ -171,9 +173,9 @@ const Admin: React.FC = () => {
     }
     setIsCreatingCurated(true);
     try {
-      const res = await fetch(`/api/admin/curated-content?key=${adminKey}`, {
+      const res = await fetch(`/api/admin/curated-content`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...adminHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: curatedType,
           title: curatedTitle.trim(),
@@ -208,9 +210,9 @@ const Admin: React.FC = () => {
 
   const handleToggleCurated = async (id: number, isActive: boolean) => {
     try {
-      const res = await fetch(`/api/admin/curated-content/${id}?key=${adminKey}`, {
+      const res = await fetch(`/api/admin/curated-content/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...adminHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !isActive }),
       });
       if (res.ok) {
@@ -227,8 +229,9 @@ const Admin: React.FC = () => {
 
   const handleDeleteCurated = async (id: number) => {
     try {
-      const res = await fetch(`/api/admin/curated-content/${id}?key=${adminKey}`, {
+      const res = await fetch(`/api/admin/curated-content/${id}`, {
         method: 'DELETE',
+        headers: adminHeaders,
       });
       if (res.ok) {
         toast.success("Content deleted");
@@ -245,7 +248,7 @@ const Admin: React.FC = () => {
   const handleSync = async () => {
     setIsSyncing(true);
     try {
-      const res = await fetch(`/api/community/sync?key=${adminKey}`, { method: 'POST' });
+      const res = await fetch(`/api/community/sync`, { method: 'POST', headers: adminHeaders });
       const data = await res.json();
       if (res.ok) {
         toast.success("Community Data Synced!", {
