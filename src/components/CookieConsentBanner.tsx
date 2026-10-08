@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Info, Cookie, Check, X } from "lucide-react";
 import { COOKIE_CONSENT_KEY } from "@/lib/profiles";
+import { COOKIE_CONSENT_RESOLVED_EVENT } from "@/lib/onboarding";
 
 export type ConsentChoice = "accept" | "reject" | null;
 
@@ -47,6 +48,9 @@ const CookieConsentBanner = () => {
     localStorage.setItem(COOKIE_CONSENT_KEY, selected);
     setConsentEnabled(selected === "accept");
     setChoice(selected);
+    // Release the onboarding tour, which waits for this so the two overlays
+    // never compete for the visitor's first click.
+    window.dispatchEvent(new Event(COOKIE_CONSENT_RESOLVED_EVENT));
   };
 
   return (

@@ -1,9 +1,24 @@
 import { driver, type DriveStep } from 'driver.js'
 import 'driver.js/dist/driver.css'
 import type { NavigateFunction } from 'react-router-dom'
+import { COOKIE_CONSENT_KEY } from '@/lib/profiles'
 
 export const STORAGE_KEY = 'dg_onboarding_seen'
 const PENDING_STEP_KEY = 'dg_onboarding_pending_step'
+
+/**
+ * Dispatched by CookieConsentBanner once the visitor accepts or rejects.
+ * The first-visit tour waits for this so the two overlays never fight:
+ * the tour used to start on mount and its overlay covered the banner,
+ * leaving visitors unable to consent until they'd sat through the tour.
+ */
+export const COOKIE_CONSENT_RESOLVED_EVENT = 'dg:cookie-consent-resolved'
+
+export function isCookieConsentResolved(): boolean {
+  if (typeof window === 'undefined') return false
+  const stored = localStorage.getItem(COOKIE_CONSENT_KEY)
+  return stored === 'accept' || stored === 'reject'
+}
 
 function markTourSeen() {
   if (typeof window === 'undefined') return
@@ -57,7 +72,7 @@ function createTourSteps(navigate?: NavigateFunction): DriveStep[] {
         description:
           'Search any digital safety topic above, or explore our family wellness tools below.',
         side: 'bottom' as const,
-        showButtons: ['next'] as const,
+        showButtons: ['next', 'close'] as const,
       },
     },
     {
@@ -124,7 +139,7 @@ function createTourSteps(navigate?: NavigateFunction): DriveStep[] {
         description:
           'Learn together through interactive activities, quizzes, and collaborative exercises designed for the whole family. Browse the full library here.',
         side: 'bottom' as const,
-        showButtons: ['next', 'skip'] as const,
+        showButtons: ['next', 'close'] as const,
       },
     },
     {
@@ -183,7 +198,7 @@ function createTourSteps(navigate?: NavigateFunction): DriveStep[] {
         description:
           'This code contains all your profile data. Scan the QR with another device, or copy and paste it. The code is not encrypted — only share with people you trust.',
         side: 'bottom' as const,
-        showButtons: ['next', 'skip'] as const,
+        showButtons: ['next', 'close'] as const,
       },
     },
     {
@@ -194,7 +209,7 @@ function createTourSteps(navigate?: NavigateFunction): DriveStep[] {
         description:
           'Replace mode clears your existing data and loads the imported profiles. Merge adds new profiles while keeping your current ones. Replace is recommended when moving to a new device.',
         side: 'bottom' as const,
-        showButtons: ['next', 'skip'] as const,
+        showButtons: ['next', 'close'] as const,
       },
     },
   ] as unknown as DriveStep[]
@@ -211,6 +226,28 @@ export function startOnboardingTour(navigate?: NavigateFunction) {
   })
   onboardingDriver = d
   d.drive()
+}
+
+/**
+ * First-visit auto-start only — waits for the cookie banner to be answered
+ * before showing the tour, so the two overlays never compete. Accepting and
+ * rejecting both resolve the choice, so either answer releases the tour.
+ * Returns a disposer for the pending listener (no-op once released).
+ */
+export function startOnboardingTourAfterConsent(
+  navigate?: NavigateFunction,
+): () => void {
+  if (typeof window === 'undefined') return () => {}
+  if (isCookieConsentResolved()) {
+    startOnboardingTour(navigate)
+    return () => {}
+  }
+  const onResolved = () => {
+    window.removeEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
+    startOnboardingTour(navigate)
+  }
+  window.addEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
+  return () => window.removeEventListener(COOKIE_CONSENT_RESOLVED_EVENT, onResolved)
 }
 
 export function resumeOnboardingTour(stepIndex: number) {
