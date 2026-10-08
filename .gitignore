@@ -19,7 +19,8 @@ dist
 dist-ssr
 *.local
 
-# Vercel serverless function (build artifact)
+# Build artifacts — api/index.ts is SOURCE and is committed (Vercel compiles it)
+api/index.js
 api/index.cjs
 
 # Editor directories and files
