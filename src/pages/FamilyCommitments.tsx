@@ -23,6 +23,8 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
 import type { CommitmentRules } from "@shared/schema";
+import { RuleEditor } from "@/components/commitments/RuleEditor";
+import { parseMemberOptions } from "@/lib/commitment-members";
 
 type Commitment = {
   id: number;
@@ -46,6 +48,8 @@ type Milestone = {
   completedAt?: string | Date | null;
 };
 
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
 const api = {
   list: async (familyId: string) => {
     const res = await fetch(`/api/family/commitments?familyId=${encodeURIComponent(familyId)}`);
@@ -57,6 +61,7 @@ const api = {
     title: string;
     terms: string;
     members: string;
+    rules?: CommitmentRules | null;
   }) => {
     const res = await fetch("/api/family/commitments", {
       method: "POST",
@@ -99,6 +104,7 @@ const FamilyCommitments: React.FC = () => {
   const [terms, setTerms] = useState("");
   const [members, setMembers] = useState("");
   const [newMilestone, setNewMilestone] = useState("");
+  const [rules, setRules] = useState<CommitmentRules | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -119,12 +125,22 @@ const FamilyCommitments: React.FC = () => {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !terms.trim() || !members.trim()) return toast.error("All fields are required.");
+    // Same invariants the API enforces, checked here so the parent gets an
+    // inline message instead of a 400 with a zod path.
+    if (rules) {
+      const noDomains = rules.entries.some((entry) => entry.domains.length === 0);
+      if (noDomains) return toast.error("Every enforcement rule needs at least one site.");
+      const noDays = rules.entries.some((entry) => entry.windows.some((w) => w.days.length === 0));
+      if (noDays) return toast.error("Every enforcement rule needs at least one day.");
+      if (!rules.timezone.trim()) return toast.error("Pick a timezone for the enforcement rules.");
+    }
     setCreating(true);
     try {
-      const created = await api.create({ familyId, title, terms, members });
+      const created = await api.create({ familyId, title, terms, members, rules });
       setTitle("");
       setTerms("");
       setMembers("");
+      setRules(null);
       await load();
       toast.success("Commitment created.");
       setSelected({ item: created, milestones: [] });
@@ -213,6 +229,44 @@ const FamilyCommitments: React.FC = () => {
                         {selected.item.members}
                       </span>
                     </div>
+                    {selected.item.rules ? (
+                      <div className="mt-4 rounded-2xl border-2 border-teal-500/30 bg-teal-500/5 p-4 space-y-2">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-teal-700 dark:text-teal-300">
+                          Enforced in the browser
+                        </div>
+                        <ul className="space-y-1.5">
+                          {selected.item.rules.entries.map((entry, i) => {
+                            const win = entry.windows[0];
+                            const days = win
+                              ? [0, 1, 2, 3, 4, 5, 6]
+                                  .filter((d) => win.days.includes(d))
+                                  .map((d) => DAY_NAMES[d])
+                                  .join(" ")
+                              : "—";
+                            return (
+                              <li
+                                key={i}
+                                className="text-xs font-bold text-foreground/90 leading-relaxed"
+                              >
+                                {entry.action === "block" ? "Block" : "Remind"}{" "}
+                                {entry.domains.join(", ")}
+                                {win ? ` · ${win.start}–${win.end} · ${days}` : ""}
+                                {entry.appliesTo.length > 0
+                                  ? ` · only ${entry.appliesTo.join(", ")}`
+                                  : " · everyone"}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                        <p className="text-[11px] text-muted-foreground font-medium">
+                          Times are in {selected.item.rules.timezone}.
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="mt-4 text-[11px] text-muted-foreground font-medium">
+                        No browser enforcement — this is a written agreement only.
+                      </p>
+                    )}
                   </div>
                   {selected.item.status !== "completed" && (
                     <Button
@@ -423,6 +477,14 @@ const FamilyCommitments: React.FC = () => {
                     onChange={(e) => setTerms(e.target.value)}
                     placeholder="State the clear agreement rules and expectations..."
                     className="w-full min-h-[120px] rounded-2xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 p-4 font-bold text-foreground placeholder:font-normal"
+                  />
+                </div>
+                <div className="space-y-3 pt-2 border-t-2 border-border/60">
+                  <RuleEditor
+                    value={rules}
+                    onChange={setRules}
+                    memberOptions={parseMemberOptions(members)}
+                    disabled={creating}
                   />
                 </div>
                 <div className="flex justify-end">
