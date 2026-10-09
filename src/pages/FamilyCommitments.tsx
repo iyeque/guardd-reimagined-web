@@ -267,7 +267,15 @@ const api = {
 const FamilyCommitments: React.FC = () => {
   const { currentProfile } = useProfile();
   const profileId = useProfileId();
-  const familyId = currentProfile?.familyId ?? "default-family";
+  const accessToken = currentProfile?.familyAccessToken ?? "";
+  const profileFamilyId = currentProfile?.familyId ?? "default-family";
+  /**
+   * The family the page actually talks to. Normally the profile's own familyId,
+   * but once a key is pasted it is whatever family that key unlocks — those two
+   * were allowed to disagree, which is what made a valid key look rejected.
+   */
+  const [resolvedFamilyId, setResolvedFamilyId] = useState<string | null>(null);
+  const familyId = resolvedFamilyId ?? profileFamilyId;
   const [items, setItems] = useState<Commitment[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -279,9 +287,9 @@ const FamilyCommitments: React.FC = () => {
   const [rules, setRules] = useState<CommitmentRules | null>(null);
   // Credential for the family's commitments. Lives in the profile next to
   // familyId; a 401 on load means it is missing or stale.
-  const accessToken = currentProfile?.familyAccessToken ?? "";
   const [tokenDraft, setTokenDraft] = useState("");
   const [needsToken, setNeedsToken] = useState(false);
+  const [adopting, setAdopting] = useState(false);
   const [pairing, setPairing] = useState(false);
   const [pairedToken, setPairedToken] = useState<string | null>(null);
 
@@ -300,6 +308,12 @@ const FamilyCommitments: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // Re-derive from the token whenever the profile changes, so a resolved
+  // family can never outlive the device it was resolved for.
+  useEffect(() => {
+    setResolvedFamilyId(null);
+  }, [profileId]);
 
   useEffect(() => {
     load();
@@ -341,14 +355,41 @@ const FamilyCommitments: React.FC = () => {
     }
   };
 
-  const saveToken = (e: React.FormEvent) => {
+  const saveToken = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = tokenDraft.trim();
     if (!token) return toast.error("Paste your family access token.");
     if (!profileId) return toast.error("No active profile.");
-    updateProfile(profileId, { familyAccessToken: token });
-    setTokenDraft("");
-    toast.success("Family access token saved.");
+    setAdopting(true);
+    try {
+      // Ask which family this key actually unlocks rather than assuming it
+      // matches the profile's stored familyId. A mismatch there is exactly what
+      // made a valid key look rejected.
+      const res = await fetch("/api/family/access/whoami", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        setNeedsToken(true);
+        toast.error("That key was not recognised.");
+        return;
+      }
+      const { familyId: keyFamily, deviceLabel } = (await res.json()) as {
+        familyId: string;
+        deviceLabel: string;
+      };
+      updateProfile(profileId, { familyAccessToken: token });
+      // Adopt the family the key opens, so the stored id can never disagree.
+      if (keyFamily !== familyId) setResolvedFamilyId(keyFamily);
+      setTokenDraft("");
+      setNeedsToken(false);
+      toast.success(`Connected to ${deviceLabel}.`);
+      await load();
+    } catch {
+      setNeedsToken(true);
+      toast.error("Could not verify that key.");
+    } finally {
+      setAdopting(false);
+    }
   };
 
   const pairDevice = async () => {

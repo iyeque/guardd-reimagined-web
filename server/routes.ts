@@ -48,12 +48,28 @@ function generateFamilyToken(): string {
  * that case so the client never has to repeat the familyId (and so a wrong
  * familyId can't be smuggled in alongside a valid token).
  */
-async function resolveFamilyId(req: Request): Promise<string | null> {
+/** The family a caller DECLARED, ignoring anything the token implies. */
+async function declaredFamilyId(req: Request): Promise<string | null> {
   const fromQuery = req.query?.familyId;
   if (typeof fromQuery === "string" && fromQuery) return fromQuery;
   const fromBody = (req.body ?? {}) as { familyId?: unknown };
   if (typeof fromBody.familyId === "string" && fromBody.familyId) return fromBody.familyId;
+  const fromParams = req.params?.familyId;
+  if (typeof fromParams === "string" && fromParams) return fromParams;
+  return null;
+}
 
+/**
+ * Which family a request targets: what the caller declared, else the family
+ * `requireFamilyAccess` resolved from the token, else — for `/:id/complete`
+ * and `/:id/milestones`, which identify a commitment by path id only — the
+ * family that row belongs to.
+ */
+async function resolveFamilyId(req: Request): Promise<string | null> {
+  const declared = await declaredFamilyId(req);
+  if (declared) return declared;
+  const resolved = (req as Request & { resolvedFamilyId?: string }).resolvedFamilyId;
+  if (resolved) return resolved;
   const id = Number(req.params?.id);
   if (Number.isFinite(id) && id > 0) {
     try {
@@ -78,32 +94,48 @@ async function resolveFamilyId(req: Request): Promise<string | null> {
  * enough to read any family's decrypted terms. Reads and writes both require
  * `Authorization: Bearer <token>` matching a row in `family_access`. There may
  * be many tokens per family, one per device.
+ *
+ * The token identifies the family, so a caller need NOT declare a familyId. If
+ * one is declared it must match the token's family, otherwise the token alone
+ * resolves it. This is what lets a parent paste a key and have it just work,
+ * without their browser profile's stored familyId having to agree.
  */
 const requireFamilyAccess = async (req: Request, res: Response, next: NextFunction) => {
-  const familyId = await resolveFamilyId(req);
-  if (!familyId) {
-    return res.status(400).json({ error: "familyId is required" });
-  }
   const auth = req.headers["authorization"];
   const provided = typeof auth === "string" && auth.startsWith("Bearer ") ? auth.slice(7) : null;
   if (!provided) {
     return res.status(401).json({ error: "Family access token required" });
   }
+  const declared = await declaredFamilyId(req);
   try {
-    const [row] = await db
-      .select({ token: familyAccess.token })
-      .from(familyAccess)
-      .where(and(eq(familyAccess.familyId, familyId), eq(familyAccess.token, provided)))
-      .limit(1);
-    if (!row) {
-      return res.status(401).json({ error: "Invalid family access token" });
+    if (declared) {
+      const [row] = await db
+        .select({ token: familyAccess.token })
+        .from(familyAccess)
+        .where(and(eq(familyAccess.familyId, declared), eq(familyAccess.token, provided)))
+        .limit(1);
+      if (!row) {
+        return res.status(401).json({ error: "Invalid family access token" });
+      }
+    } else {
+      // No family declared — look the family up from the token itself.
+      const [row] = await db
+        .select({ familyId: familyAccess.familyId })
+        .from(familyAccess)
+        .where(eq(familyAccess.token, provided))
+        .limit(1);
+      if (!row) {
+        return res.status(401).json({ error: "Invalid family access token" });
+      }
+      // Stash it so the route handler reads the same family the token resolved.
+      (req as Request & { resolvedFamilyId?: string }).resolvedFamilyId = row.familyId;
     }
     // Best-effort "last seen" so the device list is useful. Never block a
     // request because bookkeeping failed.
     void db
       .update(familyAccess)
       .set({ lastUsedAt: new Date() })
-      .where(and(eq(familyAccess.familyId, familyId), eq(familyAccess.token, provided)))
+      .where(eq(familyAccess.token, provided))
       .catch(() => {});
     next();
   } catch (err) {
@@ -529,6 +561,30 @@ export function registerRoutes(app: Express) {
   // unauthenticated path is admin recovery, for when a family has lost every
   // token it held.
 
+  /**
+   * Which family does this token belong to? Lets a client adopt the family its
+   * key actually unlocks instead of relying on a stored guess that may be for a
+   * different family. Admin-protected routes aside, this is the one place a
+   * familyId is derived from a credential rather than supplied by the caller.
+   */
+  app.get("/api/family/access/whoami", async (req, res) => {
+    const auth = req.headers["authorization"];
+    const token = typeof auth === "string" && auth.startsWith("Bearer ") ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ error: "Family access token required" });
+    try {
+      const [row] = await db
+        .select({ familyId: familyAccess.familyId, label: familyAccess.label })
+        .from(familyAccess)
+        .where(eq(familyAccess.token, token))
+        .limit(1);
+      if (!row) return res.status(401).json({ error: "Invalid family access token" });
+      res.json({ familyId: row.familyId, deviceLabel: row.label ?? "Unnamed device" });
+    } catch (err) {
+      console.error("/api/family/access/whoami failed:", err);
+      res.status(500).json({ error: "Failed to resolve family" });
+    }
+  });
+
   /** Pair a new device: requires an existing token, mints another. */
   app.post("/api/family/access/pair", requireFamilyAccess, async (req, res) => {
     try {
@@ -651,7 +707,10 @@ export function registerRoutes(app: Express) {
 
   app.get("/api/family/commitments", requireFamilyAccess, async (req, res) => {
     try {
-      const familyId = String(req.query.familyId || "default-family");
+      // Never fall back to a default here — that would hand one family's
+      // commitments to any valid token that omits familyId.
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
       const items = await storage.listFamilyCommitments(familyId);
       const decrypted = await Promise.all(
         items.map(async (item) => ({
