@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Digital Guardian — Family Commitments",
+  "version": "0.1.0",
+  "description": "Enforces your family's agreed commitments at the browser level.",
+  "permissions": ["storage", "alarms", "declarativeNetRequest"],
+  "host_permissions": ["https://digitalguardianwellness.org/*"],
+  "action": {
+    "default_title": "Family Commitments"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["rules.js", "content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

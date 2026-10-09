@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Family Commitments — settings</title>
+    <style>
+      :root {
+        --teal: #4fd1c5;
+        --coral: #ff9a8b;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --line: #e2e8f0;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 32px 20px 48px;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: var(--ink);
+        background: #f8fafc;
+      }
+      .wrap { max-width: 640px; margin: 0 auto; }
+      h1 { font-size: 22px; letter-spacing: -0.02em; margin: 0 0 4px; }
+      .sub { color: var(--muted); font-size: 13px; margin: 0 0 24px; line-height: 1.5; }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      input, select {
+        width: 100%;
+        height: 42px;
+        padding: 0 12px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        border: 2px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        color: var(--ink);
+      }
+      input:focus, select:focus { outline: none; border-color: var(--teal); }
+      select { font-family: inherit; }
+      button {
+        height: 44px;
+        padding: 0 18px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: 0;
+        border-radius: 10px;
+        background: var(--ink);
+        color: #fff;
+        cursor: pointer;
+      }
+      button.secondary { background: #fff; color: var(--ink); border: 2px solid var(--line); }
+      button:disabled { opacity: 0.5; cursor: default; }
+      .row { display: flex; gap: 10px; align-items: flex-end; }
+      .row > div:first-child { flex: 1; }
+      .status {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.5;
+        display: none;
+      }
+      .status.ok { display: block; background: rgba(79, 209, 197, 0.12); color: #0f766e; }
+      .status.bad { display: block; background: rgba(255, 154, 139, 0.15); color: #9a3412; }
+      .status.info { display: block; background: #f1f5f9; color: var(--muted); }
+      dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13px; }
+      dt { color: var(--muted); font-weight: 600; }
+      dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+      .hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Family Commitments</h1>
+      <p class="sub">
+        Paste the family access key to enforce this family's commitments in this
+        browser. The key decides which family you see — a key from one family will
+        never show another's.
+      </p>
+
+      <div class="card">
+        <label for="key">Family access key</label>
+        <div class="row">
+          <div>
+            <input id="key" type="text" placeholder="Paste the key you were given" autocomplete="off" />
+          </div>
+          <button id="save">Connect</button>
+        </div>
+        <p class="hint">
+          Find the key in Digital Guardian → Family Commitments → Connect this
+          device. It is stored in this browser only.
+        </p>
+        <div id="status" class="status info"></div>
+      </div>
+
+      <div class="card">
+        <label>Paired with</label>
+        <dl>
+          <dt>Status</dt><dd id="s-status">Not paired</dd>
+          <dt>Family</dt><dd id="s-family">—</dd>
+          <dt>Device</dt><dd id="s-device">—</dd>
+          <dt>Commitments</dt><dd id="s-count">—</dd>
+          <dt>Last sync</dt><dd id="s-synced">—</dd>
+        </dl>
+        <p class="row" style="margin-top: 14px">
+          <button id="sync" class="secondary">Sync now</button>
+          <button id="forget" class="secondary">Forget this key</button>
+        </p>
+      </div>
+
+      <div class="card">
+        <label>Which child is using this browser?</label>
+        <div class="row">
+          <div>
+            <select id="member">
+              <option value="">Everyone</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">
+          Rules that apply to a named member only block for that person. Leave this
+          as <strong>Everyone</strong> for a shared browser.
+        </p>
+      </div>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>
