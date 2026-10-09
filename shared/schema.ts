@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, boolean, jsonb, primaryKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -73,20 +73,30 @@ export const faqChunks = pgTable("faq_chunks", {
 });
 
 /**
- * Per-family access credential. `family_commitments` is grouped by the
- * human-chosen `familyId`, which is guessable (`default-family`) and was
- * previously enough to read every family's decrypted terms. The token is the
- * actual credential — knowing a familyId alone now gets nothing.
+ * Per-family access credentials — one row per DEVICE, not per family.
  *
- * Existing families are seeded by a migration; new families mint theirs on
- * their first commitment (a family with no commitments has nothing to protect).
+ * A family with two parents on two laptops needs both to see the same
+ * commitments, so each device holds its own independently revocable token. The
+ * first token is minted by the family's first commitment; further devices pair
+ * by presenting an existing valid token.
+ *
+ * `familyId` alone is never a credential — it is guessable (`default-family`)
+ * and proves nothing on its own.
  */
-export const familyAccess = pgTable("family_access", {
-  familyId: text("family_id").primaryKey(),
-  token: text("token").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  rotatedAt: timestamp("rotated_at"),
-});
+export const familyAccess = pgTable(
+  "family_access",
+  {
+    familyId: text("family_id").notNull(),
+    token: text("token").notNull(),
+    /** Human label so a family can tell devices apart when revoking. */
+    label: text("label"),
+    createdAt: timestamp("created_at").defaultNow(),
+    lastUsedAt: timestamp("last_used_at"),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.familyId, t.token] }),
+  }),
+);
 
 export type TimeWindow = {
   days: number[];

@@ -8,7 +8,7 @@ import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { timingSafeEqual, randomBytes } from "node:crypto";
 import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess } from "../shared/schema.js";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { encryptField, decryptField } from "./crypto.js";
 
 /** Constant-time compare so the admin key cannot be recovered by timing. */
@@ -72,11 +72,12 @@ async function resolveFamilyId(req: Request): Promise<string | null> {
 }
 
 /**
- * Gates every family-commitment route on the family's own access token.
+ * Gates every family-commitment route on one of the family's device tokens.
  *
  * The familyId alone is not a credential — it is guessable and was previously
  * enough to read any family's decrypted terms. Reads and writes both require
- * `Authorization: Bearer <token>` matching the row in `family_access`.
+ * `Authorization: Bearer <token>` matching a row in `family_access`. There may
+ * be many tokens per family, one per device.
  */
 const requireFamilyAccess = async (req: Request, res: Response, next: NextFunction) => {
   const familyId = await resolveFamilyId(req);
@@ -92,11 +93,18 @@ const requireFamilyAccess = async (req: Request, res: Response, next: NextFuncti
     const [row] = await db
       .select({ token: familyAccess.token })
       .from(familyAccess)
-      .where(eq(familyAccess.familyId, familyId))
+      .where(and(eq(familyAccess.familyId, familyId), eq(familyAccess.token, provided)))
       .limit(1);
-    if (!row || !secretsMatch(provided, row.token)) {
+    if (!row) {
       return res.status(401).json({ error: "Invalid family access token" });
     }
+    // Best-effort "last seen" so the device list is useful. Never block a
+    // request because bookkeeping failed.
+    void db
+      .update(familyAccess)
+      .set({ lastUsedAt: new Date() })
+      .where(and(eq(familyAccess.familyId, familyId), eq(familyAccess.token, provided)))
+      .catch(() => {});
     next();
   } catch (err) {
     console.error("requireFamilyAccess failed:", err);
@@ -514,44 +522,104 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  // Family access tokens: recovery and rotation.
-  // Reveal is ADMIN-only — it is the path back when a family loses the token
-  // they stored in their profile. Rotation requires the current token.
+  // Family access devices.
+  //
+  // Pairing, listing and revocation all require an existing valid token — a
+  // family grows its device list from a token it already holds. The only
+  // unauthenticated path is admin recovery, for when a family has lost every
+  // token it held.
+
+  /** Pair a new device: requires an existing token, mints another. */
+  app.post("/api/family/access/pair", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const body = z.object({ label: z.string().max(80).optional() }).safeParse(req.body ?? {});
+      const token = generateFamilyToken();
+      const [row] = await db
+        .insert(familyAccess)
+        .values({
+          familyId,
+          token,
+          label: body.success ? (body.data.label ?? null) : null,
+        })
+        .returning();
+      res.status(201).json({ familyId, token: row.token, label: row.label, createdAt: row.createdAt });
+    } catch (err) {
+      console.error("/api/family/access/pair failed:", err);
+      res.status(500).json({ error: "Failed to pair device" });
+    }
+  });
+
+  /** List this family's paired devices. Never returns the tokens themselves. */
+  app.get("/api/family/access/devices", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const rows = await db
+        .select({
+          token: familyAccess.token,
+          label: familyAccess.label,
+          createdAt: familyAccess.createdAt,
+          lastUsedAt: familyAccess.lastUsedAt,
+        })
+        .from(familyAccess)
+        .where(eq(familyAccess.familyId, familyId));
+      // Mark which row is the caller so the UI can say "this device".
+      const auth = req.headers["authorization"];
+      const mine = typeof auth === "string" && auth.startsWith("Bearer ") ? auth.slice(7) : "";
+      res.json(
+        rows.map((r) => ({
+          label: r.label ?? "Unnamed device",
+          createdAt: r.createdAt,
+          lastUsedAt: r.lastUsedAt,
+          current: r.token === mine,
+        })),
+      );
+    } catch (err) {
+      console.error("/api/family/access/devices failed:", err);
+      res.status(500).json({ error: "Failed to list devices" });
+    }
+  });
+
+  /** Revoke one device by its token. */
+  app.delete("/api/family/access/:token", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const target = String(req.params.token || "");
+      if (!target) return res.status(400).json({ error: "token is required" });
+      const del = await db
+        .delete(familyAccess)
+        .where(and(eq(familyAccess.familyId, familyId), eq(familyAccess.token, target)))
+        .returning({ token: familyAccess.token });
+      if (del.length === 0) return res.status(404).json({ error: "Device not found" });
+      res.json({ revoked: del.length });
+    } catch (err) {
+      console.error("/api/family/access revoke failed:", err);
+      res.status(500).json({ error: "Failed to revoke device" });
+    }
+  });
+
+  /** Admin-only recovery: reveal a family's tokens, or mint the first one. */
   app.get("/api/family/access", validateAdmin, async (req, res) => {
     try {
       const familyId = String(req.query.familyId || "");
       if (!familyId) return res.status(400).json({ error: "familyId is required" });
-      const [existing] = await db
-        .select({ token: familyAccess.token, createdAt: familyAccess.createdAt, rotatedAt: familyAccess.rotatedAt })
+      const rows = await db
+        .select({ token: familyAccess.token, label: familyAccess.label, createdAt: familyAccess.createdAt })
         .from(familyAccess)
-        .where(eq(familyAccess.familyId, familyId))
-        .limit(1);
-      if (existing) return res.json({ familyId, token: existing.token, createdAt: existing.createdAt, rotatedAt: existing.rotatedAt });
-      // No row yet — mint one so the family can start using the token.
+        .where(eq(familyAccess.familyId, familyId));
+      if (rows.length > 0) {
+        return res.json({ familyId, devices: rows });
+      }
+      // No tokens yet — mint the first so the family can start using one.
       const token = generateFamilyToken();
-      const [row] = await db.insert(familyAccess).values({ familyId, token }).returning();
-      res.json({ familyId, token: row.token, createdAt: row.createdAt, rotatedAt: row.rotatedAt });
+      const [row] = await db.insert(familyAccess).values({ familyId, token, label: "Recovered" }).returning();
+      res.json({ familyId, devices: [{ token: row.token, label: row.label, createdAt: row.createdAt }] });
     } catch (err) {
       console.error("/api/family/access failed:", err);
-      res.status(500).json({ error: "Failed to resolve family access token" });
-    }
-  });
-
-  app.post("/api/family/access/rotate", requireFamilyAccess, async (req, res) => {
-    try {
-      const familyId = await resolveFamilyId(req);
-      if (!familyId) return res.status(400).json({ error: "familyId is required" });
-      const token = generateFamilyToken();
-      const [row] = await db
-        .update(familyAccess)
-        .set({ token, rotatedAt: new Date() })
-        .where(eq(familyAccess.familyId, familyId))
-        .returning();
-      if (!row) return res.status(404).json({ error: "Unknown family" });
-      res.json({ familyId, token: row.token, rotatedAt: row.rotatedAt });
-    } catch (err) {
-      console.error("/api/family/access/rotate failed:", err);
-      res.status(500).json({ error: "Failed to rotate token" });
+      res.status(500).json({ error: "Failed to resolve family access tokens" });
     }
   });
 
@@ -634,22 +702,27 @@ export function registerRoutes(app: Express) {
       // otherwise this endpoint would let anyone add commitments to any family.
       // A family with no token yet has nothing to protect, so its first
       // commitment is allowed and mints the token, returned once below.
-      const [existingAccess] = await db
+      const existingTokens = await db
         .select({ token: familyAccess.token })
         .from(familyAccess)
-        .where(eq(familyAccess.familyId, body.data.familyId))
-        .limit(1);
+        .where(eq(familyAccess.familyId, body.data.familyId));
 
       let mintedToken: string | null = null;
-      if (existingAccess) {
+      if (existingTokens.length > 0) {
         const auth = req.headers["authorization"];
         const provided = typeof auth === "string" && auth.startsWith("Bearer ") ? auth.slice(7) : null;
-        if (!provided || !secretsMatch(provided, existingAccess.token)) {
+        const ok =
+          !!provided && existingTokens.some((row) => secretsMatch(provided, row.token));
+        if (!ok) {
           return res.status(401).json({ error: "Invalid family access token" });
         }
       } else {
         mintedToken = generateFamilyToken();
-        await db.insert(familyAccess).values({ familyId: body.data.familyId, token: mintedToken });
+        await db.insert(familyAccess).values({
+          familyId: body.data.familyId,
+          token: mintedToken,
+          label: "First device",
+        });
       }
 
       const [encTerms, encMembers] = await Promise.all([

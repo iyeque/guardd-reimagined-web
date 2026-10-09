@@ -67,16 +67,18 @@ const FamilyAccessPanel = ({
   tokenDraft,
   onTokenDraftChange,
   onSaveToken,
-  onRotate,
-  rotating,
+  onPair,
+  pairing,
+  pairedToken,
 }: {
   accessToken: string;
   needsToken: boolean;
   tokenDraft: string;
   onTokenDraftChange: (v: string) => void;
   onSaveToken: (e: React.FormEvent) => void;
-  onRotate: () => void;
-  rotating: boolean;
+  onPair: () => void;
+  pairing: boolean;
+  pairedToken: string | null;
 }) => {
   const [revealed, setRevealed] = useState(false);
   const labelClass =
@@ -124,45 +126,73 @@ const FamilyAccessPanel = ({
             </Button>
           </div>
           <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
-            Store this somewhere safe. It is the only way to read this family's
-            commitments — clearing browser data loses it, and an administrator
-            has to reissue it.
+            This is the key for this device. Keep it somewhere safe — clearing
+            browser data loses it, and only an administrator can reissue one.
           </p>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onRotate}
-            disabled={rotating}
-            className="rounded-xl text-xs font-black uppercase tracking-widest"
-          >
-            {rotating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Rotate token"}
-          </Button>
         </div>
-      ) : (
-        <form onSubmit={onSaveToken} className="space-y-2">
-          <label className={labelClass}>Paste a family access token</label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={tokenDraft}
-              onChange={(e) => onTokenDraftChange(e.target.value)}
-              placeholder="Paste the token you were given"
-              className={fieldClass}
-            />
-            <Button
-              type="submit"
-              variant="outline"
-              className="shrink-0 rounded-xl text-xs font-black uppercase tracking-widest"
-            >
-              Save
-            </Button>
-          </div>
-          <p className="text-[11px] text-muted-foreground font-medium">
-            The first commitment you create for a family generates its token and
-            saves it automatically.
-          </p>
-        </form>
-      )}
+      ) : null}
+
+      {/* Recovery is deliberately collapsed and secondary. A family whose
+          single-device setup is working should never have to look at this. */}
+      <details className="rounded-xl border-2 border-border bg-white/50 dark:bg-white/5">
+        <summary className="cursor-pointer px-3 py-2.5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          Recover or pair a device
+        </summary>
+        <div className="space-y-3 border-t-2 border-border/60 p-3">
+          {accessToken ? (
+            <div className="space-y-2">
+              <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
+                To let another laptop or phone see these commitments, pair it
+                here and copy the new key across. Each device gets its own key,
+                so one can be revoked without locking out the others.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onPair}
+                disabled={pairing}
+                className="rounded-xl text-xs font-black uppercase tracking-widest"
+              >
+                {pairing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Pair another device"}
+              </Button>
+              {pairedToken && (
+                <div className="space-y-1">
+                  <code className="block truncate rounded-xl border-2 border-teal-500/40 bg-teal-500/5 px-3 py-2.5 text-xs font-mono text-foreground">
+                    {pairedToken}
+                  </code>
+                  <p className="text-[11px] font-bold text-teal-700 dark:text-teal-300">
+                    Shown once — copy it onto the other device now.
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <form onSubmit={onSaveToken} className="space-y-2">
+              <label className={labelClass}>Paste a family access key</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={tokenDraft}
+                  onChange={(e) => onTokenDraftChange(e.target.value)}
+                  placeholder="Paste the key you were given"
+                  className={fieldClass}
+                />
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="shrink-0 rounded-xl text-xs font-black uppercase tracking-widest"
+                >
+                  Save
+                </Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground font-medium">
+                The first commitment you create for a family generates its key
+                and saves it automatically.
+              </p>
+            </form>
+          )}
+        </div>
+      </details>
     </div>
   );
 };
@@ -216,14 +246,21 @@ const api = {
     if (!res.ok) throw new Error("Not found");
     return res.json() as Promise<{ item: Commitment; milestones: Milestone[] }>;
   },
-  rotate: async (familyId: string, token: string) => {
-    const res = await fetch("/api/family/access/rotate", {
+  pair: async (familyId: string, token: string) => {
+    const res = await fetch("/api/family/access/pair", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...authHeaders(token) },
-      body: JSON.stringify({ familyId }),
+      body: JSON.stringify({ familyId, label: "Paired device" }),
     });
-    if (!res.ok) throw new Error("Failed to rotate token");
-    return res.json() as Promise<{ familyId: string; token: string; rotatedAt: string }>;
+    if (!res.ok) throw new Error("Failed to pair device");
+    return res.json() as Promise<{ familyId: string; token: string; label: string | null; createdAt: string }>;
+  },
+  devices: async (familyId: string, token: string) => {
+    const res = await fetch(`/api/family/access/devices?familyId=${encodeURIComponent(familyId)}`, {
+      headers: authHeaders(token),
+    });
+    if (!res.ok) throw new Error("Failed to list devices");
+    return res.json() as Promise<Array<{ label: string; createdAt: string; lastUsedAt: string | null; current: boolean }>>;
   },
 };
 
@@ -245,7 +282,8 @@ const FamilyCommitments: React.FC = () => {
   const accessToken = currentProfile?.familyAccessToken ?? "";
   const [tokenDraft, setTokenDraft] = useState("");
   const [needsToken, setNeedsToken] = useState(false);
-  const [rotating, setRotating] = useState(false);
+  const [pairing, setPairing] = useState(false);
+  const [pairedToken, setPairedToken] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -313,18 +351,17 @@ const FamilyCommitments: React.FC = () => {
     toast.success("Family access token saved.");
   };
 
-  const rotateToken = async () => {
+  const pairDevice = async () => {
     if (!accessToken) return;
-    setRotating(true);
+    setPairing(true);
     try {
-      const res = await api.rotate(familyId, accessToken);
-      if (profileId) updateProfile(profileId, { familyAccessToken: res.token });
-      toast.success("Token rotated — the old one no longer works.");
-      await load();
+      const res = await api.pair(familyId, accessToken);
+      setPairedToken(res.token);
+      toast.success("New device key created — copy it now.");
     } catch {
-      toast.error("Could not rotate the token.");
+      toast.error("Could not create a device key.");
     } finally {
-      setRotating(false);
+      setPairing(false);
     }
   };
 
@@ -670,8 +707,9 @@ const FamilyCommitments: React.FC = () => {
                   tokenDraft={tokenDraft}
                   onTokenDraftChange={setTokenDraft}
                   onSaveToken={saveToken}
-                  onRotate={rotateToken}
-                  rotating={rotating}
+                  onPair={pairDevice}
+                  pairing={pairing}
+                  pairedToken={pairedToken}
                 />
                 <div className="flex justify-end">
                   <Button type="submit" disabled={creating} className="h-14 px-10 bg-foreground text-background font-black rounded-2xl">
