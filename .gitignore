@@ -39,3 +39,6 @@ tmp/
 
 # Local planning docs
 .hermes/
+
+# Tool scratch output (in-app browser MCP logs)
+.manus/
