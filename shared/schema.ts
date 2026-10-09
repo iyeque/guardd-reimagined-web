@@ -72,6 +72,22 @@ export const faqChunks = pgTable("faq_chunks", {
   category: text("category").notNull(),
 });
 
+/**
+ * Per-family access credential. `family_commitments` is grouped by the
+ * human-chosen `familyId`, which is guessable (`default-family`) and was
+ * previously enough to read every family's decrypted terms. The token is the
+ * actual credential — knowing a familyId alone now gets nothing.
+ *
+ * Existing families are seeded by a migration; new families mint theirs on
+ * their first commitment (a family with no commitments has nothing to protect).
+ */
+export const familyAccess = pgTable("family_access", {
+  familyId: text("family_id").primaryKey(),
+  token: text("token").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  rotatedAt: timestamp("rotated_at"),
+});
+
 export type TimeWindow = {
   days: number[];
   start: string;

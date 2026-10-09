@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
+import { updateProfile } from "@/lib/profiles";
 import type { CommitmentRules } from "@shared/schema";
 import { RuleEditor } from "@/components/commitments/RuleEditor";
 import { parseMemberOptions } from "@/lib/commitment-members";
@@ -50,9 +51,127 @@ type Milestone = {
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
+const authHeaders = (token?: string): Record<string, string> =>
+  token ? { Authorization: `Bearer ${token}` } : {};
+
+/**
+ * Manages the family's access token: shows it so it can be copied somewhere
+ * safe, accepts a pasted one on recovery, and rotates it.
+ *
+ * Deliberately blunt about the stakes — losing this token locks the family out
+ * of their own commitments, and the only recovery is an admin reissue.
+ */
+const FamilyAccessPanel = ({
+  accessToken,
+  needsToken,
+  tokenDraft,
+  onTokenDraftChange,
+  onSaveToken,
+  onRotate,
+  rotating,
+}: {
+  accessToken: string;
+  needsToken: boolean;
+  tokenDraft: string;
+  onTokenDraftChange: (v: string) => void;
+  onSaveToken: (e: React.FormEvent) => void;
+  onRotate: () => void;
+  rotating: boolean;
+}) => {
+  const [revealed, setRevealed] = useState(false);
+  const labelClass =
+    "text-[10px] font-black uppercase tracking-widest text-muted-foreground";
+  const fieldClass =
+    "w-full h-11 rounded-xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 px-3 text-sm font-bold text-foreground";
+
+  return (
+    <div className="space-y-3 pt-2 border-t-2 border-border/60">
+      <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+        Family access token
+      </div>
+
+      {needsToken && (
+        <p className="text-xs font-bold text-red-500">
+          This device has no valid token for this family, so commitments cannot
+          be loaded. Paste one below, or ask an administrator to reissue it.
+        </p>
+      )}
+
+      {accessToken ? (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <code className="flex-1 truncate rounded-xl border-2 border-border bg-white/70 dark:bg-white/5 px-3 py-2.5 text-xs font-mono text-foreground">
+              {revealed ? accessToken : "•".repeat(Math.min(accessToken.length, 32))}
+            </code>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setRevealed((r) => !r)}
+              className="shrink-0 rounded-xl text-xs font-black uppercase tracking-widest"
+            >
+              {revealed ? "Hide" : "Reveal"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                void navigator.clipboard?.writeText(accessToken);
+                toast.success("Token copied.");
+              }}
+              className="shrink-0 rounded-xl text-xs font-black uppercase tracking-widest"
+            >
+              Copy
+            </Button>
+          </div>
+          <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">
+            Store this somewhere safe. It is the only way to read this family's
+            commitments — clearing browser data loses it, and an administrator
+            has to reissue it.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onRotate}
+            disabled={rotating}
+            className="rounded-xl text-xs font-black uppercase tracking-widest"
+          >
+            {rotating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Rotate token"}
+          </Button>
+        </div>
+      ) : (
+        <form onSubmit={onSaveToken} className="space-y-2">
+          <label className={labelClass}>Paste a family access token</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={tokenDraft}
+              onChange={(e) => onTokenDraftChange(e.target.value)}
+              placeholder="Paste the token you were given"
+              className={fieldClass}
+            />
+            <Button
+              type="submit"
+              variant="outline"
+              className="shrink-0 rounded-xl text-xs font-black uppercase tracking-widest"
+            >
+              Save
+            </Button>
+          </div>
+          <p className="text-[11px] text-muted-foreground font-medium">
+            The first commitment you create for a family generates its token and
+            saves it automatically.
+          </p>
+        </form>
+      )}
+    </div>
+  );
+};
+
 const api = {
-  list: async (familyId: string) => {
-    const res = await fetch(`/api/family/commitments?familyId=${encodeURIComponent(familyId)}`);
+  list: async (familyId: string, token?: string) => {
+    const res = await fetch(`/api/family/commitments?familyId=${encodeURIComponent(familyId)}`, {
+      headers: authHeaders(token),
+    });
     if (!res.ok) throw new Error("Failed to load commitments");
     return res.json() as Promise<Commitment[]>;
   },
@@ -62,33 +181,49 @@ const api = {
     terms: string;
     members: string;
     rules?: CommitmentRules | null;
+    token?: string;
   }) => {
     const res = await fetch("/api/family/commitments", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders(body.token) },
       body: JSON.stringify(body),
     });
     if (!res.ok) throw new Error("Failed to create commitment");
-    return res.json() as Promise<Commitment>;
+    // The minted token rides along exactly once — capture it before the type
+    // assertion narrows it away.
+    const json = (await res.json()) as Commitment & { familyAccessToken?: string };
+    return json;
   },
-  complete: async (id: number) => {
-    const res = await fetch(`/api/family/commitments/${id}/complete`, { method: "POST" });
+  complete: async (id: number, token?: string) => {
+    const res = await fetch(`/api/family/commitments/${id}/complete`, {
+      method: "POST",
+      headers: authHeaders(token),
+    });
     if (!res.ok) throw new Error("Failed to complete commitment");
     return res.json() as Promise<Commitment>;
   },
-  addMilestone: async (commitmentId: number, label: string, targetDate?: string) => {
+  addMilestone: async (commitmentId: number, label: string, targetDate?: string, token?: string) => {
     const res = await fetch(`/api/family/commitments/${commitmentId}/milestones`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders(token) },
       body: JSON.stringify({ label, targetDate }),
     });
     if (!res.ok) throw new Error("Failed to add milestone");
     return res.json() as Promise<Milestone>;
   },
-  get: async (id: number) => {
-    const res = await fetch(`/api/family/commitments/${id}`);
+  get: async (id: number, token?: string) => {
+    const res = await fetch(`/api/family/commitments/${id}`, { headers: authHeaders(token) });
     if (!res.ok) throw new Error("Not found");
     return res.json() as Promise<{ item: Commitment; milestones: Milestone[] }>;
+  },
+  rotate: async (familyId: string, token: string) => {
+    const res = await fetch("/api/family/access/rotate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders(token) },
+      body: JSON.stringify({ familyId }),
+    });
+    if (!res.ok) throw new Error("Failed to rotate token");
+    return res.json() as Promise<{ familyId: string; token: string; rotatedAt: string }>;
   },
 };
 
@@ -105,14 +240,24 @@ const FamilyCommitments: React.FC = () => {
   const [members, setMembers] = useState("");
   const [newMilestone, setNewMilestone] = useState("");
   const [rules, setRules] = useState<CommitmentRules | null>(null);
+  // Credential for the family's commitments. Lives in the profile next to
+  // familyId; a 401 on load means it is missing or stale.
+  const accessToken = currentProfile?.familyAccessToken ?? "";
+  const [tokenDraft, setTokenDraft] = useState("");
+  const [needsToken, setNeedsToken] = useState(false);
+  const [rotating, setRotating] = useState(false);
 
   const load = async () => {
     setLoading(true);
     try {
-      const list = await api.list(familyId);
+      const list = await api.list(familyId, accessToken);
       setItems(list);
-    } catch (e) {
-      toast.error("Could not load commitments.");
+      setNeedsToken(false);
+    } catch {
+      // Distinguish "no token / wrong token" from a real outage so the panel
+      // offers recovery instead of a bare error.
+      setNeedsToken(true);
+      toast.error("Could not load commitments — check your family access token.");
     } finally {
       setLoading(false);
     }
@@ -120,7 +265,7 @@ const FamilyCommitments: React.FC = () => {
 
   useEffect(() => {
     load();
-  }, [familyId]);
+  }, [familyId, accessToken]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,13 +281,20 @@ const FamilyCommitments: React.FC = () => {
     }
     setCreating(true);
     try {
-      const created = await api.create({ familyId, title, terms, members, rules });
+      const created = await api.create({ familyId, title, terms, members, rules, token: accessToken || undefined });
       setTitle("");
       setTerms("");
       setMembers("");
       setRules(null);
+      // First-ever create for a family mints its token; persist it now or the
+      // family is locked out of its own data on the next load.
+      if (created.familyAccessToken && profileId) {
+        updateProfile(profileId, { familyAccessToken: created.familyAccessToken });
+        toast.success("Commitment created — your family access token was saved.");
+      } else {
+        toast.success("Commitment created.");
+      }
       await load();
-      toast.success("Commitment created.");
       setSelected({ item: created, milestones: [] });
     } catch {
       toast.error("Failed to create commitment.");
@@ -151,9 +303,34 @@ const FamilyCommitments: React.FC = () => {
     }
   };
 
+  const saveToken = (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = tokenDraft.trim();
+    if (!token) return toast.error("Paste your family access token.");
+    if (!profileId) return toast.error("No active profile.");
+    updateProfile(profileId, { familyAccessToken: token });
+    setTokenDraft("");
+    toast.success("Family access token saved.");
+  };
+
+  const rotateToken = async () => {
+    if (!accessToken) return;
+    setRotating(true);
+    try {
+      const res = await api.rotate(familyId, accessToken);
+      if (profileId) updateProfile(profileId, { familyAccessToken: res.token });
+      toast.success("Token rotated — the old one no longer works.");
+      await load();
+    } catch {
+      toast.error("Could not rotate the token.");
+    } finally {
+      setRotating(false);
+    }
+  };
+
   const complete = async (id: number) => {
     try {
-      const updated = await api.complete(id);
+      const updated = await api.complete(id, accessToken || undefined);
       setItems((p) => p.map((x) => (x.id === id ? updated : x)));
       if (selected?.item.id === id) setSelected({ ...selected, item: updated });
       toast.success("Commitment completed.");
@@ -165,8 +342,8 @@ const FamilyCommitments: React.FC = () => {
   const addMilestone = async () => {
     if (!selected || !newMilestone.trim()) return;
     try {
-      const ms = await api.addMilestone(selected.item.id, newMilestone.trim());
-      setSelected((s) => s ? { ...s, milestones: [...s.milestones, ms] } : s);
+      const ms = await api.addMilestone(selected.item.id, newMilestone.trim(), undefined, accessToken || undefined);
+      setSelected((s) => (s ? { ...s, milestones: [...s.milestones, ms] } : s));
       setNewMilestone("");
       toast.success("Milestone added.");
     } catch {
@@ -176,7 +353,7 @@ const FamilyCommitments: React.FC = () => {
 
   const openCommitment = async (id: number) => {
     try {
-      const detail = await api.get(id);
+      const detail = await api.get(id, accessToken || undefined);
       setSelected(detail);
     } catch {
       toast.error("Could not load commitment details.");
@@ -487,6 +664,15 @@ const FamilyCommitments: React.FC = () => {
                     disabled={creating}
                   />
                 </div>
+                <FamilyAccessPanel
+                  accessToken={accessToken}
+                  needsToken={needsToken}
+                  tokenDraft={tokenDraft}
+                  onTokenDraftChange={setTokenDraft}
+                  onSaveToken={saveToken}
+                  onRotate={rotateToken}
+                  rotating={rotating}
+                />
                 <div className="flex justify-end">
                   <Button type="submit" disabled={creating} className="h-14 px-10 bg-foreground text-background font-black rounded-2xl">
                     {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-4 h-4 mr-2" /> Create Commitment</>}

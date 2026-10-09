@@ -9,6 +9,12 @@ export interface Profile {
   familyId: string;
   mode: FamilyMode;
   createdAt: number;
+  /**
+   * Credential for /api/family/commitments. Returned once by the create call
+   * that minted it. Losing it means the family cannot read its own
+   * commitments — an admin reissue is the recovery path.
+   */
+  familyAccessToken?: string;
 }
 
 function generateId(): string {
@@ -86,7 +92,7 @@ export function setCurrentProfile(profileId: string): void {
 
 export function updateProfile(
   profileId: string,
-  updates: Partial<Pick<Profile, "nickname" | "mode">>
+  updates: Partial<Pick<Profile, "nickname" | "mode" | "familyAccessToken">>
 ): Profile | null {
   const profiles = getProfiles();
   if (!profiles[profileId]) return null;

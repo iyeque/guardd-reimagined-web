@@ -6,9 +6,10 @@ import axios from "axios";
 import { z } from "zod";
 import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
-import { faqChunks, familyCommitments, familyCommitmentMilestones } from "../shared/schema.js";
+import { timingSafeEqual, randomBytes } from "node:crypto";
+import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess } from "../shared/schema.js";
+import { eq } from "drizzle-orm";
 import { encryptField, decryptField } from "./crypto.js";
-import { timingSafeEqual } from "node:crypto";
 
 /** Constant-time compare so the admin key cannot be recovered by timing. */
 function secretsMatch(a: string, b: string): boolean {
@@ -34,6 +35,74 @@ function isCronRequest(req: Request): boolean {
   if (!cronSecret) return false;
   return req.headers["authorization"] === `Bearer ${cronSecret}`;
 }
+
+function generateFamilyToken(): string {
+  return randomBytes(32).toString("base64url");
+}
+
+/**
+ * Resolve which family a request targets.
+ *
+ * Most routes carry `familyId` in the query or body, but `/:id/complete` and
+ * `/:id/milestones` identify the commitment by path id only. Load the row in
+ * that case so the client never has to repeat the familyId (and so a wrong
+ * familyId can't be smuggled in alongside a valid token).
+ */
+async function resolveFamilyId(req: Request): Promise<string | null> {
+  const fromQuery = req.query?.familyId;
+  if (typeof fromQuery === "string" && fromQuery) return fromQuery;
+  const fromBody = (req.body ?? {}) as { familyId?: unknown };
+  if (typeof fromBody.familyId === "string" && fromBody.familyId) return fromBody.familyId;
+
+  const id = Number(req.params?.id);
+  if (Number.isFinite(id) && id > 0) {
+    try {
+      const [row] = await db
+        .select({ familyId: familyCommitments.familyId })
+        .from(familyCommitments)
+        .where(eq(familyCommitments.id, id))
+        .limit(1);
+      return row?.familyId ?? null;
+    } catch (err) {
+      console.error("resolveFamilyId lookup failed:", err);
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Gates every family-commitment route on the family's own access token.
+ *
+ * The familyId alone is not a credential — it is guessable and was previously
+ * enough to read any family's decrypted terms. Reads and writes both require
+ * `Authorization: Bearer <token>` matching the row in `family_access`.
+ */
+const requireFamilyAccess = async (req: Request, res: Response, next: NextFunction) => {
+  const familyId = await resolveFamilyId(req);
+  if (!familyId) {
+    return res.status(400).json({ error: "familyId is required" });
+  }
+  const auth = req.headers["authorization"];
+  const provided = typeof auth === "string" && auth.startsWith("Bearer ") ? auth.slice(7) : null;
+  if (!provided) {
+    return res.status(401).json({ error: "Family access token required" });
+  }
+  try {
+    const [row] = await db
+      .select({ token: familyAccess.token })
+      .from(familyAccess)
+      .where(eq(familyAccess.familyId, familyId))
+      .limit(1);
+    if (!row || !secretsMatch(provided, row.token)) {
+      return res.status(401).json({ error: "Invalid family access token" });
+    }
+    next();
+  } catch (err) {
+    console.error("requireFamilyAccess failed:", err);
+    res.status(500).json({ error: "Authorization check failed" });
+  }
+};
 
 // Helper function to verify reCAPTCHA
 async function verifyRecaptcha(token: string) {
@@ -445,6 +514,47 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Family access tokens: recovery and rotation.
+  // Reveal is ADMIN-only — it is the path back when a family loses the token
+  // they stored in their profile. Rotation requires the current token.
+  app.get("/api/family/access", validateAdmin, async (req, res) => {
+    try {
+      const familyId = String(req.query.familyId || "");
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const [existing] = await db
+        .select({ token: familyAccess.token, createdAt: familyAccess.createdAt, rotatedAt: familyAccess.rotatedAt })
+        .from(familyAccess)
+        .where(eq(familyAccess.familyId, familyId))
+        .limit(1);
+      if (existing) return res.json({ familyId, token: existing.token, createdAt: existing.createdAt, rotatedAt: existing.rotatedAt });
+      // No row yet — mint one so the family can start using the token.
+      const token = generateFamilyToken();
+      const [row] = await db.insert(familyAccess).values({ familyId, token }).returning();
+      res.json({ familyId, token: row.token, createdAt: row.createdAt, rotatedAt: row.rotatedAt });
+    } catch (err) {
+      console.error("/api/family/access failed:", err);
+      res.status(500).json({ error: "Failed to resolve family access token" });
+    }
+  });
+
+  app.post("/api/family/access/rotate", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const token = generateFamilyToken();
+      const [row] = await db
+        .update(familyAccess)
+        .set({ token, rotatedAt: new Date() })
+        .where(eq(familyAccess.familyId, familyId))
+        .returning();
+      if (!row) return res.status(404).json({ error: "Unknown family" });
+      res.json({ familyId, token: row.token, rotatedAt: row.rotatedAt });
+    } catch (err) {
+      console.error("/api/family/access/rotate failed:", err);
+      res.status(500).json({ error: "Failed to rotate token" });
+    }
+  });
+
   // Family commitments: list by family
   // Shared validator for a commitment's enforcement rules. Nullable so
   // commitments created before rules existed stay valid, and null must keep
@@ -471,7 +581,7 @@ export function registerRoutes(app: Express) {
     })
     .nullable();
 
-  app.get("/api/family/commitments", async (req, res) => {
+  app.get("/api/family/commitments", requireFamilyAccess, async (req, res) => {
     try {
       const familyId = String(req.query.familyId || "default-family");
       const items = await storage.listFamilyCommitments(familyId);
@@ -490,7 +600,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.get("/api/family/commitments/:id", async (req, res) => {
+  app.get("/api/family/commitments/:id", requireFamilyAccess, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const item = await storage.getFamilyCommitment(id);
@@ -519,6 +629,28 @@ export function registerRoutes(app: Express) {
         })
         .safeParse(req.body);
       if (!body.success) return res.status(400).json({ error: body.error.message });
+
+      // Bootstrap gate. A family that already has a token must present it —
+      // otherwise this endpoint would let anyone add commitments to any family.
+      // A family with no token yet has nothing to protect, so its first
+      // commitment is allowed and mints the token, returned once below.
+      const [existingAccess] = await db
+        .select({ token: familyAccess.token })
+        .from(familyAccess)
+        .where(eq(familyAccess.familyId, body.data.familyId))
+        .limit(1);
+
+      let mintedToken: string | null = null;
+      if (existingAccess) {
+        const auth = req.headers["authorization"];
+        const provided = typeof auth === "string" && auth.startsWith("Bearer ") ? auth.slice(7) : null;
+        if (!provided || !secretsMatch(provided, existingAccess.token)) {
+          return res.status(401).json({ error: "Invalid family access token" });
+        }
+      } else {
+        mintedToken = generateFamilyToken();
+        await db.insert(familyAccess).values({ familyId: body.data.familyId, token: mintedToken });
+      }
 
       const [encTerms, encMembers] = await Promise.all([
         encryptField(body.data.terms),
@@ -550,14 +682,18 @@ export function registerRoutes(app: Express) {
         metadataCid,
       });
 
-      res.status(201).json(updated ?? created);
+      // The token is returned exactly once, on the create that minted it. The
+      // client stores it in the profile; there is no second chance to read it.
+      res.status(201).json(
+        mintedToken ? { ...(updated ?? created), familyAccessToken: mintedToken } : (updated ?? created),
+      );
     } catch (err) {
       console.error("/api/family/commitments failed:", err);
       res.status(500).json({ error: "Failed to create commitment" });
     }
   });
 
-  app.post("/api/family/commitments/:id/complete", async (req, res) => {
+  app.post("/api/family/commitments/:id/complete", requireFamilyAccess, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const updated = await storage.updateFamilyCommitment(id, { status: "completed", completedAt: new Date() });
@@ -569,7 +705,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/family/commitments/:id/milestones", async (req, res) => {
+  app.post("/api/family/commitments/:id/milestones", requireFamilyAccess, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const body = z.object({ label: z.string(), targetDate: z.string().optional() }).parse(req.body);
