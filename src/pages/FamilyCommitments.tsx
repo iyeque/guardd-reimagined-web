@@ -634,6 +634,40 @@ const FamilyCommitments: React.FC = () => {
             </p>
           </motion.header>
 
+          {/* Connect this device. This is the only place a key is entered, so it
+              must be impossible to miss: burying it inside the create form meant
+              a family whose page would not load had to scroll past the whole form
+              and expand a collapsed section to find the field. */}
+          {!accessToken && (
+            <div className="max-w-2xl mx-auto rounded-2xl border-2 border-teal-500/40 bg-teal-500/5 p-6 space-y-3">
+              <div className="text-[10px] font-black uppercase tracking-widest text-teal-700 dark:text-teal-300">
+                Connect this device
+              </div>
+              <form onSubmit={saveToken} className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={tokenDraft}
+                  onChange={(e) => setTokenDraft(e.target.value)}
+                  placeholder="Paste the family access key you were given"
+                  className="flex-1 h-12 rounded-xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 px-4 text-sm font-bold text-foreground"
+                />
+                <button
+                  type="submit"
+                  disabled={adopting || !tokenDraft.trim()}
+                  className="h-12 px-6 rounded-xl bg-foreground text-background font-black uppercase tracking-widest text-xs disabled:opacity-50"
+                >
+                  {adopting ? "Checking…" : "Connect"}
+                </button>
+              </form>
+              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                Your commitments are private to your family. Paste the key an
+                administrator gave you to unlock them on this device. The key
+                decides which family you see, so a key from one family will never
+                show another's.
+              </p>
+            </div>
+          )}
+
           {/* How It Works */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
