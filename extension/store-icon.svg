@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Brand triad from BRAND_KIT.md §2: teal -> coral -> lavender, 135deg -->
+    <linearGradient id="tri" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#4FD1C5"/>
+      <stop offset="50%"  stop-color="#FF9A8B"/>
+      <stop offset="100%" stop-color="#B794F4"/>
+    </linearGradient>
+    <linearGradient id="shieldFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.97"/>
+      <stop offset="100%" stop-color="#F0FFF4" stop-opacity="0.92"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle ground: the gradient alone carries the brand, so the icon reads
+       on any background (store listing, toolbar, light or dark). -->
+  <rect x="0" y="0" width="512" height="512" rx="116" ry="116" fill="url(#tri)"/>
+
+  <!-- Shield: flat top, curved base to a point -->
+  <path d="M 150 142 H 362 V 262
+           C 362 336 314 374 256 404
+           C 198 374 150 336 150 262 Z"
+        fill="url(#shieldFill)"
+        stroke="#2C7A7B" stroke-width="9" stroke-opacity="0.85"
+        stroke-linejoin="round"/>
+
+  <!-- The family: two adults and a child, grouped so it still reads at 16px -->
+  <circle cx="220" cy="228" r="25" fill="#2C7A7B"/>
+  <circle cx="292" cy="228" r="25" fill="#2C7A7B"/>
+  <circle cx="256" cy="296" r="19" fill="#2C7A7B" fill-opacity="0.72"/>
+</svg>
