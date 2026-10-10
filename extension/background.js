@@ -149,7 +149,11 @@ async function applyRules(commitments) {
     addRules.push({
       id: id++,
       priority: 1,
-      action: { type: "block" },
+      // Redirect rather than block: a blocked request never loads a page, so no
+      // content script could run on it and the family would see Chrome's bare
+      // ERR_BLOCKED_BY_CLIENT. Redirecting to our own page is what lets the
+      // block explain itself in the family's own words.
+      action: { type: "redirect", redirect: { extensionPath: "/blocked.html" } },
       // requestDomains matches the domain and its subdomains. main_frame covers
       // the navigation itself; sub_frame covers an embed on another site.
       condition: {

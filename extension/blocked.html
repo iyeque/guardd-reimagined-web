@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Screen-free time — Digital Guardian</title>
+    <style>
+      :root {
+        --teal: #4fd1c5;
+        --coral: #ff9a8b;
+        --ink: #0f172a;
+        --muted: #94a3b8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--ink);
+        color: #f8fafc;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      .card { max-width: 34rem; width: 100%; text-align: center; }
+      .eyebrow {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 14px;
+      }
+      h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 10px; }
+      .lede { font-size: 0.95rem; line-height: 1.6; color: var(--muted); margin: 0 0 26px; }
+      .agreement {
+        text-align: left;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-left: 3px solid var(--teal);
+        border-radius: 12px;
+        padding: 18px 20px;
+        margin-bottom: 18px;
+      }
+      .agreement + .agreement { margin-top: -6px; }
+      .agreement h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 8px; color: #f8fafc; }
+      .agreement p { font-size: 0.92rem; line-height: 1.65; color: #cbd5e1; margin: 0 0 10px; white-space: pre-wrap; }
+      .agreement .who { font-size: 0.78rem; color: var(--muted); margin: 0; }
+      .blocked {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin: 0 0 26px;
+        line-height: 1.6;
+      }
+      .blocked code {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 5px;
+        padding: 2px 7px;
+        font-size: 0.78rem;
+        color: #e2e8f0;
+      }
+      .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+      a.btn, button.btn {
+        display: inline-block;
+        height: 44px;
+        line-height: 44px;
+        padding: 0 20px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-radius: 10px;
+        text-decoration: none;
+        cursor: pointer;
+        border: 0;
+        font-family: inherit;
+      }
+      .btn.primary { background: var(--teal); color: #062e2b; }
+      .btn.ghost { background: transparent; color: #e2e8f0; border: 2px solid rgba(255, 255, 255, 0.16); line-height: 40px; }
+      .empty { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+    </style>
+  </head>
+  <body>
+    <div class="card" id="root">
+      <div class="eyebrow">Digital Guardian</div>
+      <h1>This is screen-free time</h1>
+      <p class="lede" id="lede">Loading your family's agreement…</p>
+      <div id="agreements"></div>
+      <p class="blocked" id="blocked"></p>
+      <div class="actions">
+        <a class="btn ghost" href="#" id="back">Go back</a>
+        <a
+          class="btn primary"
+          href="https://digitalguardianwellness.org/family-commitments"
+          target="_blank"
+          rel="noreferrer"
+          >Review commitments</a
+        >
+      </div>
+    </div>
+    <script src="blocked.js"></script>
+  </body>
+</html>

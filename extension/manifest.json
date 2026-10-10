@@ -9,6 +9,12 @@
     "default_title": "Family Commitments"
   },
   "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html", "blocked.js", "rules.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "background": {
     "service_worker": "background.js"
   },
