@@ -229,7 +229,14 @@ let onboardingDriver: ReturnType<typeof driver> | null = null
  * again while waiting, the latest intent replaces the queued one instead of
  * stacking listeners that would each start a tour.
  */
-function runWhenConsentResolved(start: () => void): () => void {
+/**
+ * Run `start` once cookie consent is resolved, waiting if it is not yet.
+ *
+ * Exported so every tour entry point shares one gate — the main onboarding tour,
+ * its replay buttons, and the extension tour all go through here. A tour that
+ * starts before consent is answered is the bug this exists to prevent.
+ */
+export function runWhenConsentResolved(start: () => void): () => void {
   if (typeof window === 'undefined') return () => {}
   if (isCookieConsentResolved()) {
     start()

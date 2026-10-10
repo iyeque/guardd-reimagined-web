@@ -15,6 +15,9 @@ import {
   ArrowLeft,
   Loader2,
   User,
+  MonitorSmartphone,
+  KeyRound,
+  ShieldCheck,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +26,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
 import { updateProfile } from "@/lib/profiles";
+import { startExtensionTour } from "@/lib/extension-tour";
 import type { CommitmentRules } from "@shared/schema";
 import { RuleEditor } from "@/components/commitments/RuleEditor";
 import { parseMemberOptions } from "@/lib/commitment-members";
@@ -87,7 +91,7 @@ const FamilyAccessPanel = ({
     "w-full h-11 rounded-xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 px-3 text-sm font-bold text-foreground";
 
   return (
-    <div className="space-y-3 pt-2 border-t-2 border-border/60">
+    <div className="space-y-3 pt-2 border-t-2 border-border/60" data-tour="extension-key">
       <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
         Family access token
       </div>
@@ -392,6 +396,8 @@ const FamilyCommitments: React.FC = () => {
     }
   };
 
+  const showExtensionTour = () => startExtensionTour();
+
   const pairDevice = async () => {
     if (!accessToken) return;
     setPairing(true);
@@ -634,10 +640,8 @@ const FamilyCommitments: React.FC = () => {
             </p>
           </motion.header>
 
-          {/* Connect this device. This is the only place a key is entered, so it
-              must be impossible to miss: burying it inside the create form meant
-              a family whose page would not load had to scroll past the whole form
-              and expand a collapsed section to find the field. */}
+          {/* How the extension works. The tour anchors to real elements here, so
+              this copy and the tour cannot drift apart. */}
           {!accessToken && (
             <div className="max-w-2xl mx-auto rounded-2xl border-2 border-teal-500/40 bg-teal-500/5 p-6 space-y-3">
               <div className="text-[10px] font-black uppercase tracking-widest text-teal-700 dark:text-teal-300">
@@ -667,6 +671,91 @@ const FamilyCommitments: React.FC = () => {
               </p>
             </div>
           )}
+
+          {/* The extension explainer */}
+          <div className="max-w-4xl mx-auto" data-tour="extension-connect">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                  Browser extension
+                </div>
+                <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tighter">
+                  Enforce these commitments in the browser
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={showExtensionTour}
+                className="shrink-0 h-11 px-5 rounded-xl border-2 border-border bg-white/70 dark:bg-white/5 font-black uppercase tracking-widest text-xs text-foreground"
+              >
+                How it works
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-6">
+                <CardContent className="p-0 space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                    <MonitorSmartphone className="w-5 h-5 text-teal-600" />
+                  </div>
+                  <h3 className="font-black text-foreground">1 · Install it</h3>
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                    Add the Digital Guardian extension to the browser each child
+                    uses. It works offline once it has synced your commitments.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-6">
+                <CardContent className="p-0 space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                    <KeyRound className="w-5 h-5 text-teal-600" />
+                  </div>
+                  <h3 className="font-black text-foreground">2 · Paste your key</h3>
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                    The key above ties the extension to <em>your</em> family. It is
+                    created when you make your first commitment and saved
+                    automatically — a key from one family will never show
+                    another's.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-6">
+                <CardContent className="p-0 space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-teal-600" />
+                  </div>
+                  <h3 className="font-black text-foreground">3 · Set hours</h3>
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                    Rules only apply inside their window. When the window ends the
+                    block lifts by itself — the extension re-checks at every
+                    boundary, so nothing stays blocked outside the agreed hours.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-6">
+                <CardContent className="p-0 space-y-2">
+                  <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                    <ShieldCheck className="w-5 h-5 text-teal-600" />
+                  </div>
+                  <h3 className="font-black text-foreground">4 · It explains itself</h3>
+                  <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                    A blocked page shows what your family actually agreed to, in
+                    your own words — not a generic browser error. A "remind" rule
+                    shows it without blocking at all.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <p className="text-xs text-muted-foreground font-medium mt-4 leading-relaxed">
+              Each device pairs with its own key, so one laptop can be revoked
+              without locking out the others. Lose a key and only an administrator
+              can reissue it.
+            </p>
+          </div>
 
           {/* How It Works */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -768,7 +857,7 @@ const FamilyCommitments: React.FC = () => {
                     className="w-full min-h-[120px] rounded-2xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 p-4 font-bold text-foreground placeholder:font-normal"
                   />
                 </div>
-                <div className="space-y-3 pt-2 border-t-2 border-border/60">
+                <div className="space-y-3 pt-2 border-t-2 border-border/60" data-tour="extension-rules">
                   <RuleEditor
                     value={rules}
                     onChange={setRules}
