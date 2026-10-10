@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Shield, ArrowLeft, RefreshCw, Globe, Clock, FileText } from "lucide-react";
+import { Shield, ArrowLeft, RefreshCw, Globe, Clock, FileText, MonitorSmartphone } from "lucide-react";
 
 const PrivacyPolicy = () => {
   return (
@@ -20,7 +20,7 @@ const PrivacyPolicy = () => {
           </div>
           <h1 className="text-4xl font-bold dark:text-white text-slate-900 mb-3">Privacy Policy</h1>
           <p className="dark:text-white/60 text-slate-500 text-lg">
-            Last updated: March 2026
+            Last updated: October 2026
           </p>
         </div>
 
@@ -189,6 +189,71 @@ const PrivacyPolicy = () => {
               </p>
             </div>
           </div>
+        </section>
+
+        {/* Browser extension */}
+        <section className="mb-10 border-l-2 border-[#4FD1C5]/40 pl-6">
+          <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4 flex items-center gap-3">
+            <MonitorSmartphone className="w-6 h-6 text-[#4FD1C5]" />
+            The Browser Extension
+          </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed">
+            The Digital Guardian browser extension enforces the family commitments you create on this site.
+            It is a companion to your commitments, not a separate service, and it is deliberately built to
+            collect as little as possible.
+          </p>
+          <div className="mt-6 space-y-4">
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">What the extension stores on your device</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                Your family access key, the commitments fetched from your family's account, which family
+                member uses that browser, and a timestamp of the last sync. All of it stays in your browser's
+                own extension storage. Caching commitments locally is what allows the rules to keep working
+                when the network is unavailable.
+              </p>
+            </div>
+
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">What the extension sends us</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                One thing: your family access key, sent to digitalguardianwellness.org to fetch that
+                family's commitments. The key is what identifies which family's commitments belong to you —
+                it is a credential, so treat it as one. Nothing else leaves your browser.
+              </p>
+            </div>
+
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">What the extension does not collect</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                It does not record your browsing history. It does not log which sites you visit or how often.
+                It sends no analytics, no telemetry, and no crash reports, and it contacts no origin other
+                than digitalguardianwellness.org. To decide whether a rule applies to a page, it reads only
+                that page's domain name — never its content — and keeps that decision entirely local.
+              </p>
+            </div>
+
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">What it does when a rule applies</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                A commitment can either block a site during the hours you agreed, or let it load and show the
+                agreement as a reminder. Either way, what a family member sees is the wording your family
+                wrote. The extension enforces your commitments; it does not decide what they are.
+              </p>
+            </div>
+
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">Removing the extension</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                Removing it from your browser deletes everything it stored there. Your commitments on this
+                site are unaffected. If a device key is lost or a laptop is handed on, a family
+                administrator can revoke that device's access from the Family Commitments page.
+              </p>
+            </div>
+          </div>
+          <p className="dark:text-amber-200/80 text-amber-800/80 mt-4 text-sm bg-amber-200/10 dark:bg-amber-200/10 rounded-xl p-4 dark:border-amber-200/20 border-amber-200/20">
+            Because the access key is stored in the browser, anyone using that browser can read your family's
+            commitments. Pair the extension only on devices your family controls.
+          </p>
         </section>
 
         {/* Choices */}
