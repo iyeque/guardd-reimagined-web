@@ -161,6 +161,30 @@ el("forget").addEventListener("click", async () => {
   await render();
 });
 
+el("create").addEventListener("click", async () => {
+  if (!confirm("Create a new family? This makes a private space you can fill with commitments.")) return;
+  el("create").disabled = true;
+  showStatus("Creating your family…", "info");
+  try {
+    const res = await fetch(`${API}/access/bootstrap`, { method: "POST" });
+    if (res.status === 429) {
+      showStatus("Too many families created recently. Try again in a little while.", "bad");
+      return;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { familyId, token, deviceLabel } = await res.json();
+    await chrome.storage.sync.set({ familyAccessKey: token });
+    await chrome.storage.local.set({ familyId, deviceLabel });
+    showStatus(`Created. Your family is ${familyId}.`, "ok");
+    await requestSync();
+    await render();
+  } catch (err) {
+    showStatus(`Could not create a family: ${err.message}`, "bad");
+  } finally {
+    el("create").disabled = false;
+  }
+});
+
 el("member").addEventListener("change", async (e) => {
   await chrome.storage.local.set({ member: e.target.value });
   await requestSync();

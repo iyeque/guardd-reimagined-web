@@ -8,7 +8,7 @@ import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { timingSafeEqual, randomBytes } from "node:crypto";
 import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess } from "../shared/schema.js";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gte } from "drizzle-orm";
 import { encryptField, decryptField } from "./crypto.js";
 
 /** Constant-time compare so the admin key cannot be recovered by timing. */
@@ -39,6 +39,9 @@ function isCronRequest(req: Request): boolean {
 function generateFamilyToken(): string {
   return randomBytes(32).toString("base64url");
 }
+
+/** Families any one caller may create per hour. See the bootstrap route. */
+const BOOTSTRAP_HOURLY_LIMIT = 20;
 
 /**
  * Resolve which family a request targets.
@@ -582,6 +585,48 @@ export function registerRoutes(app: Express) {
     } catch (err) {
       console.error("/api/family/access/whoami failed:", err);
       res.status(500).json({ error: "Failed to resolve family" });
+    }
+  });
+
+  /**
+   * Bootstrap: create a brand-new family and return its first access key.
+   *
+   * Unauthenticated by design — a stranger installing the extension has no key
+   * and no account, so there is no credential to check. The familyId is
+   * generated server-side rather than accepted from the caller, which is what
+   * stops anyone claiming an existing family's id. Each family is its own
+   * private space, so creating one grants nothing over another.
+   *
+   * The abuse guard is a blunt instrument: an unauthenticated write on a public
+   * API can otherwise fill the table. It caps how many families may be created
+   * per hour. If that ever becomes a real constraint, reCAPTCHA (already used on
+   * the contact form) is the proper answer.
+   */
+  app.post("/api/family/access/bootstrap", async (req, res) => {
+    try {
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const recent = await db
+        .select({ createdAt: familyAccess.createdAt })
+        .from(familyAccess)
+        .where(gte(familyAccess.createdAt, oneHourAgo));
+
+      if (recent.length >= BOOTSTRAP_HOURLY_LIMIT) {
+        console.warn(`family bootstrap rate limit hit: ${recent.length} in the last hour`);
+        return res.status(429).json({
+          error: "Too many families created recently. Try again later.",
+        });
+      }
+
+      // 64 bits of entropy. Deliberately server-generated: a caller-supplied id
+      // would let someone target an id that already exists.
+      const familyId = `family-${randomBytes(8).toString("hex")}`;
+      const token = generateFamilyToken();
+      await db.insert(familyAccess).values({ familyId, token, label: "First device" });
+
+      res.status(201).json({ familyId, token, deviceLabel: "First device" });
+    } catch (err) {
+      console.error("/api/family/access/bootstrap failed:", err);
+      res.status(500).json({ error: "Failed to create a family" });
     }
   });
 
