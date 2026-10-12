@@ -27,6 +27,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
 import { updateProfile } from "@/lib/profiles";
 import { startExtensionTour } from "@/lib/extension-tour";
+import { installPath, ENFORCEMENT_LIMIT_NOTE } from "@/lib/extension-install";
 import type { CommitmentRules } from "@shared/schema";
 import { RuleEditor } from "@/components/commitments/RuleEditor";
 import { parseMemberOptions } from "@/lib/commitment-members";
@@ -398,6 +399,23 @@ const FamilyCommitments: React.FC = () => {
 
   const showExtensionTour = () => startExtensionTour();
 
+  /** Does this commitment name a site to block? Drives the honesty banner. */
+  const hasBlockRule = (it: { rules: unknown }): boolean => {
+    const rules = it.rules as { entries?: { action?: string }[] } | null;
+    if (!rules?.entries) return false;
+    return rules.entries.some((e) => e.action === "block" && (e as { domains?: string[] }).domains?.length);
+  };
+
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const visibleItems = statusFilter === "all" ? items : items.filter((it) => it.status === statusFilter);
+  const statusCounts = {
+    all: items.length,
+    pending: items.filter((i) => i.status === "pending").length,
+    active: items.filter((i) => i.status === "active").length,
+    completed: items.filter((i) => i.status === "completed").length,
+  };
+  const FILTERS = ["all", "pending", "active", "completed"] as const;
+
   const pairDevice = async () => {
     if (!accessToken) return;
     setPairing(true);
@@ -672,6 +690,44 @@ const FamilyCommitments: React.FC = () => {
             </div>
           )}
 
+          {/* The honesty banner. Shown when a commitment names a site to block
+              but this browser is not paired: without the extension the rule
+              blocks nothing, and saying so is the only way a family learns that
+              before assuming the feature is broken. */}
+          {items.some(hasBlockRule) && !accessToken && (
+            <div className="max-w-4xl mx-auto rounded-2xl border-2 border-amber-500/40 bg-amber-500/5 p-5 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0">
+                  <MonitorSmartphone className="w-4.5 h-4.5 text-amber-600" />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-black text-foreground">
+                    These commitments are not being enforced yet
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                    A commitment that names a site is enforced by the browser
+                    extension, not by this website. Nothing is blocked until the
+                    extension is installed and paired to your family.{" "}
+                    {installPath(false).live ? (
+                      <a
+                        href={installPath(false).href ?? undefined}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-black text-teal-600 underline"
+                      >
+                        {installPath(false).cta}
+                      </a>
+                    ) : (
+                      <span className="font-black text-amber-700 dark:text-amber-300">
+                        Coming to the Chrome Web Store shortly.
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* The extension explainer */}
           <div className="max-w-4xl mx-auto" data-tour="extension-connect">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
@@ -754,6 +810,10 @@ const FamilyCommitments: React.FC = () => {
               Each device pairs with its own key, so one laptop can be revoked
               without locking out the others. Lose a key and only an administrator
               can reissue it.
+            </p>
+            <p className="text-xs text-muted-foreground font-medium leading-relaxed rounded-xl border-2 border-border bg-white/60 dark:bg-white/5 p-4">
+              <span className="font-black text-foreground">Worth knowing: </span>
+              {ENFORCEMENT_LIMIT_NOTE}
             </p>
           </div>
 
@@ -885,15 +945,37 @@ const FamilyCommitments: React.FC = () => {
           </Card>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-2xl font-black text-foreground tracking-tighter">Current Commitments</h2>
               <Button onClick={load} variant="ghost" className="text-xs font-black uppercase tracking-widest">
                 Refresh
               </Button>
             </div>
+
+            {/* Status filter. The badge existed before but nothing let you
+                narrow by it, so a family could not see only pending or only
+                completed commitments. */}
+            <div className="flex flex-wrap gap-2">
+              {FILTERS.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setStatusFilter(f)}
+                  aria-pressed={statusFilter === f}
+                  className={
+                    statusFilter === f
+                      ? "px-3.5 h-9 rounded-full bg-foreground text-background text-[10px] font-black uppercase tracking-widest"
+                      : "px-3.5 h-9 rounded-full border-2 border-border bg-white/60 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-teal-500/50"
+                  }
+                >
+                  {f} <span className="opacity-60">{statusCounts[f]}</span>
+                </button>
+              ))}
+            </div>
+
             {loading && <div className="text-sm text-muted-foreground font-medium">Loading...</div>}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {items.map((it) => (
+              {visibleItems.map((it) => (
                 <Card
                   key={it.id}
                   className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-[2rem] p-6 hover:border-teal-500/40 transition-colors cursor-pointer group"
@@ -919,8 +1001,12 @@ const FamilyCommitments: React.FC = () => {
                   </CardContent>
                 </Card>
               ))}
-              {!loading && items.length === 0 && (
-                <div className="text-sm text-muted-foreground font-medium">No commitments yet. Create your first above.</div>
+              {visibleItems.length === 0 && !loading && (
+                <div className="text-sm text-muted-foreground font-medium">
+                  {statusFilter === "all"
+                    ? "No commitments yet. Create your first above."
+                    : `No ${statusFilter} commitments.`}
+                </div>
               )}
             </div>
           </div>
