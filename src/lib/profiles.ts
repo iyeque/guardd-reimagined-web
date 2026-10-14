@@ -25,6 +25,9 @@ function generateId(): string {
   });
 }
 
+/** Set once a corrupt dg_profiles has been reported, so we warn once per page load. */
+let warnedAboutCorruptProfiles = false;
+
 function getProfiles(): Record<string, Profile> {
   if (typeof window === "undefined") return {};
   try {
@@ -40,9 +43,17 @@ function getProfiles(): Record<string, Profile> {
     if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
       return parsed as Record<string, Profile>;
     }
-    console.error(
-      `dg_profiles is not a profile map (got ${Array.isArray(parsed) ? "array" : typeof parsed}); resetting`
-    );
+    // Called several times per load, so guard the log: three identical errors on
+    // every page view reads like something is broken repeatedly when it is one
+    // repair, reported once.
+    if (!warnedAboutCorruptProfiles) {
+      warnedAboutCorruptProfiles = true;
+      console.error(
+        `dg_profiles is not a profile map (got ${
+          Array.isArray(parsed) ? "array" : typeof parsed
+        }); resetting to empty. Existing profiles in this browser were not readable.`
+      );
+    }
     return {};
   } catch (e) {
     console.error("Failed to parse profiles", e);
