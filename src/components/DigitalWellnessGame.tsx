@@ -220,7 +220,7 @@ const DigitalWellnessPop: React.FC = () => {
     if (!gameOver && gameStarted) {
       requestRef.current = requestAnimationFrame(animate);
     }
-  }, [gameStarted, gameOver, score, highScore]);
+  }, [gameStarted, gameOver, score, highScore, highScoreKey]);
 
   useEffect(() => {
     if (gameStarted && !gameOver) {
