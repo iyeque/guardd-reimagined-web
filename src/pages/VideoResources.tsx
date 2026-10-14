@@ -28,7 +28,6 @@ interface VideoCategory {
 }
 
 const VideoResources: React.FC = () => {
-  const { setContentAgeGroup } = useWellness();
   const channelId = "UCCRU5NVBA7hyl18jXAICwaA";
   const [selectedVideo, setSelectedVideo] = useState<{id: string, title: string, provider?: Video["provider"], url?: string} | null>(null);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -103,8 +102,7 @@ const VideoResources: React.FC = () => {
       }
     };
     fetchVideos();
-    setContentAgeGroup('both');
-  }, [setContentAgeGroup]);
+  }, []);
 
   useEffect(() => {
     let cleared = false;

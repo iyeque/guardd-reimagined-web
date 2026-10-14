@@ -27,7 +27,6 @@ interface BlogPost {
 }
 
 const EducationalBlog: React.FC = () => {
-  const { setContentAgeGroup } = useWellness();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleCount, setVisibleCount] = useState(9);
@@ -45,8 +44,7 @@ const EducationalBlog: React.FC = () => {
         console.error("Failed to load resources:", err);
         toast.error("Failed to load resource database.");
       });
-    setContentAgeGroup('both');
-  }, [setContentAgeGroup]);
+  }, []);
 
   const filteredPosts = useMemo(() => {
     if (!searchTerm) return posts;

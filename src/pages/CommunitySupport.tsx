@@ -69,7 +69,6 @@ interface Mentor {
 }
 
 const CommunitySupport: React.FC = () => {
-  const { setContentAgeGroup } = useWellness();
   const [events, setEvents] = useState<GlobalEvent[]>([]);
   const [discussions, setDiscussions] = useState<TrendingDiscussion[]>([]);
   const [mentors, setMentors] = useState<Mentor[]>([]);
@@ -254,9 +253,8 @@ const CommunitySupport: React.FC = () => {
       fetchData();
       setLiveUsers(prev => Math.max(900, prev + stableSessionOffset.current));
     }, 45000);
-    setContentAgeGroup('family');
     return () => clearInterval(refreshInterval);
-  }, [setContentAgeGroup]);
+  }, []);
 
   const filteredEvents = useMemo(() => {
     const lower = eventSearch.toLowerCase();
