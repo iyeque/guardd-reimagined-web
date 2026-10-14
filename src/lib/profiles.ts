@@ -59,7 +59,14 @@ function saveProfiles(profiles: Record<string, Profile>): boolean {
     localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
     return true;
   } catch (e) {
-    console.error("Failed to save profiles", e);
+    // Report the real failure. setItem throws QuotaExceededError when the origin's
+    // quota is full, but it can also throw for other reasons, and a message that
+    // asserts one cause for every failure sends people clearing storage that was
+    // never the problem.
+    console.error(
+      `Failed to save profiles: ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}`,
+      e
+    );
     return false;
   }
 }

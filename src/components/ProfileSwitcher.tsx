@@ -70,7 +70,7 @@ const ProfileSwitcher: FC = () => {
     // would look like the profile was created when nothing was stored.
     if (!created) {
       setSaveError(
-        "Could not create the profile — this browser's storage is full. Free up space or clear old progress, then try again."
+        "Could not create the profile. The browser refused the write — open the console (F12) for the exact error. If it says QuotaExceededError, clear site data for digitalguardianwellness.org and try again."
       );
       return;
     }
@@ -96,7 +96,7 @@ const ProfileSwitcher: FC = () => {
     // clicking save against a full disk.
     if (updated === null) {
       setSaveError(
-        "Could not save — this browser's storage is full. Free up space or clear old progress, then try again."
+        "Could not save this profile. The browser refused the write — open the console (F12) for the exact error. If it says QuotaExceededError, clear site data for digitalguardianwellness.org and try again."
       );
       return;
     }
