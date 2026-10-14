@@ -18,7 +18,12 @@ import type { FamilyMode } from "@/lib/profiles";
 const MODE_CYCLE: FamilyMode[] = ["parent", "child", "family"];
 
 function nextMode(current: FamilyMode): FamilyMode {
+  // An unrecognised value must not wedge the cycler. indexOf returns -1 for
+  // anything outside the union, and (-1 + 1) % length is 0 — which happens to
+  // land on "parent", but only by accident of the arithmetic rather than by
+  // intent. Clamp so the behaviour is deliberate.
   const idx = MODE_CYCLE.indexOf(current);
+  if (idx === -1) return MODE_CYCLE[0];
   return MODE_CYCLE[(idx + 1) % MODE_CYCLE.length];
 }
 

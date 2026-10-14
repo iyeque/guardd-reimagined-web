@@ -21,6 +21,33 @@
 
 import type { Profile } from "@/lib/profiles";
 
+/** The only values `mode` may hold. Anything else came from a hand-edited or foreign blob. */
+const VALID_MODES = ["parent", "child", "family"] as const;
+
+/**
+ * Force a profile's `mode` into the union.
+ *
+ * A transfer blob is untrusted input — it is JSON a user pasted, or a file from
+ * another device or an older build. Nothing validated `mode` on the way in, so a
+ * profile carrying `mode: "both"` (or any string) was written straight to
+ * localStorage. ProfileSwitcher then displays that raw value, and its cycler does
+ * `MODE_CYCLE.indexOf(current)`, which returns -1 for anything unrecognised — so
+ * the first click jumps to "parent" instead of cycling, and the badge shows a
+ * value that is not a mode at all.
+ *
+ * Same shape as the content-age-group bug: derived state and unvalidated import
+ * both let a value outside the union reach the UI.
+ */
+function sanitizeProfileMode<T extends { mode?: unknown }>(profile: T): T {
+  const mode = profile.mode;
+  return {
+    ...profile,
+    mode: VALID_MODES.includes(mode as (typeof VALID_MODES)[number])
+      ? mode
+      : "family",
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Scope: which top-level localStorage keys are conceptually "device-level" and
 // should NOT be part of a profile transfer.
@@ -287,7 +314,12 @@ export function applyTransferBlob(
   }
 
   const writeProfilesList = (profiles: Profile[]) => {
-    localStorage.setItem("dg_profiles", JSON.stringify(profiles));
+    // Sanitise on the way in: a blob is untrusted, and an out-of-union `mode`
+    // reaches the Mode button's cycler, which cannot index it.
+    localStorage.setItem(
+      "dg_profiles",
+      JSON.stringify(profiles.map(sanitizeProfileMode))
+    );
   };
 
   const existingRaw = localStorage.getItem("dg_profiles");
