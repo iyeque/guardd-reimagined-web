@@ -36,9 +36,32 @@ function getProfiles(): Record<string, Profile> {
   return {};
 }
 
-function saveProfiles(profiles: Record<string, Profile>): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+/**
+ * Persist the profiles map.
+ *
+ * Returns false when the write fails. localStorage.setItem throws
+ * QuotaExceededError once the origin's ~5MB is full, and this app stores a great
+ * deal per profile (courses, workshops, companion state, progress keys, family
+ * commitments). Before this returned a status the throw propagated straight out
+ * of the caller's onClick handler, which meant:
+ *
+ *   - the lines after the save never ran, so an edit modal stayed open and a new
+ *     profile never appeared in the list, and
+ *   - nothing was shown to the user, so it looked like the button was dead.
+ *
+ * Both "cannot switch mode" and "cannot add a profile" are that one failure.
+ * Reads were already guarded; writes were not, which is why the page still
+ * rendered correctly from stale data.
+ */
+function saveProfiles(profiles: Record<string, Profile>): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+    return true;
+  } catch (e) {
+    console.error("Failed to save profiles", e);
+    return false;
+  }
 }
 
 export function getCurrentProfileId(): string | null {
@@ -61,7 +84,7 @@ export function createProfile(
   nickname: string = "",
   mode: FamilyMode = "family",
   baseFamilyId?: string
-): Profile {
+): Profile | null {
   const profiles = getProfiles();
   const id = generateId();
   const familyId = baseFamilyId ?? `family-${id.slice(0, 8)}`;
@@ -75,7 +98,7 @@ export function createProfile(
   };
 
   profiles[id] = newProfile;
-  saveProfiles(profiles);
+  if (!saveProfiles(profiles)) return null;
   localStorage.setItem(CURRENT_PROFILE_KEY, id);
 
   return newProfile;
@@ -98,7 +121,10 @@ export function updateProfile(
   if (!profiles[profileId]) return null;
 
   profiles[profileId] = { ...profiles[profileId], ...updates };
-  saveProfiles(profiles);
+  // Only report success once the write actually landed. Returning the merged
+  // object on a failed write is what made this silent: callers saw a truthy
+  // result and updated their state to match data that was never stored.
+  if (!saveProfiles(profiles)) return null;
   return profiles[profileId];
 }
 

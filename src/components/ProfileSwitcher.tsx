@@ -33,6 +33,10 @@ const ProfileSwitcher: FC = () => {
   const profileId = useProfileId();
 
   const [isOpen, setIsOpen] = useState(false);
+  // Shown when a profile write fails. localStorage.setItem throws once the
+  // origin's quota is full, and before this the failure was invisible: the click
+  // did nothing and no error appeared, which reads as a dead button.
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editMode, setEditMode] = useState<FamilyMode>("parent");
@@ -59,11 +63,18 @@ const ProfileSwitcher: FC = () => {
   };
 
   const confirmCreate = () => {
-    if (!newNickname.trim()) {
-      createNewProfile("", mode);
-    } else {
-      createNewProfile(newNickname.trim(), mode);
+    const created = newNickname.trim()
+      ? createNewProfile(newNickname.trim(), mode)
+      : createNewProfile("", mode);
+    // null = the write did not land. Leave the form open and say why; closing it
+    // would look like the profile was created when nothing was stored.
+    if (!created) {
+      setSaveError(
+        "Could not create the profile — this browser's storage is full. Free up space or clear old progress, then try again."
+      );
+      return;
     }
+    setSaveError(null);
     setShowNew(false);
     setNewNickname("");
   };
@@ -76,10 +87,20 @@ const ProfileSwitcher: FC = () => {
 
   const saveEdit = () => {
     const nickname = editingNickname.trim() || currentProfile.nickname;
-    updateCurrentProfile({
+    const updated = updateCurrentProfile({
       nickname,
       mode: editMode,
     });
+    // updateCurrentProfile returns null when the write did not land. Keep the
+    // modal open and say why, rather than closing it and leaving the user
+    // clicking save against a full disk.
+    if (updated === null) {
+      setSaveError(
+        "Could not save — this browser's storage is full. Free up space or clear old progress, then try again."
+      );
+      return;
+    }
+    setSaveError(null);
     setEditing(false);
   };
 
@@ -119,6 +140,14 @@ const ProfileSwitcher: FC = () => {
                 {selectedProfile.nickname || "Unnamed"}
               </span>
             </div>
+            {saveError && (
+              <div
+                role="alert"
+                className="mb-3 rounded-xl border-2 border-red-300 dark:border-red-500/40 bg-red-50 dark:bg-red-500/10 px-3 py-2 text-xs font-medium text-red-700 dark:text-red-300"
+              >
+                {saveError}
+              </div>
+            )}
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500 dark:text-slate-400">Family</span>
               <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">

@@ -25,11 +25,11 @@ interface ProfileContextType {
   currentProfile: Profile | null;
   profiles: Profile[];
   reloadProfiles: () => void;
-  createNewProfile: (nickname?: string, mode?: FamilyMode) => void;
+  createNewProfile: (nickname?: string, mode?: FamilyMode) => Profile | null;
   switchProfile: (profileId: string) => void;
   updateCurrentProfile: (
     updates: Partial<Pick<Profile, "nickname" | "mode">>
-  ) => void;
+  ) => Profile | null;
   deleteCurrentProfile: () => boolean;
   resetCurrentProgress: () => void;
   }
@@ -68,11 +68,10 @@ export const ProfileProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   const createNewProfile = useCallback(
-    (nickname: string = "", mode: FamilyMode = "family") => {
-      const profile = createProfile(nickname, mode);
-      setCurrentProfile(profile.id);
-      setCurrentProfileState(profile);
-      setProfiles(listProfiles());
+    (nickname: string = "", mode: FamilyMode = "family"): Profile | null => {
+      // null means the write failed, so the profile was never stored. Callers
+      // must not adopt it — it would appear in the UI and vanish on reload.
+      return createProfile(nickname, mode);
     },
     []
   );
@@ -93,13 +92,19 @@ export const ProfileProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, []);
 
   const updateCurrentProfile = useCallback(
-    (updates: Partial<Pick<Profile, "nickname" | "mode">>) => {
-      if (!currentProfile) return;
+    (
+      updates: Partial<Pick<Profile, "nickname" | "mode">>
+    ): Profile | null => {
+      if (!currentProfile) return null;
       const updated = updateProfile(currentProfile.id, updates);
       if (updated) {
         setCurrentProfileState(updated);
         setProfiles(listProfiles());
+        return updated;
       }
+      // null means the write did not land — almost always localStorage quota.
+      // Callers need to know so they can say so instead of failing silently.
+      return null;
     },
     [currentProfile]
   );
