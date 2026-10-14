@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trophy, Zap, Heart, AlertCircle } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { getProfileStorageKey } from "@/lib/profiles";
+import { useProfileId } from "@/context/ProfileContext";
 
 interface Bubble {
   x: number;
@@ -52,10 +54,23 @@ const DigitalWellnessPop: React.FC = () => {
   const requestRef = useRef<number>();
   const lastTimeRef = useRef<number>(0);
 
+  // The high score is per profile, not per browser. A bare key meant two
+  // siblings on the same device shared one score, so the second profile saw the
+  // first one's number as its own best. Every other feature already scopes this
+  // way via getProfileStorageKey; this was the only one that did not.
+  //
+  // With no profile selected there is nothing to scope to, so fall back to an
+  // unscoped key — the same convention useWorkshopProgress already uses.
+  const profileId = useProfileId();
+  const highScoreKey =
+    profileId != null
+      ? getProfileStorageKey('wellness-pop-highscore', profileId)
+      : 'wellness-pop-highscore-guest';
+
   useEffect(() => {
-    const saved = localStorage.getItem('wellness-pop-highscore');
+    const saved = localStorage.getItem(highScoreKey);
     if (saved) setHighScore(parseInt(saved));
-  }, []);
+  }, [highScoreKey]);
 
   const createParticles = (x: number, y: number, color: string, count: number) => {
     for (let i = 0; i < count; i++) {
@@ -195,7 +210,7 @@ const DigitalWellnessPop: React.FC = () => {
         setGameOver(true);
         if (score > highScore) {
           setHighScore(score);
-          localStorage.setItem('wellness-pop-highscore', score.toString());
+          localStorage.setItem(highScoreKey, score.toString());
         }
       }
       return Math.min(100, next);
