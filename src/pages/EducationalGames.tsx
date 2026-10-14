@@ -26,6 +26,7 @@ import {
   Keyboard
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { SOCIAL_NAVIGATOR_SCENARIOS, type SocialOption } from "@/lib/social-navigator";
 import { useWellness, type ContentAgeGroup } from "@/context/WellnessContext";
 
 type GameCategory = 'all' | 'kids' | 'teens' | 'parents';
@@ -213,42 +214,17 @@ const PrivacyArchitect = () => {
 
 const SocialNavigator = () => {
   const [step, setStep] = useState(0);
-  const [outcome, setOutcome] = useState<string | null>(null);
+  // The outcome carries its own verdict. Colouring the result by matching English
+  // words in the copy is a translation bug waiting to happen: any edit to the
+  // text silently changes which answers look right, and a "wrong" answer whose
+  // wording happens to contain the word gets coloured green.
+  const [outcome, setOutcome] = useState<{ result: string; ok: boolean } | null>(null);
   const [totalSuccess, setTotalSuccess] = useState(0);
 
-  const scenarios = [
-    {
-      text: "A friend posts something mean about another friend. They ask you to 'like' it. What do you do?",
-      options: [
-        { text: "Like it to stay in the group.", result: "Bad move. You encouraged bullying.", ok: false },
-        { text: "Ignore it and talk to them privately.", result: "Great choice! You didn't escalate and showed maturity.", ok: true }
-      ]
-    },
-    {
-      text: "A stranger in a game offers you 'free credits' if you click a link and login. What is your response?",
-      options: [
-        { text: "Click it—I need the credits!", result: "Phishing attack! Your account was stolen.", ok: false },
-        { text: "Report the player and ignore the link.", result: "Perfect! You recognized a scam and protected your data.", ok: true }
-      ]
-    },
-    {
-      text: "Your sibling leaves their phone unlocked. You see an embarrassing text. What do you do?",
-      options: [
-        { text: "Take a photo and send it to your friends.", result: "Privacy violation. This destroys trust and could lead to trouble.", ok: false },
-        { text: "Lock the phone and respect their privacy.", result: "Honorable! You treated their digital space with respect.", ok: true }
-      ]
-    },
-    {
-      text: "You want to post a photo of your friends, but one of them looks bad in it. They didn't see it yet.",
-      options: [
-        { text: "Post it anyway, I look great!", result: "Disrespectful. Always ask for consent before posting others.", ok: false },
-        { text: "Ask them if they're okay with you posting it.", result: "Consent is key! Your friends appreciate the respect.", ok: true }
-      ]
-    }
-  ];
+  const scenarios = SOCIAL_NAVIGATOR_SCENARIOS;
 
-  const handleChoice = (opt: { text: string; result: string; ok: boolean }) => {
-    setOutcome(opt.result);
+  const handleChoice = (opt: SocialOption) => {
+    setOutcome({ result: opt.result, ok: opt.ok });
     if (opt.ok) setTotalSuccess(s => s + 1);
   };
 
@@ -268,8 +244,8 @@ const SocialNavigator = () => {
         </div>
       ) : outcome ? (
         <div className="space-y-6 animate-in zoom-in duration-300">
-          <div className={cn("p-8 rounded-[2.5rem] border-2 shadow-inner", outcome.includes("Great") || outcome.includes("Perfect") || outcome.includes("Honorable") || outcome.includes("Consent") ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400" : "border-red-500 bg-red-500/10 text-red-700 dark:text-red-400")}>
-            <p className="text-xl font-black leading-tight">{outcome}</p>
+          <div className={cn("p-8 rounded-[2.5rem] border-2 shadow-inner", outcome.ok ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400" : "border-red-500 bg-red-500/10 text-red-700 dark:text-red-400")}>
+            <p className="text-xl font-black leading-tight">{outcome.result}</p>
           </div>
           <Button onClick={nextScenario} className="bg-foreground text-background font-black px-10 py-6 rounded-2xl shadow-xl">
             Next Scenario
@@ -510,11 +486,15 @@ const EducationalGames: React.FC = () => {
             <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
               <div className="flex items-center gap-3 bg-white/60 dark:bg-white/5 px-6 py-3 rounded-2xl border border-border shadow-sm">
                 <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                <span className="text-sm font-black text-foreground">1.2k Players</span>
+                <span className="text-sm font-black text-foreground">
+                  {claims.find(c => c.slug === "families_helped")?.value || "750+"} Families
+                </span>
               </div>
               <div className="flex items-center gap-3 bg-white/60 dark:bg-white/5 px-6 py-3 rounded-2xl border border-border shadow-sm">
-                <Trophy className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
-                <span className="text-sm font-black text-foreground">450 Champions</span>
+                <Trophy className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                <span className="text-sm font-black text-foreground">
+                  {claims.find(c => c.slug === "resources")?.value || "1,000+"} Resources
+                </span>
               </div>
             </div>
           </div>
