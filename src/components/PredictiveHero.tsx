@@ -170,7 +170,9 @@ const PredictiveHero: React.FC = () => {
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
-            placeholder={`Search for a ${mode === 'child' ? 'game or topic' : 'resource'}...`}
+            // Child mode searches games only, so the placeholder promises only
+            // that. "or topic" advertised a search the results never perform.
+            placeholder={`Search for a ${mode === 'child' ? 'game' : 'resource'}...`}
             className="text-2xl px-10 py-8 rounded-full shadow-[0_0_40px_rgba(79,209,197,0.2)] border-2 border-[#4FD1C5]/30 focus:border-[#4FD1C5] focus:shadow-[0_0_60px_rgba(79,209,197,0.4)] bg-white/40 dark:bg-black/40 backdrop-blur-md transition-all duration-300 text-foreground placeholder:text-muted-foreground font-bold"
             autoComplete="off"
           />
