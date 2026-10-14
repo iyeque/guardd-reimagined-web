@@ -333,17 +333,10 @@ const EducationalGames: React.FC = () => {
     return game?.category ?? ['kids', 'teens', 'parents'];
   }, [activeGame]);
 
-  useEffect(() => {
-    const hasKids = activeCategories.includes('kids');
-    const hasTeens = activeCategories.includes('teens');
-    const hasParents = activeCategories.includes('parents');
-    if (hasKids && hasTeens) setContentAgeGroup('both');
-    else if (hasKids) setContentAgeGroup('kids');
-    else if (hasTeens) setContentAgeGroup('teens');
-    else if (hasParents) setContentAgeGroup('parents');
-    else setContentAgeGroup('family');
-  }, [activeCategories, setContentAgeGroup]);
-
+  // The age group is a user preference, held and persisted by WellnessContext.
+  // It used to be derived here from whichever game was open, which meant opening
+  // a game silently overwrote whatever the user had picked — and browsing the
+  // list forced it to 'both'. It is now read only.
   const filteredGames = useMemo(() => {
     if (filter === 'all') return GAMES;
     return GAMES.filter(game => game.category.includes(filter));

@@ -7,6 +7,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { Shield } from "lucide-react";
 import { ProfileProvider } from "@/context/ProfileContext";
+import { WellnessProvider } from "@/context/WellnessContext";
 import { COOKIE_CONSENT_KEY } from "@/lib/profiles";
 
 function GlobalScrollHandler() {
@@ -47,6 +48,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <ProfileProvider>
+    <WellnessProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
@@ -88,6 +90,7 @@ const App = () => (
           }} />
         </TooltipProvider>
       </QueryClientProvider>
+    </WellnessProvider>
     </ProfileProvider>
   );
 

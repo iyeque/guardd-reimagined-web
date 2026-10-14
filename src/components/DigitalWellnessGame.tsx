@@ -7,6 +7,14 @@ import { cn } from "@/lib/utils";
 import { getProfileStorageKey } from "@/lib/profiles";
 import { useProfileId } from "@/context/ProfileContext";
 
+/**
+ * Canvas text uses the system font stack, matching the rest of the app. It used
+ * to request 'Montserrat', which is never loaded — the brandkit specifies the
+ * system stack — so the browser silently fell back to a different font on every
+ * platform and the bubble labels looked different on each.
+ */
+const CANVAS_FONT = 'bold 20px system-ui, -apple-system, "Segoe UI", sans-serif';
+
 interface Bubble {
   x: number;
   y: number;
@@ -43,6 +51,8 @@ const DigitalWellnessPop: React.FC = () => {
   
   const [score, setScore] = useState(0);
   const [stress, setStress] = useState(0);
+  // Bubble words drawn into the canvas, mirrored for assistive tech.
+  const [visibleLabels, setVisibleLabels] = useState<string[]>([]);
   const [gameOver, setGameOver] = useState(false);
   const [highScore, setHighScore] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -62,6 +72,8 @@ const DigitalWellnessPop: React.FC = () => {
   // With no profile selected there is nothing to scope to, so fall back to an
   // unscoped key — the same convention useWorkshopProgress already uses.
   const profileId = useProfileId();
+  const canvasDirection: 'ltr' | 'rtl' =
+    typeof document !== 'undefined' && document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';
   const highScoreKey =
     profileId != null
       ? getProfileStorageKey('wellness-pop-highscore', profileId)
@@ -124,7 +136,7 @@ const DigitalWellnessPop: React.FC = () => {
       t.life -= 0.02;
       ctx.fillStyle = t.color;
       ctx.globalAlpha = t.life;
-      ctx.font = 'bold 20px Montserrat, sans-serif';
+      ctx.font = CANVAS_FONT;
       ctx.textAlign = 'center';
       ctx.fillText(t.text, t.x, t.y);
       if (t.life <= 0) floatingTextsRef.current.splice(i, 1);
@@ -161,7 +173,11 @@ const DigitalWellnessPop: React.FC = () => {
         ctx.stroke();
 
         ctx.fillStyle = 'white';
-        ctx.font = 'black 12px Montserrat, sans-serif';
+        ctx.font = 'black 12px system-ui, -apple-system, "Segoe UI", sans-serif';
+        // Canvas draws left-to-right unless told otherwise, so Arabic and Hebrew
+        // labels render with correct glyphs in the wrong order. Direction has to
+        // be set per draw because it is canvas state, not a style.
+        ctx.direction = canvasDirection === 'rtl' ? 'rtl' : 'ltr';
         ctx.textAlign = 'center';
         ctx.fillText(b.text, b.x, b.y + 5);
       }
@@ -189,6 +205,10 @@ const DigitalWellnessPop: React.FC = () => {
       }
 
       const radius = Math.random() * 20 + 30; // Slightly larger bubbles
+      // Mirror the label into a live region. Synced here, at spawn, rather than
+      // in the draw loop: announcing on every frame would flood a screen reader,
+      // and a bubble's word does not change while it is alive.
+      setVisibleLabels((prev) => (prev.includes(text) ? prev : [...prev, text].slice(-6)));
       bubblesRef.current.push({
         x: Math.random() * (width - radius * 2) + radius,
         y: height + radius,
@@ -377,11 +397,25 @@ const DigitalWellnessPop: React.FC = () => {
           </div>
         )}
 
-        <canvas 
+        <canvas
           ref={canvasRef}
           onPointerDown={handlePointer}
           className="w-full h-full block"
+          role="img"
+          aria-label="Focus Pop game. Tap the healthy-habit bubbles before they float off the top of the screen, and avoid the distraction bubbles."
         />
+
+        {/* Bubble words are drawn into the canvas, which is opaque to assistive
+            tech — without this a screen reader gets silent coloured circles and
+            the game is unplayable. Polite, so it does not interrupt. */}
+        <div aria-live="polite" className="sr-only">
+          {gameStarted && !gameOver
+            ? `Bubbles on screen: ${visibleLabels.join(", ") || "none"}`
+            : ""}
+        </div>
+        <div aria-live="polite" className="sr-only">
+          {`Score ${score}, stress ${stress}.`}
+        </div>
 
         <div className="absolute top-6 right-6 flex flex-col gap-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
            <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
