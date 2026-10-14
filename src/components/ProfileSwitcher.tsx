@@ -87,16 +87,14 @@ const ProfileSwitcher: FC = () => {
 
   const saveEdit = () => {
     const nickname = editingNickname.trim() || currentProfile.nickname;
-    const updated = updateCurrentProfile({
-      nickname,
-      mode: editMode,
-    });
-    // updateCurrentProfile returns null when the write did not land. Keep the
-    // modal open and say why, rather than closing it and leaving the user
-    // clicking save against a full disk.
-    if (updated === null) {
+    const result = updateCurrentProfile({ nickname, mode: editMode });
+    if (!result.ok) {
+      // Two different failures with two different fixes. Saying "storage is
+      // full" for the first one is what sent us looking in the wrong place.
       setSaveError(
-        "Could not save this profile. The browser refused the write — open the console (F12) for the exact error. If it says QuotaExceededError, clear site data for digitalguardianwellness.org and try again."
+        result.reason === "not-found"
+          ? "This profile is no longer in saved data, so there is nothing to update. Reload the page — if it persists, the saved profile list is out of step with the selected profile."
+          : "Could not save — the browser refused the write. Open the console (F12) for the exact error."
       );
       return;
     }

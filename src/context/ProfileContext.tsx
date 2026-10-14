@@ -19,6 +19,7 @@ import {
   getProfile,
   getProfileStorageKey,
   type FamilyMode,
+  type ProfileSaveResult,
 } from "@/lib/profiles";
 
 interface ProfileContextType {
@@ -29,7 +30,7 @@ interface ProfileContextType {
   switchProfile: (profileId: string) => void;
   updateCurrentProfile: (
     updates: Partial<Pick<Profile, "nickname" | "mode">>
-  ) => Profile | null;
+  ) => ProfileSaveResult;
   deleteCurrentProfile: () => boolean;
   resetCurrentProgress: () => void;
   }
@@ -69,9 +70,17 @@ export const ProfileProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const createNewProfile = useCallback(
     (nickname: string = "", mode: FamilyMode = "family"): Profile | null => {
-      // null means the write failed, so the profile was never stored. Callers
-      // must not adopt it — it would appear in the UI and vanish on reload.
-      return createProfile(nickname, mode);
+      const profile = createProfile(nickname, mode);
+      // null means the write failed, so nothing was stored — adopting it would
+      // show a profile that vanishes on reload.
+      if (!profile) return null;
+      // Adopt it, or the profile is written to storage but never appears: the
+      // list only re-renders from state, so skipping these lines looks exactly
+      // like the create button being dead.
+      setCurrentProfile(profile.id);
+      setCurrentProfileState(profile);
+      setProfiles(listProfiles());
+      return profile;
     },
     []
   );
@@ -94,17 +103,16 @@ export const ProfileProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const updateCurrentProfile = useCallback(
     (
       updates: Partial<Pick<Profile, "nickname" | "mode">>
-    ): Profile | null => {
-      if (!currentProfile) return null;
-      const updated = updateProfile(currentProfile.id, updates);
-      if (updated) {
-        setCurrentProfileState(updated);
+    ): ProfileSaveResult => {
+      if (!currentProfile) return { ok: false, reason: "not-found" };
+      const result = updateProfile(currentProfile.id, updates);
+      if (result.ok) {
+        setCurrentProfileState(result.profile);
         setProfiles(listProfiles());
-        return updated;
       }
-      // null means the write did not land — almost always localStorage quota.
-      // Callers need to know so they can say so instead of failing silently.
-      return null;
+      // Pass the reason through: the caller decides what to tell the user, and
+      // collapsing both failures into one message hides which one happened.
+      return result;
     },
     [currentProfile]
   );

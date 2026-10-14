@@ -120,19 +120,28 @@ export function setCurrentProfile(profileId: string): void {
   localStorage.setItem(CURRENT_PROFILE_KEY, profileId);
 }
 
+/**
+ * Why a profile write did not land. Callers need the distinction: "the profile
+ * is not in saved data" and "the browser refused the write" have completely
+ * different fixes, and reporting both as one message sends people clearing
+ * storage that was never the problem.
+ */
+export type ProfileSaveResult =
+  | { ok: true; profile: Profile }
+  | { ok: false; reason: "not-found" | "write-failed" };
+
 export function updateProfile(
   profileId: string,
   updates: Partial<Pick<Profile, "nickname" | "mode" | "familyAccessToken">>
-): Profile | null {
+): ProfileSaveResult {
   const profiles = getProfiles();
-  if (!profiles[profileId]) return null;
+  const existing = profiles[profileId];
+  if (!existing) return { ok: false, reason: "not-found" };
 
-  profiles[profileId] = { ...profiles[profileId], ...updates };
-  // Only report success once the write actually landed. Returning the merged
-  // object on a failed write is what made this silent: callers saw a truthy
-  // result and updated their state to match data that was never stored.
-  if (!saveProfiles(profiles)) return null;
-  return profiles[profileId];
+  const merged: Profile = { ...existing, ...updates };
+  profiles[profileId] = merged;
+  if (!saveProfiles(profiles)) return { ok: false, reason: "write-failed" };
+  return { ok: true, profile: merged };
 }
 
 export function deleteProfile(profileId: string): boolean {
