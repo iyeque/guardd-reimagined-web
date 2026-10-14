@@ -29,7 +29,21 @@ function getProfiles(): Record<string, Profile> {
   if (typeof window === "undefined") return {};
   try {
     const data = localStorage.getItem(PROFILES_KEY);
-    if (data) return JSON.parse(data);
+    if (!data) return {};
+    const parsed: unknown = JSON.parse(data);
+    // Must be a plain object keyed by profile id. An array parses without error
+    // and looks like a map, but assigning profiles[id] onto an array sets a
+    // named property that JSON.stringify then drops on write — so every save
+    // appears to succeed and nothing persists, and the selected id is never
+    // found afterwards. That is the whole "cannot switch mode / cannot save"
+    // symptom: a present key, valid JSON, and writes that vanish.
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, Profile>;
+    }
+    console.error(
+      `dg_profiles is not a profile map (got ${Array.isArray(parsed) ? "array" : typeof parsed}); resetting`
+    );
+    return {};
   } catch (e) {
     console.error("Failed to parse profiles", e);
   }

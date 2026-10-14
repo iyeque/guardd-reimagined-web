@@ -46,23 +46,29 @@ export const ProfileProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const existing = getCurrentProfile();
     const profileList = listProfiles();
 
+    // A stale pointer is the common corruption: dg_current_profile names an id
+    // that is not in dg_profiles, so getCurrentProfile() returns null and every
+    // save reports "not found" even though the key exists and parses. Re-point at
+    // a real profile rather than leaving the app with nothing selected.
+    const repoint = (profile: Profile) => {
+      setCurrentProfile(profile.id);
+      setCurrentProfileState(profile);
+      setProfiles(listProfiles());
+      return profile;
+    };
+
     if (!existing && profileList.length === 0) {
-      const defaultProfile = createProfile("", "family");
-      setCurrentProfileState(defaultProfile);
+      setCurrentProfileState(createProfile("", "family"));
       setProfiles(listProfiles());
     } else if (existing) {
       migrateOldProgress(existing.id);
       setCurrentProfileState(existing);
       setProfiles(listProfiles());
     } else if (profileList.length > 0) {
-      const fallback = profileList[0];
-      setCurrentProfile(fallback.id);
-      setCurrentProfileState(fallback);
-      setProfiles(listProfiles());
-      migrateOldProgress(fallback.id);
+      repoint(profileList[0]);
+      migrateOldProgress(profileList[0].id);
     } else {
-      const defaultProfile = createProfile("", "family");
-      setCurrentProfileState(defaultProfile);
+      setCurrentProfileState(createProfile("", "family"));
       setProfiles(listProfiles());
     }
     setIsLoaded(true);
