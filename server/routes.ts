@@ -894,6 +894,22 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  /** Share the family's content packs with the extension (and the parent's apps). */
+  app.get("/api/family/chapters", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const packs = await storage.listFamilyContentPacks(familyId);
+      res.json({
+        familyId,
+        packs: packs.map((p) => ({ ...p, memberIds: JSON.parse(p.memberIds ?? "[]") })),
+      });
+    } catch (err) {
+      console.error("/api/family/chapters failed:", err);
+      res.status(500).json({ error: "Failed to load content packs" });
+    }
+  });
+
   // Curated Content (admin-managed discussions and events)
   app.get("/api/admin/curated-content", validateAdmin, async (req, res) => {
     try {

@@ -13,6 +13,11 @@ const SYNC_ALARM = "dg-sync-commitments";
 const BOUNDARY_ALARM = "dg-rule-boundary";
 const SYNC_PERIOD_MINUTES = 30;
 
+// Load the bundled rule engine and chapter packs. These are classic IIFE
+// scripts, so they declare their globals on the shared global scope that the
+// service worker runs in.
+importScripts(chrome.runtime.getURL("rules.js"), chrome.runtime.getURL("chapters.js"));
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create(SYNC_ALARM, { periodInMinutes: SYNC_PERIOD_MINUTES });
 });
@@ -53,40 +58,59 @@ async function sync() {
   if (!familyAccessKey) {
     await chrome.storage.local.set({ syncError: "No family access key saved." });
     // Nothing paired: make sure a previously-blocked site is reachable again.
-    await applyRules([]);
+    await applyRules([], []);
     return;
   }
 
   try {
-    const res = await fetch(`${API}/commitments`, {
-      headers: { Authorization: `Bearer ${familyAccessKey}` },
-    });
+    const [commitmentsRes, chaptersRes] = await Promise.all([
+      fetch(`${API}/commitments`, {
+        headers: { Authorization: `Bearer ${familyAccessKey}` },
+      }),
+      fetch(`${API}/chapters`, {
+        headers: { Authorization: `Bearer ${familyAccessKey}` },
+      }),
+    ]);
 
-    if (res.status === 401) {
+    if (commitmentsRes.status === 401 || chaptersRes.status === 401) {
       // A rejected key is a pairing problem, not a transient one — surface it
       // plainly instead of retrying every 30 minutes. Clear the rules too, so a
       // stale key cannot keep blocking sites forever.
       await chrome.storage.local.set({
         syncError: "The family access key was rejected. Re-paste it in settings.",
       });
-      await applyRules([]);
+      await applyRules([], []);
       return;
     }
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!commitmentsRes.ok || !chaptersRes.ok) {
+      throw new Error(`HTTP ${commitmentsRes.status}, ${chaptersRes.status}`);
+    }
 
-    const commitments = await res.json();
+    const commitments = await commitmentsRes.json();
+    const chaptersData = await chaptersRes.json();
+
+    // Map the family's content packs into chapter objects.
+    const chapters = chaptersData.packs.map((p) => DGRules.chapter(
+      p.packId,
+      p.title,
+      p.summary,
+      p.memberIds,
+      p.rules ?? null,
+    ));
+
     const who = await fetch(`${API}/access/whoami`, {
       headers: { Authorization: `Bearer ${familyAccessKey}` },
     }).catch(() => null);
 
     await chrome.storage.local.set({
       commitments,
+      chapters,
       syncedAt: Date.now(),
       syncError: null,
       ...(who?.ok ? { familyId: who.familyId, deviceLabel: who.deviceLabel } : {}),
     });
 
-    await applyRules(commitments);
+    await applyRules(commitments, chapters);
   } catch (err) {
     await chrome.storage.local.set({ syncError: String(err?.message ?? err) });
     throw err;
@@ -101,13 +125,19 @@ async function sync() {
  * never disagree about what is blocked.
  */
 async function evaluateHost(hostname) {
-  const { commitments, member } = await chrome.storage.local.get(["commitments", "member"]);
-  if (!commitments) return { blocked: false };
-  return DGRules.evaluateCommitmentRules(commitments, {
-    hostname: String(hostname ?? "").toLowerCase(),
+  const { commitments, chapters, member } = await chrome.storage.local.get(["commitments", "chapters", "member"]);
+  if (!commitments && !chapters) return { blocked: false };
+  const domain = String(hostname ?? "").toLowerCase();
+  const base = {
+    hostname: domain,
     member: member || null,
     now: new Date(),
-  });
+  };
+  const byCommitment = DGRules.evaluateCommitmentRules(commitments, base);
+  const byChapter = chapters
+    ? DGRules.evaluateChapterCollection(chapters, domain, base.now).some((v) => v.blocked)
+    : false;
+  return { blocked: byCommitment.blocked || byChapter, commitmentId: byCommitment.commitmentId };
 }
 
 /**
@@ -121,14 +151,14 @@ async function evaluateHost(hostname) {
  * re-implementing the window logic here, which is what guarantees the extension
  * blocks exactly what the web app says it will.
  */
-async function applyRules(commitments) {
+async function applyRules(commitments, chapters) {
   const { member } = await chrome.storage.local.get("member");
   const now = new Date();
 
+  // Unique domains we must test, from both commitments and content packs.
   const domains = new Set();
-  for (const c of commitments ?? []) {
+  for (const c of [...(commitments ?? []), ...(chapters ?? [])]) {
     for (const entry of c.rules?.entries ?? []) {
-      // "remind" shows the overlay without blocking, so it is not a DNR rule.
       if (entry.action !== "block") continue;
       for (const d of entry.domains ?? []) {
         const domain = String(d).trim().toLowerCase();
@@ -140,22 +170,20 @@ async function applyRules(commitments) {
   const addRules = [];
   let id = 1;
   for (const domain of [...domains].sort()) {
-    const verdict = DGRules.evaluateCommitmentRules(commitments, {
+    const blocked = DGRules.evaluateCommitmentRules(commitments, {
       hostname: domain,
       member: member || null,
       now,
-    });
-    if (!verdict.blocked) continue;
+    }).blocked;
+    if (!blocked) {
+      const blockedByChapter = DGRules.evaluateChapterCollection(chapters, domain, now).some((v) => v.blocked);
+      if (!blockedByChapter) continue;
+    }
+
     addRules.push({
       id: id++,
       priority: 1,
-      // Redirect rather than block: a blocked request never loads a page, so no
-      // content script could run on it and the family would see Chrome's bare
-      // ERR_BLOCKED_BY_CLIENT. Redirecting to our own page is what lets the
-      // block explain itself in the family's own words.
       action: { type: "redirect", redirect: { extensionPath: "/blocked.html" } },
-      // requestDomains matches the domain and its subdomains. main_frame covers
-      // the navigation itself; sub_frame covers an embed on another site.
       condition: {
         requestDomains: [domain],
         resourceTypes: ["main_frame", "sub_frame"],

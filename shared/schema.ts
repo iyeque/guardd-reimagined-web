@@ -98,6 +98,18 @@ export const familyAccess = pgTable(
   }),
 );
 
+export const familyContentPacks = pgTable("family_content_packs", {
+  id: serial("id").primaryKey(),
+  familyId: text("family_id").notNull(),
+  packId: text("pack_id").notNull(),
+  title: text("title").notNull(),
+  summary: text("summary").notNull(),
+  memberIds: text("member_ids").notNull().default("[]"),
+  rules: jsonb("rules").$type<CommitmentRules | null>(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export type TimeWindow = {
   days: number[];
   start: string;
@@ -222,3 +234,7 @@ export type FamilyCommitment = typeof familyCommitments.$inferSelect;
 export type InsertFamilyCommitment = z.infer<typeof insertFamilyCommitmentSchema>;
 export type FamilyCommitmentMilestone = typeof familyCommitmentMilestones.$inferSelect;
 export type InsertFamilyCommitmentMilestone = z.infer<typeof insertFamilyMilestoneSchema>;
+
+export const insertFamilyContentPackSchema = createInsertSchema(familyContentPacks);
+export type FamilyContentPack = typeof familyContentPacks.$inferSelect;
+export type InsertFamilyContentPack = typeof familyContentPacks.$inferInsert;

@@ -5,30 +5,22 @@
  * a specific member. It is content, not code: the parent adds the pack in the web
  * app, and the extension enforces the rule it carries.
  *
- * Rules use the declarativeNetRequest shape (action / start / end, both absolute
- * instants) because that is what this extension pushes to the browser. The web
- * app's schema.ts CommitRules carries a *different* shape (days[] arrays,
- * appliesTo). Those live in the commitment engine, not here.
+ * A chapter carries the same `CommitmentRules` object the bundled engine already
+ * evaluates, so there is only one rule shape in the project and the web app and
+ * the browser extension can never disagree about what a window means.
  */
 
-/** The enforcement rule a chapter carries. */
-export type ChapterRule = {
-  action: "block" | "remind";
-  /** Instant, in UTC. */
-  start: Date;
-  /** Instant, in UTC. */
-  end: Date;
-  /** What the family agreed this rule is for. */
-  reason: string;
-};
+import type { CommitmentRules } from "./schema";
+import { evaluateCommitmentRules } from "./commitment-rules";
+export { evaluateCommitmentRules };
 
 /** One content pack a family has agreed on. */
 export interface Chapter {
   id: string;
-  label: string;
+  title: string;
   summary: string;
   memberIds: string[];
-  rules: ChapterRule[];
+  rules: CommitmentRules | null;
 }
 
 /** A bundle of chapters, in play order. */
@@ -36,80 +28,66 @@ export interface ChapterCollection {
   chapters: Chapter[];
 }
 
-const EMPTY_WINDOW = new Date("1970-01-01T00:00:00Z");
+/** The verdict the bundled engine returns for a chapter. */
+export type ChapterVerdict = {
+  blocked: boolean;
+  chapterId: string;
+  title: string;
+  terms: string;
+  agreedBy: string;
+};
 
 // --- builders ---------------------------------------------------------------
 
-/** A block: stop the site, with the family's own summary as the reason. */
-export function block(
-  start: Date,
-  end: Date,
-  reason: string
-): ChapterRule {
-  return { action: "block", start, end, reason };
-}
-
-/** A remind: show the family's own wording, do not block. */
-export function remind(
-  start: Date,
-  end: Date,
-  reason: string
-): ChapterRule {
-  return { action: "remind", start, end, reason };
-}
-
-/** A chapter that carries no enforcement rules. */
+/** A chapter with `rules: null` carries nothing to enforce. */
 export function chapter(
   id: string,
-  label: string,
+  title: string,
   summary: string,
   memberIds: string[],
-  rules: ChapterRule[] = []
+  rules: CommitmentRules | null = null,
 ): Chapter {
-  return { id, label, summary, memberIds, rules };
+  return { id, title, summary, memberIds, rules: rules ?? null };
 }
 
 // --- evaluation -------------------------------------------------------------
 
 /**
- * The chapters in `collection` that are "blocking now" against `hostname` at
- * `now`. A chapter is blocking only while at least one of its rules is inside
- * its window; the extension uses this verdict to pick which rules to push.
+ * Evaluate every chapter in `collection` against `hostname` at `now`. The bundled
+ * engine is the single source of truth for window math, so this never drifts.
  */
 export function evaluateChapterCollection(
   collection: ChapterCollection,
   hostname: string,
-  now: Date
-): Chapter[] {
-  const blocking: Chapter[] = [];
+  now: Date,
+): ChapterVerdict[] {
+  const verdicts: ChapterVerdict[] = [];
   for (const chapter of collection.chapters) {
-    if (chapterActive(chapter, now)) {
-      blocking.push(chapter);
+    if (!chapter.rules) continue;
+    const commitments = [
+      {
+        id: 0,
+        title: chapter.title,
+        terms: chapter.summary,
+        members: chapter.memberIds.join(","),
+        rules: chapter.rules,
+      },
+    ];
+    const result = evaluateCommitmentRules(commitments, {
+      hostname: String(hostname ?? "").toLowerCase(),
+      member: null,
+      now,
+    });
+    if (result.blocked) {
+      verdicts.push({ ...result, chapterId: chapter.id });
     }
   }
-  return blocking;
-}
-
-/** Whether a chapter has any rule currently in effect. */
-export function chapterActive(chapter: Chapter, now: Date): boolean {
-  return chapter.rules.some((r) => inWindow(r.start, r.end, now));
-}
-
-/** True when `now` falls inside `[start, end]`. Cross-midnight windows are
- * supported by comparing as instants, so a rule from 20:00 to 07:00 blocks
- * between midnight and 07:00 as well as between 20:00 and 12:00. */
-export function inWindow(start: Date, end: Date, now: Date): boolean {
-  // If start <= end the window is a normal single span. If start > end the
-  // window wraps midnight, so `now` is inside it when it is either >= start
-  // (evening) or <= end (morning).
-  return start <= end
-    ? now >= start && now <= end
-    : now >= start || now <= end;
+  return verdicts;
 }
 
 /**
- * Build a handful of default content packs. Pure content — a parent can edit a
- * pack's label, summary and windows in the web app, and no bundle rebuild is
+ * Build a handful of default content packs. Pure content - a parent can edit a
+ * pack's title, summary and windows in the web app, and no bundle rebuild is
  * needed for ordinary edits.
  */
 export function defaultChapters(): Chapter[] {
@@ -119,17 +97,34 @@ export function defaultChapters(): Chapter[] {
       "No phones after 8",
       "We keep our phones off after 8pm so everyone can rest.",
       ["member-1"],
-      [
-        block(new Date("1970-01-01T20:00:00Z"), new Date("1970-01-01T07:00:00Z"), "No phones after 8pm"),
-        remind(new Date("1970-01-01T07:00:00Z"), new Date("1970-01-01T20:00:00Z"), "Phones are fine before 8pm"),
-      ]
+      {
+        timezone: "Asia/Dubai",
+        entries: [
+          {
+            domains: ["instagram.com", "m.instagram.com"],
+            windows: [{ days: [0, 1, 2, 3, 4], start: "20:00", end: "07:00" }],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
     ),
     chapter(
       "weekend-stream-stop",
       "Stop the stream at 6pm",
       "When the weekend stream ends, the family does something else together.",
       ["member-1", "member-2"],
-      [block(new Date("1970-01-01T18:00:00Z"), new Date("1970-01-01T00:00:00Z"), "Stream ends at 6pm")]
+      {
+        timezone: "Asia/Dubai",
+        entries: [
+          {
+            domains: ["youtube.com", "tiktok.com"],
+            windows: [{ days: [0, 1, 2, 3, 4, 5, 6], start: "18:00", end: "00:00" }],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
     ),
   ];
 }

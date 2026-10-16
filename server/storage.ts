@@ -29,9 +29,11 @@ import {
   curatedContent,
   type CuratedContent,
   type InsertCuratedContent,
+  familyContentPacks,
+  type InsertFamilyContentPack,
 } from "../shared/schema.js";
 import { db } from "./db.js";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 export interface IStorage {
   createMessage(message: InsertMessage): Promise<Message>;
@@ -227,6 +229,37 @@ export class DatabaseStorage implements IStorage {
 
   async listFamilyCommitmentMilestones(commitmentId: number): Promise<InsertFamilyCommitmentMilestone[]> {
     return await db.select().from(familyCommitmentMilestones).where(eq(familyCommitmentMilestones.commitmentId, commitmentId));
+  }
+
+  async listFamilyContentPacks(familyId: string): Promise<InsertFamilyContentPack[]> {
+    return await db.select().from(familyContentPacks).where(eq(familyContentPacks.familyId, familyId));
+  }
+
+  async getFamilyContentPack(familyId: string, packId: string): Promise<InsertFamilyContentPack | null> {
+    const [row] = await db
+      .select()
+      .from(familyContentPacks)
+      .where(and(eq(familyContentPacks.familyId, familyId), eq(familyContentPacks.packId, packId)))
+      .limit(1);
+    return row ?? null;
+  }
+
+  async createFamilyContentPack(insert: InsertFamilyContentPack): Promise<InsertFamilyContentPack> {
+    const [row] = await db.insert(familyContentPacks).values(insert).returning();
+    return row;
+  }
+
+  async updateFamilyContentPack(
+    familyId: string,
+    packId: string,
+    patch: Partial<InsertFamilyContentPack>,
+  ): Promise<InsertFamilyContentPack | null> {
+    const [row] = await db
+      .update(familyContentPacks)
+      .set({ ...patch, updatedAt: new Date() })
+      .where(and(eq(familyContentPacks.familyId, familyId), eq(familyContentPacks.packId, packId)))
+      .returning();
+    return row ?? null;
   }
 
   async createAssessmentAnalytics(insert: InsertAssessmentAnalytics): Promise<AssessmentAnalytics> {

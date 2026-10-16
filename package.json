@@ -12,7 +12,7 @@
     "start": "NODE_ENV=production node dist/start.js",
     "update-data": "tsx scripts/update-community-data.ts",
     "check": "tsc",
-    "build:extension": "esbuild shared/commitment-rules.ts --bundle --format=iife --global-name=DGRules --platform=browser --outfile=extension/rules.js",
+    "build:extension": "esbuild shared/commitment-rules.ts --bundle --format=iife --global-name=DGRules --platform=browser --outfile=extension/rules.js && esbuild shared/chapters.ts --bundle --format=iife --global-name=DGChapters --platform=browser --outfile=extension/chapters.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "db:push": "drizzle-kit push",
