@@ -277,6 +277,60 @@ const PrivacyPolicy = () => {
           </div>
         </section>
 
+        {/* Data usage */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4">
+            Data usage and what we collect
+          </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed">
+            We collect the minimum a family needs to cooperate: the commitments they agree to, the devices that
+            hold the access key, and a per-device family access token. Everything else is none.
+          </p>
+          <ul className="list-disc pl-5 -mt-2 space-y-2 text-slate-300">
+            <li>
+              <span className="font-semibold text-slate-100">Personally identifiable information:</span>
+              <span className="text-slate-300"> None collected.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">Health information:</span>
+              <span className="text-slate-300"> None collected.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">Financial and payment information:</span>
+              <span className="text-slate-300"> None collected.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">Authentication information:</span>
+              <span className="text-slate-300"> None collected. The only credential is the family access key, and it stays local on the device.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">Personal communications:</span>
+              <span className="text-slate-300"> None collected.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">Location:</span>
+              <span className="text-slate-300"> None collected. No geolocation, GPS, or nearby-device APIs are used.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">Web history:</span>
+              <span className="text-slate-300"> None collected. We do not record the pages you visit, their titles, or visit times.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">User activity:</span>
+              <span className="text-slate-300"> None collected. No mouse, scroll, keystroke, or network monitoring beyond the rule engine's own enforcement.</span>
+            </li>
+            <li>
+              <span className="font-semibold text-slate-100">Website content:</span>
+              <span className="text-slate-300"> None collected. No page text, images, audio, video, or hyperlinks are read.</span>
+            </li>
+          </ul>
+          <p className="dark:text-white/60 text-slate-700 leading-relaxed mt-4 text-sm">
+            What leaves the device is the family's own data, only: the commitments, the packs, and the device keys,
+            synced under the family access key to the family's own server. Nothing else. The browser extension
+            is a client — it does not sell, track, or profile you.
+          </p>
+        </section>
+
         {/* Disclosure */}
         <section className="mb-10">
           <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4">
