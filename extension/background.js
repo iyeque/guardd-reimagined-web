@@ -169,6 +169,8 @@ async function applyRules(commitments, chapters) {
 
   const addRules = [];
   let id = 1;
+
+  // Specific domains (commitments + content packs) currently blocked.
   for (const domain of [...domains].sort()) {
     const blocked = DGRules.evaluateCommitmentRules(commitments, {
       hostname: domain,
@@ -191,6 +193,22 @@ async function applyRules(commitments, chapters) {
     });
   }
 
+  // Blanket rule: if a committed "no-website window" is active, block every
+  // origin so the family's agreed screen-free period is enforced at the browser
+  // level. Fire-and-forget only makes sense if host_permissions covers all
+  // origins — so this is why manifest.json declares "<all_urls>".
+  if (blanketWindowActive(commitments, member, now)) {
+    addRules.push({
+      id: id++,
+      priority: 1,
+      action: { type: "redirect", redirect: { extensionPath: "/blocked.html" } },
+      condition: {
+        urlFilter: "<all_urls>",
+        resourceTypes: ["main_frame", "sub_frame"],
+      },
+    });
+  }
+
   // Replace the whole set. A rule that no longer applies must stop blocking,
   // which means removing everything previously added, not just adding on top.
   const old = await chrome.declarativeNetRequest.getDynamicRules();
@@ -203,11 +221,50 @@ async function applyRules(commitments, chapters) {
     enforcement: {
       at: now.toISOString(),
       domainsTested: domains.size,
-      blocked: addRules.map((r) => r.condition.requestDomains[0]),
+      blocked: addRules.map((r) => r.condition.requestDomains?.[0] ?? "all"),
+      blanket: blanketWindowActive(commitments, member, now),
     },
   });
 
   armNextBoundary(commitments);
+}
+
+/** Blanket window: a committed rule with no specific domains whose time window
+ *  currently covers `now`. With host_permissions "<all_urls>" this triggers a
+ *  blanket DNR rule so no site can be reached during the family's agreed
+ *  screen-free window. */
+function blanketWindowActive(commitments, member, now) {
+  const day = now.getDay();
+  const mins = now.getHours() * 60 + now.getMinutes();
+  for (const c of commitments ?? []) {
+    for (const entry of c.rules?.entries ?? []) {
+      if (entry.action !== "block") continue;
+      if (entry.domains?.length) continue; // specific domains, not blanket
+      const me = (member || "").trim().toLowerCase();
+      if (entry.appliesTo?.length && !entry.appliesTo.some((n) => n.trim().toLowerCase() === me)) continue;
+      const window = entry.windows?.find((w) => {
+        const start = parseClock(w.start);
+        const end = parseClock(w.end);
+        if (start === null || end === null) return false;
+        if (start <= end) return w.days.includes(day) && mins >= start && mins < end;
+        if (w.days.includes(day) && mins >= start) return true;
+        const prevDay = (day + 6) % 7;
+        return w.days.includes(prevDay) && mins < end;
+      });
+      if (window) return true;
+    }
+  }
+  return false;
+}
+
+/** Parse a "HH:MM" clock value to minutes since midnight (or null if invalid). */
+function parseClock(value) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(value).trim());
+  if (!m) return null;
+  const h = Number(m[1]);
+  const min = Number(m[2]);
+  if (h > 23 || min > 59) return null;
+  return h * 60 + min;
 }
 
 /** Arm an alarm for the next window edge so the rule set is re-applied then. */

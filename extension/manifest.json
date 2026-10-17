@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Enforces your family's agreed commitments at the browser level.",
   "permissions": ["storage", "alarms", "declarativeNetRequest"],
-  "host_permissions": ["https://digitalguardianwellness.org/*"],
+  "host_permissions": ["<all_urls>"],
   "action": {
     "default_title": "Family Commitments",
     "default_icon": {
