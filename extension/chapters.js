@@ -101,8 +101,19 @@ var DGChapters = (() => {
           if (!names.includes(input.member.trim().toLowerCase())) continue;
         }
         if (!entry.windows.some((w) => windowCovers(w, day, minutes))) continue;
+        if (entry.action === "block") {
+          return {
+            blocked: true,
+            reminded: false,
+            commitmentId: commitment.id,
+            title: commitment.title,
+            terms: commitment.terms,
+            agreedBy: commitment.members
+          };
+        }
         return {
-          blocked: true,
+          blocked: false,
+          reminded: true,
           commitmentId: commitment.id,
           title: commitment.title,
           terms: commitment.terms,
@@ -110,7 +121,7 @@ var DGChapters = (() => {
         };
       }
     }
-    return { blocked: false };
+    return { blocked: false, reminded: false };
   }
 
   // shared/chapters.ts

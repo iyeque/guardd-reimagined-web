@@ -85,6 +85,7 @@
       dt { color: var(--muted); font-weight: 600; }
       dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
       .hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; line-height: 1.5; }
+      .hint.warn { color: #9a3412; font-weight: 600; }
     </style>
   </head>
   <body>
@@ -138,6 +139,11 @@
         <p class="hint">
           Rules that apply to a named member only block for that person. Leave this
           as <strong>Everyone</strong> for a shared browser.
+        </p>
+        <p id="member-warning" class="hint warn" hidden>
+          Some of your family's rules name specific people. On
+          <strong>Everyone</strong> those rules do not apply at all — set the child's
+          name above to enforce them on this browser.
         </p>
       </div>
 

@@ -126,7 +126,7 @@ async function sync() {
  */
 async function evaluateHost(hostname) {
   const { commitments, chapters, member } = await chrome.storage.local.get(["commitments", "chapters", "member"]);
-  if (!commitments && !chapters) return { blocked: false };
+  if (!commitments && !chapters) return { blocked: false, reminded: false };
   const domain = String(hostname ?? "").toLowerCase();
   const base = {
     hostname: domain,
@@ -134,10 +134,48 @@ async function evaluateHost(hostname) {
     now: new Date(),
   };
   const byCommitment = DGRules.evaluateCommitmentRules(commitments, base);
-  const byChapter = chapters
-    ? DGRules.evaluateChapterCollection(chapters, domain, base.now).some((v) => v.blocked)
-    : false;
-  return { blocked: byCommitment.blocked || byChapter, commitmentId: byCommitment.commitmentId };
+  const chapterResults = chapters
+    ? DGRules.evaluateChapterCollection(chapters, domain, base.now)
+    : [];
+  const byChapterBlocked = chapterResults.some((v) => v.blocked);
+  const byChapterReminded = chapterResults.some((v) => v.reminded);
+  // A blanket window names no site, so the shared engine can never match it —
+  // it has to be resolved here or "all sites" reminders would be silent.
+  const blanket = blanketVerdict(commitments, member || null, base.now, domain);
+  const chapter = chapterResults[0] ?? null;
+  const fromCommitment = byCommitment.blocked || byCommitment.reminded;
+  // Most specific source wins for the wording: the site's own rule, then the
+  // pack, then the blanket window.
+  const source = fromCommitment
+    ? {
+        id: byCommitment.commitmentId,
+        title: byCommitment.title,
+        terms: byCommitment.terms,
+        agreedBy: byCommitment.agreedBy,
+      }
+    : chapter
+      ? {
+          id: chapter.chapterId,
+          title: chapter.title,
+          terms: chapter.terms,
+          agreedBy: chapter.agreedBy,
+        }
+      : blanket
+        ? {
+            id: blanket.commitmentId,
+            title: blanket.title,
+            terms: blanket.terms,
+            agreedBy: blanket.agreedBy,
+          }
+        : null;
+  return {
+    blocked: byCommitment.blocked || byChapterBlocked || blanket?.action === "block",
+    reminded: byCommitment.reminded || byChapterReminded || blanket?.action === "remind",
+    commitmentId: source?.id,
+    title: source?.title,
+    terms: source?.terms,
+    agreedBy: source?.agreedBy,
+  };
 }
 
 /**
@@ -197,14 +235,23 @@ async function applyRules(commitments, chapters) {
   // origin so the family's agreed screen-free period is enforced at the browser
   // level. Fire-and-forget only makes sense if host_permissions covers all
   // origins — so this is why manifest.json declares "<all_urls>".
-  if (blanketWindowActive(commitments, member, now)) {
+  const blanket = blanketVerdict(commitments, member, now);
+  if (blanket?.action === "block") {
     addRules.push({
       id: id++,
       priority: 1,
       action: { type: "redirect", redirect: { extensionPath: "/blocked.html" } },
       condition: {
-        urlFilter: "<all_urls>",
+        // No urlFilter: per the DNR contract an omitted urlFilter matches every
+        // url. "<all_urls>" is a host-permission pattern, not a urlFilter — as a
+        // literal it would match nothing and the blanket block would never fire.
+        // Schemes are pinned so the redirect target itself is never re-matched.
         resourceTypes: ["main_frame", "sub_frame"],
+        schemes: ["http", "https"],
+        // Sites the family agreed to leave open, e.g. a school portal. DNR
+        // applies these itself, so the engine does not have to be consulted
+        // per request.
+        ...(blanket.excepts.length ? { excludedRequestDomains: blanket.excepts } : {}),
       },
     });
   }
@@ -222,39 +269,59 @@ async function applyRules(commitments, chapters) {
       at: now.toISOString(),
       domainsTested: domains.size,
       blocked: addRules.map((r) => r.condition.requestDomains?.[0] ?? "all"),
-      blanket: blanketWindowActive(commitments, member, now),
+      blanket: blanketVerdict(commitments, member, now)?.action ?? null,
     },
   });
 
   armNextBoundary(commitments);
 }
 
-/** Blanket window: a committed rule with no specific domains whose time window
- *  currently covers `now`. With host_permissions "<all_urls>" this triggers a
- *  blanket DNR rule so no site can be reached during the family's agreed
- *  screen-free window. */
-function blanketWindowActive(commitments, member, now) {
+/** Does `w` cover the given weekday and minute-of-day? Handles windows that
+ *  wrap past midnight, where the early hours belong to the previous day. */
+function windowCovers(w, day, mins) {
+  const start = parseClock(w.start);
+  const end = parseClock(w.end);
+  if (start === null || end === null) return false;
+  if (start <= end) return w.days.includes(day) && mins >= start && mins < end;
+  if (w.days.includes(day) && mins >= start) return true;
+  const prevDay = (day + 6) % 7;
+  return w.days.includes(prevDay) && mins < end;
+}
+
+/** Blanket verdict: a committed rule that names no domains whose time window
+ *  currently covers `now`. Both actions matter — a blanket *block* becomes a
+ *  DNR rule (with host_permissions "<all_urls>", no site is reachable), while a
+ *  blanket *remind* has no DNR rule and is surfaced through the overlay on
+ *  every site instead. The shared engine cannot express either, because an
+ *  empty domain list matches nothing there.
+ *
+ *  `hostname` is optional: pass it to ask "does this window cover this site",
+ *  which skips windows that except it. Omit it when building the DNR rule,
+ *  which carries the exception list itself via excludedRequestDomains. */
+function blanketVerdict(commitments, member, now, hostname) {
   const day = now.getDay();
   const mins = now.getHours() * 60 + now.getMinutes();
+  const me = (member || "").trim().toLowerCase();
+  const host = String(hostname ?? "").toLowerCase();
   for (const c of commitments ?? []) {
     for (const entry of c.rules?.entries ?? []) {
-      if (entry.action !== "block") continue;
-      if (entry.domains?.length) continue; // specific domains, not blanket
-      const me = (member || "").trim().toLowerCase();
+      if (entry.domains?.length) continue; // names sites: not blanket
       if (entry.appliesTo?.length && !entry.appliesTo.some((n) => n.trim().toLowerCase() === me)) continue;
-      const window = entry.windows?.find((w) => {
-        const start = parseClock(w.start);
-        const end = parseClock(w.end);
-        if (start === null || end === null) return false;
-        if (start <= end) return w.days.includes(day) && mins >= start && mins < end;
-        if (w.days.includes(day) && mins >= start) return true;
-        const prevDay = (day + 6) % 7;
-        return w.days.includes(prevDay) && mins < end;
-      });
-      if (window) return true;
+      if (!entry.windows?.some((w) => windowCovers(w, day, mins))) continue;
+      const excepts = (entry.exceptDomains ?? []).filter(Boolean);
+      // A site the family agreed to leave open is never touched by this window.
+      if (host && excepts.some((d) => DGRules.hostMatches(d, host))) continue;
+      return {
+        action: entry.action === "remind" ? "remind" : "block",
+        excepts,
+        commitmentId: c.id,
+        title: c.title,
+        terms: c.terms,
+        agreedBy: c.members,
+      };
     }
   }
-  return false;
+  return null;
 }
 
 /** Parse a "HH:MM" clock value to minutes since midnight (or null if invalid). */

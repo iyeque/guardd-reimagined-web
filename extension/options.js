@@ -97,6 +97,14 @@ async function render() {
   }
   select.value = member ?? "";
 
+  // A member-scoped rule is skipped entirely when no member is set, so an
+  // unlabelled browser silently escapes it. Say so rather than let the family
+  // assume the rule is in force.
+  const hasMemberScopedRule = (cache.commitments ?? []).some((c) =>
+    (c.rules?.entries ?? []).some((e) => (e.appliesTo ?? []).length > 0),
+  );
+  el("member-warning").hidden = !(hasMemberScopedRule && !member);
+
   if (familyAccessKey && !cache.commitments) {
     showStatus("Key saved. Syncing commitments…", "info");
   } else if (familyAccessKey && cache.syncError) {

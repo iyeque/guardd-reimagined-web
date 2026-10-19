@@ -12,7 +12,7 @@
 
 chrome.runtime.sendMessage({ type: "dg:evaluate", hostname: location.hostname }, (res) => {
   const verdict = res?.verdict;
-  if (!verdict?.blocked) return;
+  if (!verdict?.blocked && !verdict?.reminded) return;
 
   const style = document.createElement("style");
   style.textContent = `

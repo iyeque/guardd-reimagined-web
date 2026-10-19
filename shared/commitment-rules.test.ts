@@ -30,6 +30,34 @@ const sunday22 = new Date("2026-10-11T22:00:00Z");
 const monday20 = new Date("2026-10-12T20:00:00Z");
 
 describe("evaluateCommitmentRules", () => {
+  // A blanket rule names no domains. The engine must NOT match it, because an
+  // empty domain list matches nothing — blanket enforcement lives in the
+  // extension's own blanketVerdict (a DNR rule for block, an overlay for
+  // remind). Pinned so nobody "fixes" the engine into claiming it.
+  it("never matches a blanket entry, which names no domains", () => {
+    const blanket = makeCommitment({
+      rules: {
+        timezone: "UTC",
+        entries: [
+          {
+            scope: "all",
+            domains: [],
+            windows: [{ days: [0, 1, 2, 3, 4], start: "21:00", end: "07:00" }],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
+    });
+    const v = evaluateCommitmentRules([blanket], {
+      hostname: "instagram.com",
+      member: "Amina",
+      now: sunday22,
+    });
+    expect(v.blocked).toBe(false);
+    expect(v.reminded).toBe(false);
+  });
+
   it("blocks a listed domain inside the window", () => {
     const v = evaluateCommitmentRules([makeCommitment()], {
       hostname: "www.instagram.com",

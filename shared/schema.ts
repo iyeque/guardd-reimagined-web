@@ -117,7 +117,15 @@ export type TimeWindow = {
 };
 
 export type RuleEntry = {
+  /**
+   * "specific" = only `domains`. "all" = every site. "all-except" = every site
+   * except `exceptDomains`. Absent on rules authored before the scope control
+   * existed, where an empty `domains` array means "all".
+   */
+  scope?: "specific" | "all" | "all-except";
   domains: string[];
+  /** Only meaningful for a blanket rule: the sites the window never touches. */
+  exceptDomains?: string[];
   windows: TimeWindow[];
   appliesTo: string[];
   action: "block" | "remind";

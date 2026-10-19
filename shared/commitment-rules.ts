@@ -9,9 +9,18 @@ export type CommitmentLike = {
 };
 
 export type RuleVerdict =
-  | { blocked: false }
+  | { blocked: false; reminded: false }
   | {
       blocked: true;
+      reminded: false;
+      commitmentId: number;
+      title: string;
+      terms: string;
+      agreedBy: string;
+    }
+  | {
+      blocked: false;
+      reminded: true;
       commitmentId: number;
       title: string;
       terms: string;
@@ -96,8 +105,12 @@ function windowCovers(
   return window.days.includes(prevDay) && minutes < end;
 }
 
-/** Matches `instagram.com` against `instagram.com` and `m.instagram.com`. */
-function hostMatches(rule: string, hostname: string): boolean {
+/**
+ * Does `rule` cover `hostname`? Exported so the extension's blanket-window
+ * check uses the same matcher as the per-site engine instead of a second one
+ * that could drift.
+ */
+export function hostMatches(rule: string, hostname: string): boolean {
   const clean = rule.trim().toLowerCase().replace(/^www\./, "");
   const host = hostname.toLowerCase().replace(/^www\./, "");
   if (!clean) return false;
@@ -136,8 +149,21 @@ export function evaluateCommitmentRules(
 
       if (!entry.windows.some((w) => windowCovers(w, day, minutes))) continue;
 
+      if (entry.action === "block") {
+        return {
+          blocked: true,
+          reminded: false,
+          commitmentId: commitment.id,
+          title: commitment.title,
+          terms: commitment.terms,
+          agreedBy: commitment.members,
+        };
+      }
+
+      // "remind" — let the page load, show the family's wording as an overlay.
       return {
-        blocked: true,
+        blocked: false,
+        reminded: true,
         commitmentId: commitment.id,
         title: commitment.title,
         terms: commitment.terms,
@@ -145,5 +171,5 @@ export function evaluateCommitmentRules(
       };
     }
   }
-  return { blocked: false };
+  return { blocked: false, reminded: false };
 }

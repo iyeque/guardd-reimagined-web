@@ -249,7 +249,8 @@ const api = {
   get: async (id: number, token?: string) => {
     const res = await fetch(`/api/family/commitments/${id}`, { headers: authHeaders(token) });
     if (!res.ok) throw new Error("Not found");
-    return res.json() as Promise<{ item: Commitment; milestones: Milestone[] }>;
+    const raw = (await res.json()) as Commitment & { milestones: Milestone[] };
+    return { item: raw, milestones: raw.milestones ?? [] };
   },
   pair: async (familyId: string, token: string) => {
     const res = await fetch("/api/family/access/pair", {
@@ -330,8 +331,21 @@ const FamilyCommitments: React.FC = () => {
     // Same invariants the API enforces, checked here so the parent gets an
     // inline message instead of a 400 with a zod path.
     if (rules) {
-      const noDomains = rules.entries.some((entry) => entry.domains.length === 0);
-      if (noDomains) return toast.error("Every enforcement rule needs at least one site.");
+      // A rule names its sites, covers all of them, or covers all but a few.
+      // Only the first and last kinds can be incomplete.
+      const missingSites = rules.entries.some(
+        (entry) =>
+          (entry.scope ?? (entry.domains.length === 0 ? "all" : "specific")) === "specific" &&
+          entry.domains.length === 0,
+      );
+      if (missingSites)
+        return toast.error("Every enforcement rule needs at least one site, or set it to all sites.");
+      const missingExcepts = rules.entries.some(
+        (entry) =>
+          entry.scope === "all-except" && (entry.exceptDomains ?? []).length === 0,
+      );
+      if (missingExcepts)
+        return toast.error("An “all sites except” rule needs at least one site to leave open.");
       const noDays = rules.entries.some((entry) => entry.windows.some((w) => w.days.length === 0));
       if (noDays) return toast.error("Every enforcement rule needs at least one day.");
       if (!rules.timezone.trim()) return toast.error("Pick a timezone for the enforcement rules.");
@@ -399,11 +413,17 @@ const FamilyCommitments: React.FC = () => {
 
   const showExtensionTour = () => startExtensionTour();
 
-  /** Does this commitment name a site to block? Drives the honesty banner. */
+  /** Does this commitment block anything? Drives the honesty banner. */
   const hasBlockRule = (it: { rules: unknown }): boolean => {
-    const rules = it.rules as { entries?: { action?: string }[] } | null;
+    const rules = it.rules as {
+      entries?: { action?: string; scope?: string; domains?: string[]; exceptDomains?: string[] }[];
+    } | null;
     if (!rules?.entries) return false;
-    return rules.entries.some((e) => e.action === "block" && (e as { domains?: string[] }).domains?.length);
+    return rules.entries.some(
+      (e) =>
+        e.action === "block" &&
+        (e.scope === "all" || e.scope === "all-except" || e.domains?.length),
+    );
   };
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -528,7 +548,11 @@ const FamilyCommitments: React.FC = () => {
                                 className="text-xs font-bold text-foreground/90 leading-relaxed"
                               >
                                 {entry.action === "block" ? "Block" : "Remind"}{" "}
-                                {entry.domains.join(", ")}
+                                {entry.domains.length > 0
+                                  ? entry.domains.join(", ")
+                                  : (entry.exceptDomains ?? []).length > 0
+                                    ? `all sites except ${(entry.exceptDomains ?? []).join(", ")}`
+                                    : "all sites"}
                                 {win ? ` · ${win.start}–${win.end} · ${days}` : ""}
                                 {entry.appliesTo.length > 0
                                   ? ` · only ${entry.appliesTo.join(", ")}`

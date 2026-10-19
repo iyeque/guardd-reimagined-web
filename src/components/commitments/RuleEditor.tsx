@@ -40,6 +40,25 @@ function timezonesForDatalist(): string[] {
   return Array.from(new Set(COMMON_TIMEZONES).add(browserTimezone()));
 }
 
+/**
+ * Which sites a rule covers. Rules authored before the scope control existed
+ * carry no `scope`, so an empty domain list means blanket for those — the same
+ * reading the extension's engine uses.
+ */
+type RuleScope = "specific" | "all" | "all-except";
+
+function scopeOf(entry: RuleEntry): RuleScope {
+  if (entry.scope) return entry.scope;
+  if (entry.domains.length > 0) return "specific";
+  return (entry.exceptDomains ?? []).length > 0 ? "all-except" : "all";
+}
+
+const SCOPES: ReadonlyArray<readonly [RuleScope, string]> = [
+  ["specific", "Specific sites"],
+  ["all", "All sites"],
+  ["all-except", "All except…"],
+];
+
 type RuleEditorProps = {
   /** null means "no enforcement" — every commitment created before rules existed. */
   value: CommitmentRules | null;
@@ -184,9 +203,17 @@ export const RuleEditor = ({
           {/* Entries */}
           {rules.entries.map((entry, index) => {
             const win = entry.windows[0];
+            const scope = scopeOf(entry);
             const domainsText = entry.domains.join(", ");
+            const exceptText = (entry.exceptDomains ?? []).join(", ");
             const domainError =
-              entry.domains.length === 0 ? "Add at least one site." : null;
+              scope === "specific" && entry.domains.length === 0
+                ? "Add at least one site, or switch to All sites."
+                : null;
+            const exceptError =
+              scope === "all-except" && (entry.exceptDomains ?? []).length === 0
+                ? "Name the sites to leave open, or switch to All sites."
+                : null;
             const daysError = win.days.length === 0 ? "Pick at least one day." : null;
 
             return (
@@ -210,28 +237,100 @@ export const RuleEditor = ({
                   )}
                 </div>
 
-                {/* Domains */}
+                {/* Scope: named sites, the whole web, or the whole web bar a few */}
                 <div className="space-y-2">
-                  <label className={labelClass}>Sites to enforce (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={domainsText}
-                    disabled={disabled}
-                    placeholder="instagram.com, tiktok.com"
-                    onChange={(e) =>
-                      updateEntry(index, {
-                        domains: e.target.value
-                          .split(",")
-                          .map((d) => d.trim().toLowerCase())
-                          .filter(Boolean),
-                      })
-                    }
-                    className={fieldClass}
-                  />
-                  {domainError && (
-                    <p className="text-[11px] font-bold text-red-500">{domainError}</p>
-                  )}
+                  <label className={labelClass}>
+                    <Globe className="w-3 h-3 inline mr-1" />
+                    What this rule covers
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {SCOPES.map(([mode, text]) => {
+                      const active = scope === mode;
+                      return (
+                        <button
+                          key={mode}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() =>
+                            updateEntry(
+                              index,
+                              mode === "specific"
+                                ? { scope: "specific", exceptDomains: [] }
+                                : mode === "all"
+                                  ? { scope: "all", domains: [], exceptDomains: [] }
+                                  : { scope: "all-except", domains: [] },
+                            )
+                          }
+                          className={
+                            "px-4 py-2 rounded-xl border-2 text-xs font-black uppercase tracking-widest transition-colors " +
+                            (active
+                              ? "bg-foreground border-foreground text-background"
+                              : "bg-transparent border-border text-muted-foreground hover:border-foreground")
+                          }
+                        >
+                          {text}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground font-medium">
+                    {scope === "all"
+                      ? "Every site, during the window below — nothing to list."
+                      : scope === "all-except"
+                        ? "Every site except the ones you leave open below."
+                        : "Only the sites you name below."}
+                  </p>
                 </div>
+
+                {/* Domains — only when the rule names sites */}
+                {scope === "specific" && (
+                  <div className="space-y-2">
+                    <label className={labelClass}>Sites to enforce (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={domainsText}
+                      disabled={disabled}
+                      placeholder="instagram.com, tiktok.com"
+                      onChange={(e) =>
+                        updateEntry(index, {
+                          domains: e.target.value
+                            .split(",")
+                            .map((d) => d.trim().toLowerCase())
+                            .filter(Boolean),
+                        })
+                      }
+                      className={fieldClass}
+                    />
+                    {domainError && (
+                      <p className="text-[11px] font-bold text-red-500">{domainError}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Exceptions — only for a rule that otherwise covers everything */}
+                {scope === "all-except" && (
+                  <div className="space-y-2">
+                    <label className={labelClass}>Sites to leave open (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={exceptText}
+                      disabled={disabled}
+                      placeholder="school.example.edu, nhs.uk"
+                      onChange={(e) =>
+                        updateEntry(index, {
+                          exceptDomains: e.target.value
+                            .split(",")
+                            .map((d) => d.trim().toLowerCase())
+                            .filter(Boolean),
+                        })
+                      }
+                      className={fieldClass}
+                    />
+                    {exceptError && (
+                      <p className="text-[11px] font-bold text-red-500">{exceptError}</p>
+                    )}
+                  </div>
+                )}
 
                 {/* Window */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

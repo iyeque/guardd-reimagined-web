@@ -98,3 +98,40 @@ describe("defaultChapters", () => {
     }
   });
 });
+
+describe("chapter verdict metadata", () => {
+  // The extension's overlay reads title/terms/agreedBy straight off the verdict.
+  // A chapter block must carry its own wording, because the commitment engine
+  // returns none when only a chapter matched.
+  it("carries the pack's own title, summary and members on a block", () => {
+    const pack = chapter(
+      "quiet-hours",
+      "Quiet hours",
+      "No screens after 8pm on school nights.",
+      ["member-1", "member-2"],
+      nightRules("instagram.com"),
+    );
+
+    const [verdict] = evaluateChapterCollection({ chapters: [pack] }, "instagram.com", LATE_NIGHT);
+
+    expect(verdict).toMatchObject({
+      blocked: true,
+      chapterId: "quiet-hours",
+      title: "Quiet hours",
+      terms: "No screens after 8pm on school nights.",
+      agreedBy: "member-1,member-2",
+    });
+  });
+
+  // Chapters are block-only: the engine hardcodes action "block", so a chapter
+  // verdict is always `reminded: false` and can never drive a reminder overlay.
+  it("never reports a remind verdict", () => {
+    const pack = chapter("quiet-hours", "Quiet hours", "No screens.", [], nightRules("instagram.com"));
+
+    const verdicts = evaluateChapterCollection({ chapters: [pack] }, "instagram.com", LATE_NIGHT);
+
+    expect(verdicts).toHaveLength(1);
+    expect(verdicts.some((v) => v.reminded)).toBe(false);
+    expect(verdicts.every((v) => v.reminded === false)).toBe(true);
+  });
+});

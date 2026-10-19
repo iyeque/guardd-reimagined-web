@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage.js";
 import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema, insertCuratedContentSchema, insertStorySchema } from "../shared/schema.js";
+import { commitmentRulesSchema } from "../shared/commitment-rules-schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import axios from "axios";
 import { z } from "zod";
@@ -725,31 +726,6 @@ export function registerRoutes(app: Express) {
   });
 
   // Family commitments: list by family
-  // Shared validator for a commitment's enforcement rules. Nullable so
-  // commitments created before rules existed stay valid, and null must keep
-  // meaning "enforce nothing" (see shared/commitment-rules.ts).
-  const commitmentRulesSchema = z
-    .object({
-      timezone: z.string().min(1),
-      entries: z
-        .array(
-          z.object({
-            domains: z.array(z.string().min(1)),
-            windows: z.array(
-              z.object({
-                days: z.array(z.number().int().min(0).max(6)),
-                start: z.string().regex(/^\d{1,2}:\d{2}$/),
-                end: z.string().regex(/^\d{1,2}:\d{2}$/),
-              }),
-            ),
-            appliesTo: z.array(z.string()),
-            action: z.enum(["block", "remind"]),
-          }),
-        )
-        .min(1),
-    })
-    .nullable();
-
   app.get("/api/family/commitments", requireFamilyAccess, async (req, res) => {
     try {
       // Never fall back to a default here — that would hand one family's
