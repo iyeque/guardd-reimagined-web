@@ -18,14 +18,17 @@ export const WorkshopDetail = () => {
 
   const workshop = workshops.find((w) => w.id === workshopId);
 
+  // Hooks must run on every render, so this sits above the not-found return.
+  // Without it, an unresolved id renders zero hooks instead of N, which crashes
+  // React on the next valid render ("rendered more hooks than previously").
+  const { completeModule, getWorkshopProgress, rawProgress } = useWorkshopProgress(
+    workshopId,
+    workshop?.modules.length ?? 0
+  );
+
   if (!workshop) {
     return <div className="min-h-screen pt-24 px-4">Workshop not found</div>;
   }
-
-  const { completeModule, getWorkshopProgress, rawProgress } = useWorkshopProgress(
-    workshopId,
-    workshop.modules.length
-  );
 
   const currentModule = workshop.modules[currentModuleIndex];
   const progress = getWorkshopProgress(workshop.id, workshop.modules.length);

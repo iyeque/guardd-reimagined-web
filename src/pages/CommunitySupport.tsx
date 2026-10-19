@@ -68,6 +68,21 @@ interface Mentor {
   online: boolean;
 }
 
+/** A row from /api/community/curated. Only the fields read below are declared;
+ *  the endpoint returns more, and the two reader predicates disagree on shape. */
+interface CuratedRow {
+  id: number;
+  type: string;
+  isActive: boolean;
+  platform?: string;
+  community?: string;
+  title: string;
+  url?: string;
+  hotness?: string;
+  postedAt?: string;
+  description?: string;
+}
+
 const CommunitySupport: React.FC = () => {
   const [events, setEvents] = useState<GlobalEvent[]>([]);
   const [discussions, setDiscussions] = useState<TrendingDiscussion[]>([]);
@@ -130,7 +145,7 @@ const CommunitySupport: React.FC = () => {
       const curated = curatedRes.ok ? await curatedRes.json() : [];
       
       // Merge curated content with synced content
-      const curatedDiscussions = curated.filter((c: any) => c.type === 'discussion' && c.isActive).map((c: any) => ({
+      const curatedDiscussions = curated.filter((c: CuratedRow) => c.type === 'discussion' && c.isActive).map((c: CuratedRow) => ({
         id: c.id,
         platform: c.platform || 'Community',
         community: c.community || 'General',
@@ -140,7 +155,7 @@ const CommunitySupport: React.FC = () => {
         replies: 0,
         postedAt: c.postedAt || 'Recent',
       }));
-      const curatedEvents = curated.filter((c: any) => c.type === 'event' && c.isActive).map((c: any) => ({
+      const curatedEvents = curated.filter((c: CuratedRow) => c.type === 'event' && c.isActive).map((c: CuratedRow) => ({
         id: c.id,
         title: c.title,
         location: c.description || 'See listing',

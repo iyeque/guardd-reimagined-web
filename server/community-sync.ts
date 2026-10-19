@@ -1,6 +1,7 @@
 import { storage } from './storage.js';
+import type { InsertEvent } from '../shared/schema.js';
 import axios from 'axios';
-import Parser from 'rss-parser';
+import Parser, { type Item } from 'rss-parser';
 function toText(v: number | string | undefined): string { return typeof v === 'number' ? String(v) : String(v ?? ''); }
 
 const rssParser = new Parser();
@@ -32,6 +33,26 @@ interface RedditChild {
     num_comments: number;
     created_utc: number;
   };
+}
+
+/** What every external event source is normalised into. Deliberately loose:
+ *  SerpApi and the RSS feeds disagree on what they return — only title and url are
+ *  guaranteed, so the rest are optional. */
+interface FetchedEvent {
+  platform?: string;
+  community?: string;
+  title: string;
+  url: string;
+  location?: string;
+  date?: string;
+  time?: string;
+  type?: string;
+  organizer?: string;
+  status?: string;
+  description?: string;
+  hotness?: string;
+  replies?: number;
+  postedAt?: string;
 }
 
 // --- Real World Events (Sourced from Research) ---
@@ -156,14 +177,15 @@ export async function syncCommunityData() {
   const rssEvents = await fetchRSSEvents();
 
   // Filter out events without titles (uniqueness baseline)
-  const withTitles = (events: any[]) => events.filter((e): e is { title: string; url: string } => Boolean(e?.title));
+  const withTitles = (events: FetchedEvent[]): FetchedEvent[] =>
+    events.filter((e) => Boolean(e?.title));
 
   // Combine all real events, using URL + title as the unique key
   const allEvents = withTitles(liveEvents || []);
   const allRSSEvents = withTitles(rssEvents || []);
-  const uniqueEvents = Array.from(new Map<string, any>([
-    ...allEvents.map((e): [string, any] => [`${e.url ?? ''}-${e.title}`, e]),
-    ...allRSSEvents.map((e): [string, any] => [`${e.url ?? ''}-${e.title}`, e])
+  const uniqueEvents = Array.from(new Map<string, FetchedEvent>([
+    ...allEvents.map((e): [string, FetchedEvent] => [`${e.url ?? ''}-${e.title}`, e]),
+    ...allRSSEvents.map((e): [string, FetchedEvent] => [`${e.url ?? ''}-${e.title}`, e])
   ]).values()).slice(0, 25);
 
   // If no real events found, use curated events only
@@ -185,7 +207,20 @@ export async function syncCommunityData() {
     ? combinedDiscussions.slice(0, 12)
     : FALLBACK_DISCUSSIONS;
 
-  await storage.setEvents(sourceEvents);
+  // The curated rows carry organizer/status/description and the live feeds do
+  // not, so supply the same fallbacks normalizeEvent uses — the stored rows are
+  // identical either way, and the storage boundary stays typed.
+  await storage.setEvents(sourceEvents.map((e): InsertEvent => ({
+    title: e.title,
+    location: e.location ?? "Online",
+    date: e.date ?? "TBD",
+    time: e.time ?? "TBD",
+    type: e.type ?? "Event",
+    url: e.url,
+    organizer: e.organizer ?? "Unknown organizer",
+    status: e.status ?? "Upcoming",
+    description: e.description ?? "",
+  })));
   await storage.setDiscussions(finalDiscussions);
 
   const lastSync = new Date().toISOString();
@@ -317,9 +352,10 @@ async function fetchLiveEventsFromSerp() {
 const EVENT_KEYWORDS = ['conference', 'workshop', 'webinar', 'seminar', 'summit', 'meetup', 'event', 'training', 'bootcamp', 'symposium'];
 
 // Filter RSS items for actual events (items with dates, locations, or event keywords)
-function isEventItem(item: any): boolean {
+function isEventItem(item: Item): boolean {
   const title = (item?.title || '').toLowerCase();
-  const description = (item?.description || '').toLowerCase();
+  // rss-parser's Item has no `description`; summary/contentSnippet are its stand-ins.
+  const description = (item?.summary ?? item?.contentSnippet ?? '').toLowerCase();
   const content = (item?.content || '').toLowerCase();
 
   // Event indicators
@@ -331,14 +367,14 @@ function isEventItem(item: any): boolean {
 
 async function fetchRSSEvents() {
   try {
-    const events: any[] = [];
+    const events: FetchedEvent[] = [];
 
     for (const feedInfo of ALL_RSS_FEEDS) {
       try {
         const feed = await rssParser.parseURL(feedInfo.url);
         for (const item of feed.items) {
           const title = (item.title || '').toLowerCase();
-          const description = (item.description || '').toLowerCase();
+          const description = (item.summary ?? item.contentSnippet ?? '').toLowerCase();
           const content = (item.content || '').toLowerCase();
 
           // Only include items that look like events
