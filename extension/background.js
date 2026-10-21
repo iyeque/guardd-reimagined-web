@@ -125,16 +125,33 @@ async function sync() {
  * commitments rather than refetching, so the overlay and the network block can
  * never disagree about what is blocked.
  */
+/**
+ * A commitment marked complete is history: the family agreed it is done, so it
+ * must stop being enforced.
+ *
+ * Nothing upstream filters it out. `/api/family/commitments` returns every
+ * commitment for the family, because the web app needs the completed ones for
+ * its history view — so the enforcement boundary is the only place this can
+ * happen. Without it, ticking a commitment complete left its sites blocked
+ * forever, with the web app showing the commitment as finished.
+ */
+function enforceable(commitments) {
+  return (commitments ?? []).filter(
+    (c) => String(c?.status ?? "").toLowerCase() !== "completed",
+  );
+}
+
 async function evaluateHost(hostname) {
   const { commitments, chapters, member } = await chrome.storage.local.get(["commitments", "chapters", "member"]);
   if (!commitments && !chapters) return { blocked: false, reminded: false };
+  const inForce = enforceable(commitments);
   const domain = String(hostname ?? "").toLowerCase();
   const base = {
     hostname: domain,
     member: member || null,
     now: new Date(),
   };
-  const byCommitment = DGRules.evaluateCommitmentRules(commitments, base);
+  const byCommitment = DGRules.evaluateCommitmentRules(inForce, base);
   const chapterResults = chapters
     ? DGChapters.evaluateChapterCollection({ chapters }, domain, base.now)
     : [];
@@ -142,7 +159,7 @@ async function evaluateHost(hostname) {
   const byChapterReminded = chapterResults.some((v) => v.reminded);
   // A blanket window names no site, so the shared engine can never match it —
   // it has to be resolved here or "all sites" reminders would be silent.
-  const blanket = blanketVerdict(commitments, member || null, base.now, domain);
+  const blanket = blanketVerdict(inForce, member || null, base.now, domain);
   const chapter = chapterResults[0] ?? null;
   const fromCommitment = byCommitment.blocked || byCommitment.reminded;
   // Most specific source wins for the wording: the site's own rule, then the
@@ -194,9 +211,12 @@ async function applyRules(commitments, chapters) {
   const { member } = await chrome.storage.local.get("member");
   const now = new Date();
 
+  // Completed commitments are history — see enforceable().
+  const inForce = enforceable(commitments);
+
   // Unique domains we must test, from both commitments and content packs.
   const domains = new Set();
-  for (const c of [...(commitments ?? []), ...(chapters ?? [])]) {
+  for (const c of [...inForce, ...(chapters ?? [])]) {
     for (const entry of c.rules?.entries ?? []) {
       if (entry.action !== "block") continue;
       for (const d of entry.domains ?? []) {
@@ -211,7 +231,7 @@ async function applyRules(commitments, chapters) {
 
   // Specific domains (commitments + content packs) currently blocked.
   for (const domain of [...domains].sort()) {
-    const blocked = DGRules.evaluateCommitmentRules(commitments, {
+    const blocked = DGRules.evaluateCommitmentRules(inForce, {
       hostname: domain,
       member: member || null,
       now,
@@ -236,7 +256,7 @@ async function applyRules(commitments, chapters) {
   // origin so the family's agreed screen-free period is enforced at the browser
   // level. Fire-and-forget only makes sense if host_permissions covers all
   // origins — so this is why manifest.json declares "<all_urls>".
-  const blanket = blanketVerdict(commitments, member, now);
+  const blanket = blanketVerdict(inForce, member, now);
   if (blanket?.action === "block") {
     addRules.push({
       id: id++,

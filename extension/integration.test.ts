@@ -62,11 +62,20 @@ const bedtimePack = {
   },
 };
 
+/** The same rule, but the family has since ticked the commitment complete. */
+const completedCommitment = { ...blockingCommitment, id: 12, status: "completed" };
+
+/** The same rule, explicitly still in force. */
+const pendingCommitment = { ...blockingCommitment, id: 11, status: "pending" };
+
 function makeChrome(stored: Record<string, unknown>) {
   const local: Record<string, unknown> = { ...stored };
   const noop = () => {};
+  // Records what the worker pushes to DNR, so a rule set can be asserted on.
+  const pushed: Array<{ id: number; condition?: Record<string, unknown> }> = [];
   return {
     local,
+    pushed,
     api: {
       runtime: {
         getURL: (p: string) => `chrome-extension://dg-test/${p}`,
@@ -98,7 +107,10 @@ function makeChrome(stored: Record<string, unknown>) {
         async getDynamicRules() {
           return [];
         },
-        async updateDynamicRules() {},
+        async updateDynamicRules(changes: { addRules?: unknown[] }) {
+          pushed.length = 0;
+          pushed.push(...((changes?.addRules ?? []) as typeof pushed));
+        },
       },
     },
   };
@@ -106,7 +118,7 @@ function makeChrome(stored: Record<string, unknown>) {
 
 /** Load the real extension files into a VM and hand back its test hooks. */
 function loadExtension(stored: Record<string, unknown> = {}) {
-  const { api } = makeChrome(stored);
+  const { api, pushed } = makeChrome(stored);
   const context = vm.createContext({ chrome: api, console });
 
   // Freeze the clock inside the VM's own realm, so the window arithmetic the
@@ -137,7 +149,7 @@ function loadExtension(stored: Record<string, unknown> = {}) {
   };
 
   expect(hooks, "background.js must expose __dgTestHooks").toBeTruthy();
-  return { hooks };
+  return { hooks, rules: () => pushed };
 }
 
 describe("extension enforcement path", () => {
@@ -199,5 +211,53 @@ describe("extension enforcement path", () => {
   it("builds dynamic rules from an empty configuration", async () => {
     const { hooks } = loadExtension();
     await hooks.applyRules([], []);
+  });
+
+  // A completed commitment is history. The API still returns it — the web app
+  // needs it for the history view — so the extension has to skip it, or the
+  // family ticks a commitment complete and the site stays blocked forever.
+  it("does not block for a commitment marked complete", async () => {
+    const { hooks } = loadExtension({
+      commitments: [completedCommitment],
+      chapters: [],
+      member: null,
+    });
+
+    const verdict = await hooks.evaluateHost("facebook.com");
+    expect(verdict.blocked).toBe(false);
+  });
+
+  it("still blocks for a commitment that is not complete", async () => {
+    const { hooks } = loadExtension({
+      commitments: [pendingCommitment],
+      chapters: [],
+      member: null,
+    });
+
+    const verdict = await hooks.evaluateHost("facebook.com");
+    expect(verdict.blocked).toBe(true);
+  });
+
+  it("installs no network rule for a completed commitment", async () => {
+    const { hooks, rules } = loadExtension();
+    await hooks.applyRules([completedCommitment], []);
+    expect(rules()).toEqual([]);
+  });
+
+  it("installs a network rule for a commitment still in force", async () => {
+    const { hooks, rules } = loadExtension();
+    await hooks.applyRules([pendingCommitment], []);
+
+    expect(rules()).toHaveLength(1);
+    expect(rules()[0].condition?.requestDomains).toEqual(["facebook.com"]);
+  });
+
+  it("ignores a completed commitment while still enforcing content packs", async () => {
+    const { hooks, rules } = loadExtension();
+    await hooks.applyRules([completedCommitment], [bedtimePack]);
+
+    // The completed commitment contributes no rule; the content pack still does.
+    expect(rules()).toHaveLength(1);
+    expect(rules()[0].condition?.requestDomains).toEqual(["roblox.com"]);
   });
 });

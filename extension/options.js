@@ -39,16 +39,21 @@ async function whoami(key) {
   return res.json();
 }
 
-/** Ask the background worker to re-sync and report what it stored. */
-function requestSync() {
-  return new Promise((resolve) => {
-    const done = (msg) => {
-      chrome.runtime.onMessage.removeListener(done);
-      resolve(msg?.result ?? null);
-    };
-    chrome.runtime.onMessage.addListener(done);
-    chrome.runtime.sendMessage({ type: "dg-sync-now" });
-  });
+/**
+ * Ask the background worker to re-sync and report what it stored.
+ *
+ * The worker answers through the sendMessage response channel — it never
+ * broadcasts a message. Waiting on onMessage therefore waits for something
+ * nothing ever sends, so the promise never settles and the page sits on
+ * "Syncing commitments…" until it is reloaded by hand.
+ */
+async function requestSync() {
+  try {
+    return await chrome.runtime.sendMessage({ type: "dg-sync-now" });
+  } catch (err) {
+    // No receiver: the worker is not up yet, or the extension was just reloaded.
+    return { ok: false, error: String(err?.message ?? err) };
+  }
 }
 
 async function render() {
