@@ -3,6 +3,7 @@ import { storage } from "./storage.js";
 import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema, insertCuratedContentSchema, insertStorySchema } from "../shared/schema.js";
 import { commitmentRulesSchema } from "../shared/commitment-rules-schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
+import { isEventExpired } from "../shared/event-expiry.js";
 import axios from "axios";
 import { z } from "zod";
 import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
@@ -296,18 +297,21 @@ export function registerRoutes(app: Express) {
   // Community Data (Public)
   app.get("/api/community/data", async (_req, res) => {
     try {
-      const [events, discussions, lastSync] = await Promise.all([
+      const [rawEvents, discussions, lastSync] = await Promise.all([
         storage.getEvents(),
         storage.getDiscussions(),
         storage.getSyncMetadata("last_sync")
       ]);
-      
+      const events = rawEvents.filter((e) => !isEventExpired(e));
+
       // If database is empty, return static data immediately and trigger sync in background
-      if (events.length === 0 || discussions.length === 0) {
+      if (rawEvents.length === 0 || discussions.length === 0) {
         console.log("Database empty, returning initial static data...");
-        
+
         // Return a mix of curated and generated data for immediate display
-        const initialEvents = [...CURATED_EVENTS, ...generateLocalEvents()].map((e, i) => ({ id: i + 1, ...e }));
+        const initialEvents = [...CURATED_EVENTS, ...generateLocalEvents()]
+          .filter((e) => !isEventExpired(e))
+          .map((e, i) => ({ id: i + 1, ...e }));
         const initialDiscussions = FALLBACK_DISCUSSIONS.map((d, i) => ({ id: i + 1, ...d }));
 
         // Trigger sync in background (fire and forget)

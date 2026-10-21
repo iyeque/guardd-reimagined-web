@@ -89,8 +89,9 @@ async function sync() {
     const commitments = await commitmentsRes.json();
     const chaptersData = await chaptersRes.json();
 
-    // Map the family's content packs into chapter objects.
-    const chapters = chaptersData.packs.map((p) => DGRules.chapter(
+    // Map the family's content packs into chapter objects. `chapter` lives in
+    // shared/chapters.ts, which is bundled as DGChapters — not DGRules.
+    const chapters = chaptersData.packs.map((p) => DGChapters.chapter(
       p.packId,
       p.title,
       p.summary,
@@ -135,7 +136,7 @@ async function evaluateHost(hostname) {
   };
   const byCommitment = DGRules.evaluateCommitmentRules(commitments, base);
   const chapterResults = chapters
-    ? DGRules.evaluateChapterCollection(chapters, domain, base.now)
+    ? DGChapters.evaluateChapterCollection({ chapters }, domain, base.now)
     : [];
   const byChapterBlocked = chapterResults.some((v) => v.blocked);
   const byChapterReminded = chapterResults.some((v) => v.reminded);
@@ -216,7 +217,7 @@ async function applyRules(commitments, chapters) {
       now,
     }).blocked;
     if (!blocked) {
-      const blockedByChapter = DGRules.evaluateChapterCollection(chapters, domain, now).some((v) => v.blocked);
+      const blockedByChapter = DGChapters.evaluateChapterCollection({ chapters }, domain, now).some((v) => v.blocked);
       if (!blockedByChapter) continue;
     }
 

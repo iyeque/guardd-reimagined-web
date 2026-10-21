@@ -1,5 +1,6 @@
 import { storage } from './storage.js';
 import type { InsertEvent } from '../shared/schema.js';
+import { isEventExpired } from '../shared/event-expiry.js';
 import axios from 'axios';
 import Parser, { type Item } from 'rss-parser';
 function toText(v: number | string | undefined): string { return typeof v === 'number' ? String(v) : String(v ?? ''); }
@@ -55,18 +56,69 @@ interface FetchedEvent {
   postedAt?: string;
 }
 
+// An event is expired once its date has passed. Only a full date counts as
+// evidence: the live feeds also return free-text dates ("Upcoming", "TBD",
+// "2026"), and guessing at those would hide content the family still needs.
+// Curated entries store the event's LAST day, so they vanish the day after it.
+// The rule itself lives in shared/event-expiry.ts so it can be tested without a
+// database connection.
+
 // --- Real World Events (Sourced from Research) ---
 export const CURATED_EVENTS = [
   {
-    title: "ISTE 2026",
-    location: "San Antonio, TX",
-    date: "2026-07-01",
-    time: "3 Days",
+    title: "EHS Mental Health Conference",
+    location: "Dubai, UAE",
+    date: "2026-11-07",
+    time: "6–7 Nov 2026",
     type: "Conference",
-    url: "https://www.iste.org/conference",
-    organizer: "International Society for Technology in Education",
+    url: "https://www.ehs.gov.ae/",
+    organizer: "Emirates Health Services",
     status: "Registration Open",
-    description: "The premier edtech event with major focus on AI safety, digital citizenship, and responsible tech integration in schools."
+    description: "Bringing together mental health professionals, policymakers, and advocates to advance care, awareness, and digital wellbeing in the region."
+  },
+  {
+    title: "FOSI Annual Conference",
+    location: "Washington, DC",
+    date: "2026-11-19",
+    time: "19 Nov 2026",
+    type: "Conference",
+    url: "https://www.fosi.org/",
+    organizer: "Family Online Safety Institute",
+    status: "Registration Open",
+    description: "The Family Online Safety Institute's flagship event — connecting global experts on child online safety, platform accountability, and digital parenting."
+  },
+  {
+    title: "Safer Internet Forum",
+    location: "Brussels, Belgium",
+    date: "2026-12-03",
+    time: "3 Dec 2026",
+    type: "Forum",
+    url: "https://www.saferinternet.org.uk/",
+    organizer: "Insafe / European Schoolnet",
+    status: "Follow Registration",
+    description: "Europe's leading forum on children's online safety — policymakers, industry, educators, and researchers shaping a safer digital future."
+  },
+  {
+    title: "UN IGF 2026 Nairobi",
+    location: "Nairobi, Kenya",
+    date: "2026-12-18",
+    time: "14–18 Dec 2026",
+    type: "Summit",
+    url: "https://www.intgovforum.org/",
+    organizer: "United Nations",
+    status: "Registration Open",
+    description: "The 21st Internet Governance Forum under the theme 'Internet Governance for Sustainable Development and Inclusive Growth' — multi-stakeholder dialogue on digital policy."
+  },
+  {
+    title: "UNESCO Global MIL Week",
+    location: "Global / Hybrid",
+    date: "2026-10-31",
+    time: "24–31 Oct 2026",
+    type: "Global Action",
+    url: "https://www.unesco.org/en/media-information-literacy",
+    organizer: "UNESCO",
+    status: "Join/Register",
+    description: "Global Media and Information Literacy Week — worldwide events celebrating media and information literacy as essential skills for the digital age."
   },
   {
     title: "Digital Citizenship Summit 2026",
@@ -210,7 +262,9 @@ export async function syncCommunityData() {
   // The curated rows carry organizer/status/description and the live feeds do
   // not, so supply the same fallbacks normalizeEvent uses — the stored rows are
   // identical either way, and the storage boundary stays typed.
-  await storage.setEvents(sourceEvents.map((e): InsertEvent => ({
+  // Drop events that have already run so the table does not accumulate stale rows.
+  const freshEvents = sourceEvents.filter((e) => !isEventExpired(e));
+  await storage.setEvents(freshEvents.map((e): InsertEvent => ({
     title: e.title,
     location: e.location ?? "Online",
     date: e.date ?? "TBD",

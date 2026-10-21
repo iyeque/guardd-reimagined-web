@@ -1,0 +1,45 @@
+name: Test
+
+# This repo had no CI, and that is exactly how two extension bugs reached a real
+# browser: background.js called chapter functions on the wrong global and passed
+# the wrong argument shape. Neither was visible to any test that existed at the
+# time, and nothing ran the tests automatically, so the suite stayed green while
+# the extension failed on every sync.
+#
+# The tests are now able to see that layer. This makes them actually gate.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test, typecheck, lint and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Runs without a database: the one test that touches a DB-coupled module
+      # sets a placeholder DATABASE_URL itself and never queries.
+      - name: Tests
+        run: npm run test
+
+      - name: Typecheck
+        run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
