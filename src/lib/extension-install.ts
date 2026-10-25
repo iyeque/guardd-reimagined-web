@@ -7,13 +7,19 @@
  * This module is the single place that answers "how do I install it", so the page
  * can be honest about the gap instead of silently under-enforcing.
  *
- * Store readiness: set CHROME_STORE_ID to the ID Chrome issues at upload and the
- * install path becomes a real link. Until then the UI says so plainly rather than
- * linking nowhere — a dead "Install" button is worse than an honest "coming soon".
+ * The extension is listed, so the install path is a real link. The unset-ID
+ * branch stays as the honest fallback — if the listing is ever pulled, a plain
+ * "not available yet" beats a button that goes nowhere.
  */
 
-/** The Chrome Web Store ID. Empty until the extension is actually listed. */
-export const CHROME_STORE_ID = "";
+/**
+ * The Chrome Web Store ID, taken from the listing URL:
+ * https://chromewebstore.google.com/detail/caebokejnkeoehkmmhbjcnbfiobngnai
+ */
+export const CHROME_STORE_ID = "caebokejnkeoehkmmhbjcnbfiobngnai";
+
+/** The public listing. Canonical host; the old chrome.google.com path redirects here. */
+export const CHROME_STORE_URL = `https://chromewebstore.google.com/detail/${CHROME_STORE_ID}`;
 
 export type InstallPath = {
   /** Headline for the install step. */
@@ -48,7 +54,7 @@ export function installPath(paired: boolean): InstallPath {
       label: "Add the extension",
       detail:
         "The extension is what enforces your commitments in the browser. Install it once on each device your family uses.",
-      href: `https://chrome.google.com/webstore/detail/${CHROME_STORE_ID}`,
+      href: CHROME_STORE_URL,
       cta: "Install from Chrome Web Store",
       live: true,
     };
