@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx server/start.ts",
     "build": "vite build && esbuild server/start.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
-    "prebuild": "node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/generate-sitemap.mjs && npm run build:extension",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
