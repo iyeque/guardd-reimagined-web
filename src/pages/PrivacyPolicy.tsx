@@ -141,11 +141,6 @@ const PrivacyPolicy = () => {
               law requires it.
             </p>
           </div>
-          <p className="dark:text-amber-200/80 text-amber-800/80 mt-4 text-sm bg-amber-200/10 dark:bg-amber-200/10 rounded-xl p-4 dark:border-amber-200/20 border-amber-200/20">
-            Please note: we are not lawyers. This is a general statement of intent, not legal advice. If your
-            situation involves children's privacy law in a specific country or state, you may want to confirm
-            the details with a qualified professional.
-          </p>
         </section>
 
         {/* Storage & security */}
