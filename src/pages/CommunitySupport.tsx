@@ -476,18 +476,20 @@ const CommunitySupport: React.FC = () => {
       {/* Application Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-[2.5rem] border-2 border-blue-500/30 shadow-2xl relative animate-in zoom-in-95 duration-300">
-            <button 
-              onClick={() => setIsModalOpen(false)}
-              className="sticky top-0 float-right m-4 p-2 text-muted-foreground hover:text-foreground transition-colors bg-white/80 dark:bg-slate-900/80 rounded-full backdrop-blur-sm z-10"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <CardHeader className="p-10 pb-4">
-              <CardTitle className="text-3xl font-black text-foreground tracking-tighter uppercase italic">Join the Elite</CardTitle>
-              <CardDescription className="text-lg font-medium">Apply to become a 2026 Community Mentor.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-10 pt-0">
+          <Card className="w-full max-w-lg max-h-[90vh] flex flex-col bg-white dark:bg-slate-900 rounded-[2.5rem] border-2 border-blue-500/30 shadow-2xl relative animate-in zoom-in-95 duration-300 overflow-hidden">
+            <div className="flex items-center justify-between p-10 pb-4 shrink-0">
+              <div>
+                <CardTitle className="text-3xl font-black text-foreground tracking-tighter uppercase italic">Join the Elite</CardTitle>
+                <CardDescription className="text-lg font-medium">Apply to become a 2026 Community Mentor.</CardDescription>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted/50"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <CardContent className="p-10 pt-0 flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <details className="mb-6 group">
                 <summary className="cursor-pointer text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 hover:underline list-none flex items-center gap-2">
                   <span className="group-open:rotate-90 transition-transform inline-block">▸</span> Mentor Eligibility Criteria (Ma'an / FCA / DCD)
