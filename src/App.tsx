@@ -48,9 +48,41 @@ function CanonicalTag() {
       document.head.appendChild(og);
     }
     og.content = url;
+
+    // Per-route title + description
+    const meta = ROUTE_META[path] || ROUTE_META["/"];
+    document.title = meta.title;
+    let desc = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (!desc) {
+      desc = document.createElement("meta");
+      desc.name = "description";
+      document.head.appendChild(desc);
+    }
+    desc.content = meta.description;
+    let ogTitle = document.querySelector<HTMLMetaElement>('meta[property="og:title"]');
+    if (!ogTitle) { ogTitle = document.createElement("meta"); ogTitle.setAttribute("property", "og:title"); document.head.appendChild(ogTitle); }
+    ogTitle.content = meta.title;
+    let ogDesc = document.querySelector<HTMLMetaElement>('meta[property="og:description"]');
+    if (!ogDesc) { ogDesc = document.createElement("meta"); ogDesc.setAttribute("property", "og:description"); document.head.appendChild(ogDesc); }
+    ogDesc.content = meta.description;
   }, [pathname]);
   return null;
 }
+
+const ROUTE_META: Record<string, { title: string; description: string }> = {
+  "/": { title: "Digital Guardian Wellness - Digital Wellness Reimagined", description: "Take control of your digital life with DigitalGuard. Screen time management, digital wellness, and online safety for families." },
+  "/blog": { title: "Digital Wellness Blog | Digital Guardian", description: "Curated articles on screen time, online safety, privacy, and digital wellness for families." },
+  "/videos": { title: "Video Resources | Digital Guardian", description: "Curated YouTube videos on internet safety, screen time, and digital citizenship for families and kids." },
+  "/community": { title: "Community Hub | Digital Guardian", description: "Connect with mentors, regional chapters (UAE, Kenya), and curated digital wellness discussions." },
+  "/family-commitments": { title: "Family Commitments | Digital Guardian", description: "Create and track shared family commitments for healthy technology use." },
+  "/family-agreements": { title: "Family Digital Agreements | Digital Guardian", description: "Shared rules families set together for healthy technology use." },
+  "/screen-time": { title: "Screen Time Management | Digital Guardian", description: "Tools and guides to manage screen time for your family." },
+  "/games": { title: "Educational Games | Digital Guardian", description: "Interactive games teaching digital wellness and online safety to kids." },
+  "/workshops": { title: "Workshops | Digital Guardian", description: "Interactive workshops and stories for the whole family." },
+  "/course": { title: "Course | Digital Guardian", description: "Digital wellness course for families." },
+  "/privacy": { title: "Privacy Policy | Digital Guardian", description: "Privacy policy for Digital Guardian Wellness." },
+  "/terms": { title: "Terms of Service | Digital Guardian", description: "Terms of service for Digital Guardian Wellness." },
+};
 
 const Index = lazy(() => import("./pages/Index"));
 const Workshop = lazy(() => import("./pages/Workshop"));
