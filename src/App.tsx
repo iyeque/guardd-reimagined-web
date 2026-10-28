@@ -24,6 +24,34 @@ function GlobalScrollHandler() {
   return null;
 }
 
+// Per-route canonical + og:url. The HTML shell is shared by every route, so a
+// static tag would wrongly claim every page is the homepage. Setting it from
+// the router keeps the signal correct for crawlers that execute JavaScript.
+const SITE_ORIGIN = "https://digitalguardianwellness.org";
+
+function CanonicalTag() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const path = pathname.length > 1 ? pathname.replace(/\/+$/, "") : "/";
+    const url = SITE_ORIGIN + path;
+    let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "canonical";
+      document.head.appendChild(link);
+    }
+    link.href = url;
+    let og = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+    if (!og) {
+      og = document.createElement("meta");
+      og.setAttribute("property", "og:url");
+      document.head.appendChild(og);
+    }
+    og.content = url;
+  }, [pathname]);
+  return null;
+}
+
 const Index = lazy(() => import("./pages/Index"));
 const Workshop = lazy(() => import("./pages/Workshop"));
 const Workshops = lazy(() => import("./pages/Workshops").then(m => ({ default: m.Workshops })));
@@ -55,6 +83,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <GlobalScrollHandler />
+          <CanonicalTag />
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-black uppercase tracking-tighter text-2xl animate-pulse">Loading Platform...</div>}>
             <Routes>
               <Route element={<Layout />}>
