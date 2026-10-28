@@ -57,7 +57,15 @@ export const faqSeed = [
   { category: "video", title: "Wellness Video Library", content: "Curated short-form videos on digital wellness topics suitable for family viewing. Use them as discussion starters rather than passive content." },
   { category: "video", title: "Using Videos as Teaching Moments", content: "Pause to ask questions, challenge claims, and compare on-screen advice with your family values. Active watching builds media literacy." },
 
-  // product / community context
+  // site navigation / how to use the app
+  { category: "navigation", title: "Contact Us", content: "To contact the Digital Guardian Wellness team, visit the Contact page at /contact. You can send a message or reach out about partnerships, feedback, or support. [Contact us](/contact)" },
+  { category: "navigation", title: "Family Commitments", content: "Family Commitments let you set screen-time and behaviour rules that the browser extension enforces. Create and manage them on the Family Commitments page. [Family Commitments](/family-commitments)" },
+  { category: "navigation", title: "Family Agreements", content: "Family Agreements are shared digital-wellness pledges your family signs together. View and create them on the Family Agreements page. [Family Agreements](/family-agreements)" },
+  { category: "navigation", title: "Educational Games", content: "Play cybersecurity, privacy, and wellness games in the Educational Games section. [Educational Games](/games)" },
+  { category: "navigation", title: "Videos", content: "Watch curated wellness and safety videos in the Videos section. [Videos](/videos)" },
+  { category: "navigation", title: "Screen Time", content: "Track and manage screen time on the Screen Time page. [Screen Time](/screen-time)" },
+  { category: "navigation", title: "Community Hub", content: "Join the Community Hub for events, discussions, and regional chapters. [Community Hub](/community)" },
+  { category: "navigation", title: "Browser Extension", content: "Install the Digital Guardian browser extension from the Chrome Web Store to enforce family commitments. [Install extension](https://chromewebstore.google.com/detail/caebokejnkeoehkmmhbjcnbfiobngnai)" },
   { category: "roadmap", title: "WellnessCompanion v2.0", content: "The AI assistant seeds from in-app content: breathing exercises, agreement builder tips, quiz explanations, and curated events. Always sourced from the app itself." },
   { category: "grounding", title: "When the Chat Doesn't Have an Answer", content: "If no specific answer is found, this assistant will say so honestly and suggest related topics such as digital safety, screen-time agreements, breathing exercises, or the Cyber-Safe Quiz." },
 

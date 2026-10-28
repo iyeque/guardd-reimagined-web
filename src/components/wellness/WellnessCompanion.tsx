@@ -432,7 +432,30 @@ export const WellnessCompanion: FC = () => {
                         You: {item.q}
                       </div>
                       <div className="text-slate-600 dark:text-[#4FD1C5] mt-1 leading-relaxed">
-                        {item.a}
+                        {item.a.split(/(\[[^\]]+\]\([^)]+\))/g).map((part, idx) => {
+                          const m = part.match(/^\[(.+?)\]\((.+?)\)$/);
+                          if (m) {
+                            const [, label, href] = m;
+                            const isExternal = href.startsWith("http");
+                            return (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  if (isExternal) {
+                                    window.open(href, "_blank", "noopener");
+                                  } else {
+                                    navigate(href);
+                                  }
+                                  setIsExpanded(false);
+                                }}
+                                className="inline-block mt-1 mr-1 px-2 py-0.5 text-[10px] font-black bg-[#4FD1C5] text-white rounded-md hover:bg-[#3db8ad] transition-colors"
+                              >
+                                {label}
+                              </button>
+                            );
+                          }
+                          return <span key={idx}>{part}</span>;
+                        })}
                       </div>
                     </div>
                   ))}
@@ -446,7 +469,7 @@ export const WellnessCompanion: FC = () => {
                     value={faqInput}
                     onChange={(e) => setFaqInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && askFaq()}
-                    placeholder={faqMode ? "Ask a question..." : "Ask me anything..."}
+                    placeholder={faqMode ? "Ask Welli..." : "Ask Welli..."}
                     className="flex-1 text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white focus:outline-none focus:border-[#4FD1C5]"
                   />
                   <button
@@ -461,7 +484,7 @@ export const WellnessCompanion: FC = () => {
                   onClick={() => setFaqMode(!faqMode)}
                   className="mt-2 text-[10px] font-black text-slate-500 hover:text-[#4FD1C5] transition-colors"
                 >
-                  {faqMode ? "← Back to tips" : "💬 Try AI assistant"}
+                  {faqMode ? "← Back to tips" : "💬 Talk to Welli"}
                 </button>
               </div>
             </motion.div>
