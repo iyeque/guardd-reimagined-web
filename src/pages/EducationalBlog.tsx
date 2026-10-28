@@ -14,6 +14,34 @@ import {
 import { toast } from "sonner";
 import { JsonLd } from "@/components/JsonLd";
 
+const HOW_TO_STEPS: Record<string, { name: string; text: string }[]> = {
+  "Setting Effective Parental Controls": [
+    { name: "Choose your device", text: "Open the settings app on your child's device (phone, tablet, or console)." },
+    { name: "Find parental controls", text: "Navigate to Screen Time, Family, or Parental Controls in settings." },
+    { name: "Set daily limits", text: "Set daily screen-time limits and app-specific restrictions." },
+    { name: "Enable content filters", text: "Turn on age-appropriate content and web filters." },
+    { name: "Review regularly", text: "Check usage reports weekly and adjust limits as needed." },
+  ],
+  "Don't Fall for Fake": [
+    { name: "Check the sender", text: "Verify the sender's email address or phone number matches the real organization." },
+    { name: "Look for urgency", text: "Be suspicious of messages demanding immediate action or threatening consequences." },
+    { name: "Hover over links", text: "Hover over links to preview the URL before clicking." },
+    { name: "Don't share personal info", text: "Never provide passwords, OTPs, or banking details via email or text." },
+    { name: "Report and delete", text: "Report suspicious messages to the platform and delete them." },
+  ],
+  "Share with Care": [
+    { name: "Think before posting", text: "Consider who will see the content and how it might be shared." },
+    { name: "Check privacy settings", text: "Review and adjust privacy settings on each platform." },
+    { name: "Ask permission", text: "Get consent before posting photos or info about others." },
+    { name: "Avoid oversharing", text: "Don't share location, school, or personal details publicly." },
+  ],
+  "Your Digital Footprint": [
+    { name: "Search yourself", text: "Google your name and review what appears publicly." },
+    { name: "Review social profiles", text: "Check privacy settings on all social media accounts." },
+    { name: "Delete old accounts", text: "Close unused accounts and remove old posts." },
+    { name: "Think before posting", text: "Consider long-term impact before sharing content online." },
+  ],
+};
 interface BlogPost {
   id: number;
   title: string;
@@ -98,6 +126,20 @@ const EducationalBlog: React.FC = () => {
           "url": post.url
         }
       }))} />
+      {displayedPosts.filter((p) => HOW_TO_STEPS[p.title]).slice(0, 3).map((post) => (
+        <JsonLd key={`howto-${post.id}`} id={`howto-${post.id}`} data={{
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": post.title,
+          "description": post.excerpt,
+          "step": HOW_TO_STEPS[post.title].map((s, i) => ({
+            "@type": "HowToStep",
+            "position": i + 1,
+            "name": s.name,
+            "text": s.text
+          }))
+        }} />
+      ))}
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-7xl font-black text-foreground mb-6">
           Digital Wellness Blog
