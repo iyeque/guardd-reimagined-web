@@ -496,14 +496,22 @@ const CommunitySupport: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="specialty" className="text-xs font-black uppercase tracking-widest ml-1">Specialty</Label>
-                  <Input 
-                    id="specialty" 
-                    required 
+                  <select
+                    id="specialty"
+                    required
                     value={formData.specialty}
                     onChange={e => setFormData({...formData, specialty: e.target.value})}
-                    placeholder="Digital Wellness / Cyber Safety" 
-                    className="h-12 rounded-xl bg-muted/50 border-border focus:ring-blue-500/20"
-                  />
+                    className="h-12 w-full rounded-xl bg-muted/50 border border-border px-3 text-sm focus:ring-blue-500/20 focus:outline-none"
+                  >
+                    <option value="" disabled>Select your specialty pillar...</option>
+                    <option value="Digital Wellness / Cyber Safety">Digital Wellness / Cyber Safety</option>
+                    <option value="SEN & Learning Support (LSA)">SEN & Learning Support (LSA)</option>
+                    <option value="Family Support & Social Work">Family Support & Social Work</option>
+                    <option value="Child & Family Mental Health">Child & Family Mental Health</option>
+                    <option value="Parenting & Caregiver Support">Parenting & Caregiver Support</option>
+                    <option value="Youth Mentorship & Coaching">Youth Mentorship & Coaching</option>
+                    <option value="Elderly & Intergenerational Support">Elderly & Intergenerational Support</option>
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="bio" className="text-xs font-black uppercase tracking-widest ml-1">Experience Summary</Label>
