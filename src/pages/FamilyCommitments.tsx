@@ -27,7 +27,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
 import { updateProfile } from "@/lib/profiles";
 import { startExtensionTour } from "@/lib/extension-tour";
-import { installPath, ENFORCEMENT_LIMIT_NOTE } from "@/lib/extension-install";
+import { installPath, ENFORCEMENT_LIMIT_NOTE, CHROME_STORE_URL } from "@/lib/extension-install";
 import type { CommitmentRules } from "@shared/schema";
 import { RuleEditor } from "@/components/commitments/RuleEditor";
 import { parseMemberOptions } from "@/lib/commitment-members";
@@ -783,6 +783,14 @@ const FamilyCommitments: React.FC = () => {
                     Add the Digital Guardian extension to the browser each child
                     uses. It works offline once it has synced your commitments.
                   </p>
+                  <a
+                    href={CHROME_STORE_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 h-10 px-4 mt-1 rounded-xl bg-[#4FD1C5] text-white font-bold text-xs uppercase tracking-widest shadow-lg shadow-teal-500/20 hover:bg-[#38b2ac] transition-all w-fit"
+                  >
+                    Install from Chrome Web Store
+                  </a>
                 </CardContent>
               </Card>
 
