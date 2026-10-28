@@ -543,6 +543,17 @@ export function registerRoutes(app: Express) {
   app.post("/api/faq/ask", async (req, res) => {
     try {
       const { question } = z.object({ question: z.string().min(3) }).parse(req.body);
+      const qLower = question.toLowerCase().trim();
+      const isGreeting = /^(hi|hello|hey|yo|sup|howdy|greetings|good (morning|afternoon|evening))[\s!?.]*$/.test(qLower);
+      const isIdentity = /(who are you|what are you|what'?s your name|your name|who is welli|tell me about yourself|introduce yourself)/.test(qLower);
+      if (isGreeting || isIdentity) {
+        return res.json({
+          answer:
+            "Hi! I'm Welli, the Digital Guardian Wellness assistant. I can help with digital safety, screen-time agreements, the Cyber-Safe Quiz, breathing exercises, and navigating the site. Try asking \"How do I set up family commitments?\" or \"Show me the contact page.\"",
+          sources: [],
+        });
+      }
+
       const chunks = await searchFaqChunks(question, 3);
 
       if (chunks.length === 0) {
