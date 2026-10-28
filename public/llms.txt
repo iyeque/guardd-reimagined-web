@@ -1,0 +1,26 @@
+# Digital Guardian Wellness
+
+> Digital Guardian Wellness is a digital wellness platform helping families build healthy screen-time habits, online safety skills, and family commitments. It offers educational games, video resources, a community hub with regional chapters (UAE, Kenya), and an Elite Mentor Circle of certified digital wellness professionals.
+
+## Key pages
+- Home: https://digitalguardianwellness.org/
+- Educational Blog: https://digitalguardianwellness.org/blog
+- Video Resources: https://digitalguardianwellness.org/videos
+- Community Hub: https://digitalguardianwellness.org/community
+- Family Commitments: https://digitalguardianwellness.org/family-commitments
+- Family Digital Agreements: https://digitalguardianwellness.org/family-agreements
+- Screen Time Management: https://digitalguardianwellness.org/screen-time
+- Interactive Games: https://digitalguardianwellness.org/games
+- Workshops: https://digitalguardianwellness.org/workshops
+- Course: https://digitalguardianwellness.org/course
+- Privacy Policy: https://digitalguardianwellness.org/privacy
+- Terms of Service: https://digitalguardianwellness.org/terms
+
+## About
+- Chatbot assistant: "Welli" — answers FAQs and navigates users to site features.
+- Chrome extension: DigitalGuard browser extension for family screen-time enforcement.
+- Regional chapters: UAE (English + Arabic), Kenya (English).
+- Mentor circle: certified professionals in digital wellness, SEN/inclusion, family support, mental health, parenting, youth mentorship, elderly care.
+
+## Contact
+- Email: hello@digitalguardianwellness.org
