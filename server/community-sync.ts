@@ -153,6 +153,33 @@ export const FALLBACK_DISCUSSIONS = [
     hotness: "High",
     postedAt: "1h ago",
     replies: toText(842)
+  },
+  {
+    platform: "Reddit",
+    community: "r/privacy",
+    title: "How do you talk to your teen about online privacy without sounding preachy?",
+    url: "https://www.reddit.com/r/privacy/search/?q=teen+privacy+parenting&restrict_sr=1",
+    hotness: "Trending",
+    postedAt: "3h ago",
+    replies: toText(317)
+  },
+  {
+    platform: "Reddit",
+    community: "r/cybersecurity",
+    title: "Screen-time rules that actually worked in our house (and ones that backfired)",
+    url: "https://www.reddit.com/r/cybersecurity/search/?q=screen+time+rules+family&restrict_sr=1",
+    hotness: "High",
+    postedAt: "6h ago",
+    replies: toText(528)
+  },
+  {
+    platform: "Reddit",
+    community: "r/digitalwellness",
+    title: "First phone contract: what clauses did you include and did they stick?",
+    url: "https://www.reddit.com/r/digitalwellness/search/?q=first+phone+contract&restrict_sr=1",
+    hotness: "Trending",
+    postedAt: "12h ago",
+    replies: toText(194)
   }
 ];
 

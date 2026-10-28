@@ -1,6 +1,6 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage.js";
-import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema, insertCuratedContentSchema, insertStorySchema } from "../shared/schema.js";
+import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema, insertCuratedContentSchema, insertStorySchema, type CuratedContent } from "../shared/schema.js";
 import { commitmentRulesSchema } from "../shared/commitment-rules-schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import { isEventExpired } from "../shared/event-expiry.js";
@@ -302,10 +302,40 @@ export function registerRoutes(app: Express) {
         storage.getDiscussions(),
         storage.getSyncMetadata("last_sync")
       ]);
-      const events = rawEvents.filter((e) => !isEventExpired(e));
+      const curated = await storage.listCuratedContent().catch(() => [] as CuratedContent[]);
+      const curatedDiscussions = curated
+        .filter((c: CuratedContent) => c.type === 'discussion' && c.isActive)
+        .map((c: CuratedContent, i: number) => ({
+          id: 100000 + i,
+          platform: c.platform || 'Community',
+          community: c.community || 'General',
+          title: c.title,
+          url: c.url || '#',
+          hotness: c.hotness || 'Trending',
+          replies: 0,
+          postedAt: c.postedAt || 'Recent',
+        }));
+      const curatedEvents = curated
+        .filter((c: CuratedContent) => c.type === 'event' && c.isActive)
+        .map((c: CuratedContent, i: number) => ({
+          id: 200000 + i,
+          title: c.title,
+          location: c.description || 'See listing',
+          date: c.postedAt || '2026',
+          time: 'See listing',
+          type: 'Community Event',
+          url: c.url || '#',
+          status: 'Live',
+          organizer: c.platform || 'Community',
+          description: c.description || '',
+        }));
 
-      // If database is empty, return static data immediately and trigger sync in background
-      if (rawEvents.length === 0 || discussions.length === 0) {
+      const events = rawEvents.filter((e) => !isEventExpired(e));
+      const mergedEvents = [...curatedEvents, ...events];
+      const mergedDiscussions = [...curatedDiscussions, ...discussions];
+
+      // If database is empty/sparse, return static data immediately and trigger sync in background
+      if (rawEvents.length === 0 || mergedDiscussions.length < 3) {
         console.log("Database empty, returning initial static data...");
 
         // Return a mix of curated and generated data for immediate display
@@ -318,16 +348,16 @@ export function registerRoutes(app: Express) {
         syncCommunityData().catch(err => console.error("Background sync failed:", err));
 
         return res.json({
-          events: initialEvents,
-          discussions: initialDiscussions,
+          events: [...curatedEvents, ...initialEvents],
+          discussions: [...curatedDiscussions, ...initialDiscussions],
           activeUsers: activeUsersCount(),
           lastSync: lastSync || new Date().toISOString()
         });
       }
 
       res.json({
-        events,
-        discussions,
+        events: mergedEvents,
+        discussions: mergedDiscussions,
         activeUsers: activeUsersCount(),
         lastSync: lastSync || new Date().toISOString()
       });

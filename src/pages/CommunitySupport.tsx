@@ -68,29 +68,12 @@ interface Mentor {
   online: boolean;
 }
 
-/** A row from /api/community/curated. Only the fields read below are declared;
- *  the endpoint returns more, and the two reader predicates disagree on shape. */
-interface CuratedRow {
-  id: number;
-  type: string;
-  isActive: boolean;
-  platform?: string;
-  community?: string;
-  title: string;
-  url?: string;
-  hotness?: string;
-  postedAt?: string;
-  description?: string;
-}
-
 const CommunitySupport: React.FC = () => {
   const [events, setEvents] = useState<GlobalEvent[]>([]);
   const [discussions, setDiscussions] = useState<TrendingDiscussion[]>([]);
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [eventSearch, setEventSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [liveUsers, setLiveUsers] = useState(720);
-  const stableSessionOffset = useRef<number>(Math.floor(Math.random() * 20) - 10);
   const [lastSync, setLastSync] = useState<string>("");
   const [isApplied, setIsApplied] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -130,9 +113,8 @@ const CommunitySupport: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const [communityRes, curatedRes] = await Promise.all([
+      const [communityRes] = await Promise.all([
         fetch('/api/community/data'),
-        fetch('/api/admin/curated-content'),
       ]);
       if (!communityRes.ok) {
         throw new Error(`API returned ${communityRes.status}`);
@@ -142,36 +124,12 @@ const CommunitySupport: React.FC = () => {
         throw new Error("API returned non-JSON response");
       }
       const data = await communityRes.json();
-      const curated = curatedRes.ok ? await curatedRes.json() : [];
-      
-      // Merge curated content with synced content
-      const curatedDiscussions = curated.filter((c: CuratedRow) => c.type === 'discussion' && c.isActive).map((c: CuratedRow) => ({
-        id: c.id,
-        platform: c.platform || 'Community',
-        community: c.community || 'General',
-        title: c.title,
-        url: c.url || '#',
-        hotness: c.hotness || 'Trending',
-        replies: 0,
-        postedAt: c.postedAt || 'Recent',
-      }));
-      const curatedEvents = curated.filter((c: CuratedRow) => c.type === 'event' && c.isActive).map((c: CuratedRow) => ({
-        id: c.id,
-        title: c.title,
-        location: c.description || 'See listing',
-        date: c.postedAt || '2026',
-        time: 'See listing',
-        type: 'Community Event',
-        url: c.url || '#',
-        status: 'Live',
-        organizer: c.platform || 'Community',
-        description: c.description || '',
-      }));
-      
-      setEvents([...curatedEvents, ...(data.events || [])]);
-      setDiscussions([...curatedDiscussions, ...(data.discussions || [])]);
+
+      // Curated content is now merged server-side into /api/community/data,
+      // so the client no longer needs the admin endpoint (which 401s for visitors).
+      setEvents(data.events || []);
+      setDiscussions(data.discussions || []);
       setMentors(data.mentors || []);
-      setLiveUsers(data.activeUsers || 720);
       setLastSync(new Date(data.lastSync).toLocaleTimeString());
       setIsLoading(false);
     } catch (error) {
@@ -266,7 +224,6 @@ const CommunitySupport: React.FC = () => {
     fetchData();
     const refreshInterval = setInterval(() => {
       fetchData();
-      setLiveUsers(prev => Math.max(900, prev + stableSessionOffset.current));
     }, 45000);
     return () => clearInterval(refreshInterval);
   }, []);
@@ -463,26 +420,33 @@ const CommunitySupport: React.FC = () => {
             </div>
           </section>
 
-          {/* Live Stats */}
+          {/* Regional Chapters (planned) */}
           <Card className="bg-white/80 dark:bg-slate-900 border-border shadow-xl">
             <CardHeader>
               <CardTitle className="text-foreground flex items-center gap-2 text-lg font-black">
-                <Users className="w-5 h-5 text-green-600 dark:text-green-400" />
-                Live Activity
+                <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                Regional Chapters
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <div className="text-3xl font-black text-foreground tabular-nums">{liveUsers.toLocaleString()}</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping" />
-                  Families Active
+            <CardContent className="space-y-3">
+              {[
+                { name: 'UAE (Dubai)', status: 'Planned', note: 'First in-person chapter, targeting Q1 2027' },
+                { name: 'Kenya (Nairobi)', status: 'Planned', note: 'Partnering with local digital-safety orgs' },
+              ].map((c) => (
+                <div key={c.name} className="flex items-start gap-3 p-3 rounded-xl bg-muted/40">
+                  <div className="w-2 h-2 mt-1.5 rounded-full bg-blue-500 shrink-0" />
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-black text-foreground">{c.name}</span>
+                      <Badge variant="outline" className="text-[9px] uppercase font-black">{c.status}</Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium mt-0.5">{c.note}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-1 text-right">
-                <div className="text-3xl font-black text-green-600 dark:text-green-400">{mentors.filter(m => m.online).length + 8}</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Experts Online</div>
-              </div>
+              ))}
+              <p className="text-[10px] text-muted-foreground font-medium pt-1">
+                Want to host a chapter in your city? <a href="mailto:hello@digitalguardianwellness.org" className="text-blue-600 dark:text-blue-400 font-black underline">Get in touch</a>.
+              </p>
             </CardContent>
           </Card>
         </div>
