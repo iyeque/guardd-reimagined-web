@@ -425,13 +425,16 @@ const CommunitySupport: React.FC = () => {
             <CardHeader>
               <CardTitle className="text-foreground flex items-center gap-2 text-lg font-black">
                 <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                Regional Chapters
+                Chapter Content Packs
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
+              <p className="text-xs text-muted-foreground font-medium">
+                Shared game engines, localized scenarios & support links per region (no duplicate code).
+              </p>
               {[
-                { name: 'UAE (Dubai)', status: 'Planned', note: 'First in-person chapter, targeting Q1 2027' },
-                { name: 'Kenya (Nairobi)', status: 'Planned', note: 'Partnering with local digital-safety orgs' },
+                { name: 'UAE Chapter', status: 'Planned', note: 'English + Arabic content packs; local privacy & safety scenarios' },
+                { name: 'Kenya Chapter', status: 'Planned', note: 'English content pack; mobile-first & community scenarios' },
               ].map((c) => (
                 <div key={c.name} className="flex items-start gap-3 p-3 rounded-xl bg-muted/40">
                   <div className="w-2 h-2 mt-1.5 rounded-full bg-blue-500 shrink-0" />
