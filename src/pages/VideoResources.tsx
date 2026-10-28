@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Youtube, ExternalLink, PlayCircle, ShieldCheck, Users, GraduationCap, Clock, ArrowRight, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useWellness } from "@/context/WellnessContext";
+import { JsonLd } from "@/components/JsonLd";
 
 interface Video {
   id: string;
@@ -263,6 +263,16 @@ const VideoResources: React.FC = () => {
 
   return (
     <div className="container mx-auto px-6 py-32">
+      <JsonLd id="video" data={{
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": "Digital Wellness Video Resources",
+        "description": "Curated YouTube videos on internet safety, screen time, and digital citizenship for families and kids.",
+        "thumbnailUrl": "https://img.youtube.com/vi/qwUSyXCnAGs/mqdefault.jpg",
+        "uploadDate": "2025-01-01",
+        "contentUrl": "https://www.youtube.com/watch?v=qwUSyXCnAGs",
+        "embedUrl": "https://www.youtube.com/embed/qwUSyXCnAGs"
+      }} />
       {/* Video Modal */}
       {selectedVideo && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-12 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300" onClick={() => setSelectedVideo(null)}>

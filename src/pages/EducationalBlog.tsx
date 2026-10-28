@@ -12,7 +12,7 @@ import {
   Filter
 } from 'lucide-react';
 import { toast } from "sonner";
-import { useWellness } from "@/context/WellnessContext";
+import { JsonLd } from "@/components/JsonLd";
 
 interface BlogPost {
   id: number;
@@ -73,6 +73,18 @@ const EducationalBlog: React.FC = () => {
 
   return (
     <div className="container mx-auto px-6 py-32">
+      <JsonLd id="blog" data={{
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Digital Wellness Blog",
+        "description": "Curated articles on screen time, online safety, privacy, and digital wellness for families.",
+        "url": "https://digitalguardianwellness.org/blog",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Digital Guardian Wellness",
+          "url": "https://digitalguardianwellness.org"
+        }
+      }} />
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-7xl font-black text-foreground mb-6">
           Digital Wellness Blog
