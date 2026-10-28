@@ -77,7 +77,7 @@ const CommunitySupport: React.FC = () => {
   const [lastSync, setLastSync] = useState<string>("");
   const [isApplied, setIsApplied] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', specialty: '', bio: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', specialty: '', licenseNumber: '', issuingBody: '', bio: '' });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const recaptchaRef = useRef<HTMLInputElement>(null);
@@ -198,7 +198,7 @@ const CommunitySupport: React.FC = () => {
 
       setIsApplied(true);
       setIsModalOpen(false);
-      setFormData({ name: '', email: '', specialty: '', bio: '' });
+      setFormData({ name: '', email: '', specialty: '', licenseNumber: '', issuingBody: '', bio: '' });
 
       toast.success("Application Received! Review Pending.", {
         description: `Thank you ${formData.name}! Your mentor application for the 2026 cohort is now under review.`,
@@ -332,6 +332,24 @@ const CommunitySupport: React.FC = () => {
                 >
                   {isApplied ? "APPLICATION PENDING" : "APPLY TO JOIN"}
                 </Button>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                <p className="text-xs font-black uppercase tracking-widest text-blue-200">Featured Mentor Profiles</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {[
+                    "Licensed CDA/DCD Social Worker",
+                    "KHDA-Certified LSA / Inclusion Specialist",
+                    "Child Psychologist (DHA/DOH licensed)",
+                    "Cyber Safety Expert (eSafe / Cyberwise)",
+                    "Emirati Parenting Coach",
+                    "Special Needs Therapist (OT / SLT)",
+                  ].map((p) => (
+                    <span key={p} className="text-[10px] font-black uppercase tracking-widest bg-white/15 text-white px-3 py-2 rounded-xl border border-white/20 text-center">
+                      {p}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
@@ -470,6 +488,30 @@ const CommunitySupport: React.FC = () => {
               <CardDescription className="text-lg font-medium">Apply to become a 2026 Community Mentor.</CardDescription>
             </CardHeader>
             <CardContent className="p-10 pt-0">
+              <details className="mb-6 group">
+                <summary className="cursor-pointer text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 hover:underline list-none flex items-center gap-2">
+                  <span className="group-open:rotate-90 transition-transform inline-block">▸</span> Mentor Eligibility Criteria (Ma'an / FCA / DCD)
+                </summary>
+                <div className="mt-3 p-4 rounded-xl bg-muted/40 text-xs space-y-2 text-muted-foreground font-medium">
+                  <p className="font-black text-foreground">Minimum requirements to join the Elite Mentor Circle:</p>
+                  <ul className="list-disc pl-4 space-y-1">
+                    <li>3+ years of professional experience in your specialty</li>
+                    <li>Valid professional license or certification (DHA, DOH, KHDA, CDA, DCD, MOHAP, or international equivalent)</li>
+                    <li>Work email (not a personal address)</li>
+                    <li>Willing to give <span className="font-black">2 hours/month pro-bono</span> to community families</li>
+                    <li>Commitment to UAE cultural values and child-safety standards</li>
+                  </ul>
+                  <p className="font-black text-foreground pt-2">Priority profiles for our founding circle:</p>
+                  <ul className="list-disc pl-4 space-y-1">
+                    <li>Licensed CDA/DCD Social Worker</li>
+                    <li>KHDA-Certified LSA / Inclusion Specialist</li>
+                    <li>Child Psychologist (DHA/DOH licensed)</li>
+                    <li>Cyber Safety Expert (eSafe / Cyberwise certified)</li>
+                    <li>Emirati Parenting Coach</li>
+                    <li>Special Needs Therapist (OT / SLT)</li>
+                  </ul>
+                </div>
+              </details>
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest ml-1">Full Name</Label>
@@ -513,9 +555,39 @@ const CommunitySupport: React.FC = () => {
                     <option value="Elderly & Intergenerational Support">Elderly & Intergenerational Support</option>
                   </select>
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="licenseNumber" className="text-xs font-black uppercase tracking-widest ml-1">License / Registration No.</Label>
+                    <Input
+                      id="licenseNumber"
+                      value={formData.licenseNumber}
+                      onChange={e => setFormData({...formData, licenseNumber: e.target.value})}
+                      placeholder="e.g. DHA-12345"
+                      className="h-12 rounded-xl bg-muted/50 border-border focus:ring-blue-500/20"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="issuingBody" className="text-xs font-black uppercase tracking-widest ml-1">Issuing Body</Label>
+                    <select
+                      id="issuingBody"
+                      value={formData.issuingBody}
+                      onChange={e => setFormData({...formData, issuingBody: e.target.value})}
+                      className="h-12 w-full rounded-xl bg-muted/50 border border-border px-3 text-sm focus:ring-blue-500/20 focus:outline-none"
+                    >
+                      <option value="">Select body...</option>
+                      <option value="DHA">DHA (Dubai Health Authority)</option>
+                      <option value="DOH">DOH (Dept. of Health Abu Dhabi)</option>
+                      <option value="KHDA">KHDA (Knowledge & Human Development Authority)</option>
+                      <option value="CDA">CDA (Community Development Authority)</option>
+                      <option value="DCD">DCD (Family Care Authority)</option>
+                      <option value="MOHAP">MOHAP (Ministry of Health)</option>
+                      <option value="Other">Other / International</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="bio" className="text-xs font-black uppercase tracking-widest ml-1">Experience Summary</Label>
-                  <Textarea 
+                  <Textarea
                     id="bio" 
                     required 
                     value={formData.bio}
