@@ -476,10 +476,10 @@ const CommunitySupport: React.FC = () => {
       {/* Application Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-          <Card className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-[2.5rem] border-2 border-blue-500/30 shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-[2.5rem] border-2 border-blue-500/30 shadow-2xl relative animate-in zoom-in-95 duration-300">
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 p-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="sticky top-0 float-right m-4 p-2 text-muted-foreground hover:text-foreground transition-colors bg-white/80 dark:bg-slate-900/80 rounded-full backdrop-blur-sm z-10"
             >
               <X className="w-6 h-6" />
             </button>
