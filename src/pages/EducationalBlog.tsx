@@ -85,6 +85,19 @@ const EducationalBlog: React.FC = () => {
           "url": "https://digitalguardianwellness.org"
         }
       }} />
+      <JsonLd id="articles" data={displayedPosts.slice(0, 10).map((post) => ({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": post.title,
+        "description": post.excerpt,
+        "datePublished": post.date,
+        "url": post.url,
+        "publisher": {
+          "@type": "Organization",
+          "name": post.source,
+          "url": post.url
+        }
+      }))} />
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-7xl font-black text-foreground mb-6">
           Digital Wellness Blog
