@@ -186,7 +186,47 @@ const PrivacyPolicy = () => {
           </div>
         </section>
 
-        {/* Browser extension */}
+        {/* AI Assistant & Third-Party Services */}
+        <section className="mb-10 border-l-2 border-amber-400/40 pl-6">
+          <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4 flex items-center gap-3">
+            <FileText className="w-6 h-6 text-amber-400" />
+            AI Assistant (Welli) &amp; Third-Party Services
+          </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed">
+            Digital Guardian Wellness includes an AI assistant named "Welli" that answers questions about
+            digital safety, screen time, and site navigation. When you use Welli, your question text is sent
+            to a third-party language-model provider (OpenRouter / the configured model provider) to generate
+            a response. <strong>We do not control how that provider processes, stores, or retains your input.</strong>
+          </p>
+          <div className="mt-4 space-y-3 dark:text-white/70 text-slate-700 leading-relaxed">
+            <p>
+              <span className="font-semibold dark:text-white text-slate-900">What is sent:</span> only the
+              text of your question and a small set of curated FAQ context. We do not attach your name, email,
+              account ID, or family data to the request.
+            </p>
+            <p>
+              <span className="font-semibold dark:text-white text-slate-900">Third-party handling:</span> the
+              provider may log, retain, or use inputs according to its own privacy policy and terms. Please
+              review OpenRouter's privacy policy before using Welli if this matters to you. We cannot delete
+              data once it has been sent to the provider.
+            </p>
+            <p>
+              <span className="font-semibold dark:text-white text-slate-900">Your choice:</span> Welli is
+              optional. If you prefer not to send questions to a third party, do not use the chat widget —
+              all other site features work without it.
+            </p>
+          </div>
+          <div className="mt-6 space-y-3">
+            <h3 className="dark:text-white text-slate-900 font-semibold text-sm">Other third-party processors we rely on</h3>
+            <ul className="space-y-2 text-sm dark:text-white/70 text-slate-700">
+              <li><span className="font-semibold">Neon (Postgres)</span> — cloud database for family commitments and progress.</li>
+              <li><span className="font-semibold">Vercel</span> — hosting and optional analytics (analytics disabled until consent).</li>
+              <li><span className="font-semibold">Pinata (optional)</span> — IPFS pinning of commitment metadata.</li>
+              <li><span className="font-semibold">Google reCAPTCHA</span> — bot protection on forms.</li>
+              <li><span className="font-semibold">OpenRouter</span> — LLM inference for the Welli assistant.</li>
+            </ul>
+          </div>
+        </section>
         <section className="mb-10 border-l-2 border-[#4FD1C5]/40 pl-6">
           <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4 flex items-center gap-3">
             <MonitorSmartphone className="w-6 h-6 text-[#4FD1C5]" />
@@ -251,11 +291,22 @@ const PrivacyPolicy = () => {
           </p>
         </section>
 
-        {/* Choices */}
         <section className="mb-10">
           <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4">
-            Your Choices
+            Your Rights (GDPR / PDP)
           </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed mb-4">
+            Depending on where you live, you may have the right to: access the personal data we hold about
+            you; correct inaccurate data; request deletion ("right to be forgotten"); restrict or object to
+            processing; receive your data in a portable format; and withdraw consent at any time. To exercise
+            any of these rights, contact us at hello@digitalguardianwellness.org.
+          </p>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed mb-4">
+            <span className="font-semibold dark:text-white text-slate-900">Lawful basis:</span> we process
+            data on the basis of consent (analytics), contract (account/family features), and legitimate
+            interest (security, platform improvement). Where consent is the basis, you can withdraw it at any
+            time without affecting prior processing.
+          </p>
           <div className="space-y-3 dark:text-white/70 text-slate-700 leading-relaxed">
             <p>
               You can usually delete local progress from your browser. For information stored on our servers,
