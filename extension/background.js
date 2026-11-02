@@ -53,6 +53,19 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   return true;
 });
 
+/** Content script reports a reminder was dismissed. */
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg?.type !== "dg:dismiss") return false;
+  (async () => {
+    const key = `dg-dismissals:${String(msg.hostname ?? "").toLowerCase()}:${new Date().toISOString().slice(0, 10)}`;
+    const stored = await chrome.storage.local.get(key);
+    const count = (stored[key] ?? 0) + 1;
+    await chrome.storage.local.set({ [key]: count });
+    sendResponse({ ok: true, count });
+  })().catch((err) => sendResponse({ ok: false, error: String(err?.message ?? err) }));
+  return true;
+});
+
 async function sync() {
   const { familyAccessKey } = await chrome.storage.sync.get("familyAccessKey");
   if (!familyAccessKey) {
@@ -186,9 +199,42 @@ async function evaluateHost(hostname) {
             agreedBy: blanket.agreedBy,
           }
         : null;
+
+  // Escalation: check if any remind rule with dismissalsBeforeBlock has been
+  // dismissed enough times today to escalate to a hard block.
+  const dismissalKey = `dg-dismissals:${domain}:${new Date().toISOString().slice(0, 10)}`;
+  const dismissalStored = await chrome.storage.local.get(dismissalKey);
+  const dismissalCount = dismissalStored[dismissalKey] ?? 0;
+  let escalated = false;
+  // Check commitment rules
+  for (const c of inForce) {
+    for (const entry of c.rules?.entries ?? []) {
+      if (entry.action !== "remind" || !entry.dismissalsBeforeBlock) continue;
+      if (!entry.windows?.some((w) => {
+        // reuse windowCovers from background
+        const day = base.now.getDay();
+        const mins = base.now.getHours() * 60 + base.now.getMinutes();
+        return windowCovers(w, day, mins);
+      })) continue;
+      // check domain match
+      const domainMatch = entry.domains?.length
+        ? entry.domains.some((d) => DGRules.hostMatches(d, domain))
+        : true; // blanket
+      if (!domainMatch) continue;
+      if (dismissalCount >= entry.dismissalsBeforeBlock) {
+        escalated = true;
+        break;
+      }
+    }
+    if (escalated) break;
+  }
+
+  const baseBlocked = byCommitment.blocked || byChapterBlocked || blanket?.action === "block";
+  const baseReminded = byCommitment.reminded || byChapterReminded || blanket?.action === "remind";
+
   return {
-    blocked: byCommitment.blocked || byChapterBlocked || blanket?.action === "block",
-    reminded: byCommitment.reminded || byChapterReminded || blanket?.action === "remind",
+    blocked: baseBlocked || (baseReminded && escalated),
+    reminded: baseReminded && !escalated,
     commitmentId: source?.id,
     title: source?.title,
     terms: source?.terms,

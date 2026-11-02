@@ -14,6 +14,13 @@ chrome.runtime.sendMessage({ type: "dg:evaluate", hostname: location.hostname },
   const verdict = res?.verdict;
   if (!verdict?.blocked && !verdict?.reminded) return;
 
+  // Escalated: a remind rule that was dismissed too many times now blocks.
+  // Redirect to the blocked page instead of showing the reminder overlay.
+  if (verdict.blocked) {
+    window.location.replace(chrome.runtime.getURL("blocked.html"));
+    return;
+  }
+
   const style = document.createElement("style");
   style.textContent = `
     .dg-commitment-overlay {
@@ -70,7 +77,10 @@ chrome.runtime.sendMessage({ type: "dg:evaluate", hostname: location.hostname },
   button.textContent = "I've read it — continue";
   // Dismissing is a reminder, not a gate: the page loaded, so the family chose
   // to be reminded rather than blocked.
-  button.addEventListener("click", () => overlay.remove());
+  button.addEventListener("click", () => {
+    chrome.runtime.sendMessage({ type: "dg:dismiss", hostname: location.hostname });
+    overlay.remove();
+  });
 
   card.append(eyebrow, title, terms, meta, button);
   overlay.append(card);
