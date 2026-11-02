@@ -377,7 +377,59 @@ const PrivacyPolicy = () => {
           </p>
         </section>
 
-        {/* Disclosure */}
+        {/* Cookies */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4">
+            Cookies &amp; Similar Technologies
+          </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed mb-4">
+            We use a small number of cookies and browser storage mechanisms. You can control these through
+            your browser settings and our consent banner.
+          </p>
+          <ul className="space-y-2 text-sm dark:text-white/70 text-slate-700">
+            <li><span className="font-semibold">Essential (always on):</span> family access key, theme preference, consent choice, session tokens.</li>
+            <li><span className="font-semibold">Analytics (opt-in only):</span> Vercel Web Analytics — disabled until you accept the consent banner.</li>
+            <li><span className="font-semibold">Third-party:</span> Google reCAPTCHA sets cookies for bot protection on forms.</li>
+          </ul>
+          <p className="dark:text-white/60 text-slate-500 mt-3 text-sm">
+            No advertising or cross-site tracking cookies are used.
+          </p>
+        </section>
+
+        {/* International transfers & retention */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4">
+            International Data Transfers &amp; Retention
+          </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed mb-4">
+            Our hosting and database providers (Vercel, Neon) may store data in regions outside your country,
+            including the United States and European Union. Where required, we rely on the providers'
+            standard contractual clauses and adequacy decisions for lawful transfer.
+          </p>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed mb-4">
+            <span className="font-semibold dark:text-white text-slate-900">Retention periods:</span> family
+            commitment data is retained until you request deletion. Workshop progress and assessment results
+            are retained for as long as your account is active. Welli question text sent to OpenRouter is
+            subject to OpenRouter's own retention policy, which we do not control.
+          </p>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed">
+            <span className="font-semibold dark:text-white text-slate-900">Data controller:</span> Digital
+            Guardian Wellness (hello@digitalguardianwellness.org). For privacy questions or to exercise your
+            rights, contact us at that address. We aim to respond within 30 days.
+          </p>
+        </section>
+
+        {/* Automated decision-making */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4">
+            Automated Decision-Making
+          </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed">
+            We do not use automated decision-making or profiling that produces legal or similarly significant
+            effects. The Welli assistant generates informational responses only; it does not make decisions
+            about your account, family, or access to services.
+          </p>
+        </section>
         <section className="mb-10">
           <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4">
             Sharing & Disclosure
