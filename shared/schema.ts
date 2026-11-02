@@ -129,6 +129,12 @@ export type RuleEntry = {
   windows: TimeWindow[];
   appliesTo: string[];
   action: "block" | "remind";
+  /**
+   * Escalation: if set, after this many "remind" dismissals the rule
+   * escalates to a hard block for the rest of the night. Null/absent means
+   * the reminder never escalates (soft enforcement only).
+   */
+  dismissalsBeforeBlock?: number | null;
 };
 
 export type CommitmentRules = {

@@ -32,7 +32,7 @@ function emptyEntry(): RuleEntry {
     domains: [],
     windows: [{ days: [0, 1, 2, 3, 4], start: "21:00", end: "07:00" }],
     appliesTo: [],
-    action: "block",
+    action: "remind",
   };
 }
 
@@ -460,6 +460,33 @@ export const RuleEditor = ({
                     them continue.
                   </p>
                 </div>
+                {/* Escalation — only relevant for remind rules */}
+                {entry.action === "remind" && (
+                  <div className="space-y-2">
+                    <label className={labelClass}>Escalation (optional)</label>
+                    <select
+                      value={entry.dismissalsBeforeBlock ?? ""}
+                      disabled={disabled}
+                      onChange={(e) =>
+                        updateEntry(index, {
+                          dismissalsBeforeBlock: e.target.value
+                            ? Number(e.target.value)
+                            : null,
+                        })
+                      }
+                      className={fieldClass}
+                    >
+                      <option value="">Never — reminder stays soft</option>
+                      <option value="1">After 1 dismissal → block for the night</option>
+                      <option value="2">After 2 dismissals → block for the night</option>
+                      <option value="3">After 3 dismissals → block for the night</option>
+                    </select>
+                    <p className="text-[11px] text-muted-foreground font-medium">
+                      Families write their own consequence. The extension counts
+                      dismissals per site per night and escalates automatically.
+                    </p>
+                  </div>
+                )}
               </div>
             );
           })}
