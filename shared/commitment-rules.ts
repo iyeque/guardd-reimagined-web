@@ -110,6 +110,23 @@ function windowCovers(
  * check uses the same matcher as the per-site engine instead of a second one
  * that could drift.
  */
+/**
+ * Escalation check: given a remind rule with a `dismissalsBeforeBlock` threshold
+ * and the number of times it has been dismissed today, should it escalate to a
+ * hard block?
+ *
+ * Pure function — no side effects, no storage access. The caller (extension,
+ * desktop app, mobile app) is responsible for tracking the dismissal count and
+ * passing it in. This keeps the escalation logic platform-agnostic.
+ */
+export function shouldEscalate(
+  entry: { action: "block" | "remind"; dismissalsBeforeBlock?: number | null },
+  dismissalCount: number,
+): boolean {
+  if (entry.action !== "remind") return false;
+  if (!entry.dismissalsBeforeBlock || entry.dismissalsBeforeBlock <= 0) return false;
+  return dismissalCount >= entry.dismissalsBeforeBlock;
+}
 export function hostMatches(rule: string, hostname: string): boolean {
   const clean = rule.trim().toLowerCase().replace(/^www\./, "");
   const host = hostname.toLowerCase().replace(/^www\./, "");

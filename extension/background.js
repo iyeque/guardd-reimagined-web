@@ -206,22 +206,17 @@ async function evaluateHost(hostname) {
   const dismissalStored = await chrome.storage.local.get(dismissalKey);
   const dismissalCount = dismissalStored[dismissalKey] ?? 0;
   let escalated = false;
-  // Check commitment rules
   for (const c of inForce) {
     for (const entry of c.rules?.entries ?? []) {
-      if (entry.action !== "remind" || !entry.dismissalsBeforeBlock) continue;
-      if (!entry.windows?.some((w) => {
-        // reuse windowCovers from background
+      if (DGRules.shouldEscalate(entry, dismissalCount)) {
+        // also check domain + window match
+        const domainMatch = entry.domains?.length
+          ? entry.domains.some((d) => DGRules.hostMatches(d, domain))
+          : true;
+        if (!domainMatch) continue;
         const day = base.now.getDay();
         const mins = base.now.getHours() * 60 + base.now.getMinutes();
-        return windowCovers(w, day, mins);
-      })) continue;
-      // check domain match
-      const domainMatch = entry.domains?.length
-        ? entry.domains.some((d) => DGRules.hostMatches(d, domain))
-        : true; // blanket
-      if (!domainMatch) continue;
-      if (dismissalCount >= entry.dismissalsBeforeBlock) {
+        if (!entry.windows?.some((w) => windowCovers(w, day, mins))) continue;
         escalated = true;
         break;
       }
