@@ -19,7 +19,10 @@
     "pretest": "npm run build:extension",
     "test:watch": "vitest",
     "db:push": "drizzle-kit push",
-    "db:migrate": "tsx scripts/migrate.ts"
+    "db:migrate": "tsx scripts/migrate.ts",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
