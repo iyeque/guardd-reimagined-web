@@ -27,6 +27,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useProfile, useProfileId } from "@/context/ProfileContext";
 import { updateProfile } from "@/lib/profiles";
 import { startExtensionTour } from "@/lib/extension-tour";
+import { DesktopPairing } from "@/components/DesktopPairing";
 import { installPath, ENFORCEMENT_LIMIT_NOTE, CHROME_STORE_URL } from "@/lib/extension-install";
 import type { CommitmentRules } from "@shared/schema";
 import { RuleEditor } from "@/components/commitments/RuleEditor";
@@ -681,6 +682,8 @@ const FamilyCommitments: React.FC = () => {
               Create, track, and complete family agreements. Every commitment is recorded on an auditable ledger with optional IPFS metadata pinning.
             </p>
           </motion.header>
+
+          <DesktopPairing />
 
           {/* How the extension works. The tour anchors to real elements here, so
               this copy and the tour cannot drift apart. */}

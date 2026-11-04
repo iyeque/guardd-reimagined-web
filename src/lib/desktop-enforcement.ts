@@ -9,7 +9,7 @@ function isTauri(): boolean {
   return typeof window !== "undefined" && "__TAURI__" in window;
 }
 
-function getAccessKey(): string | null {
+export function getAccessKey(): string | null {
   try {
     return localStorage.getItem("familyAccessKey");
   } catch {
