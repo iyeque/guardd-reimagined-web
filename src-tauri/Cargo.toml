@@ -1,3 +1,5 @@
+[package.metadata.tauri]
+identifier = "org.digitalguardianwellness.app"
 [package]
 name = "digital-guardian"
 version = "0.1.0"
