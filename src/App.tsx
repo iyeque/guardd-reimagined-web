@@ -9,6 +9,7 @@ import { Shield } from "lucide-react";
 import { ProfileProvider } from "@/context/ProfileContext";
 import { WellnessProvider } from "@/context/WellnessContext";
 import { COOKIE_CONSENT_KEY } from "@/lib/profiles";
+import { startDesktopEnforcement } from "@/lib/desktop-enforcement";
 
 function GlobalScrollHandler() {
   const { pathname, hash } = useLocation();
@@ -106,7 +107,13 @@ const ProfileTransfer = lazy(() => import("./pages/ProfileTransfer"));
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  useEffect(() => {
+    const cleanup = startDesktopEnforcement();
+    return cleanup;
+  }, []);
+
+  return (
   <ProfileProvider>
     <WellnessProvider>
     <QueryClientProvider client={queryClient}>
@@ -154,5 +161,6 @@ const App = () => (
     </WellnessProvider>
     </ProfileProvider>
   );
+};
 
 export default App;
