@@ -316,10 +316,11 @@ export function applyTransferBlob(
   const writeProfilesList = (profiles: Profile[]) => {
     // Sanitise on the way in: a blob is untrusted, and an out-of-union `mode`
     // reaches the Mode button's cycler, which cannot index it.
-    localStorage.setItem(
-      "dg_profiles",
-      JSON.stringify(profiles.map(sanitizeProfileMode))
-    );
+    const profilesRecord: Record<string, Profile> = {};
+    for (const p of profiles) {
+      profilesRecord[p.id] = sanitizeProfileMode(p);
+    }
+    localStorage.setItem("dg_profiles", JSON.stringify(profilesRecord));
   };
 
   const existingRaw = localStorage.getItem("dg_profiles");

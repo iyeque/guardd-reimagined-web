@@ -38,7 +38,16 @@ export function DesktopPairing() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setFamilyName(data?.familyName ?? "Family");
+      // Also resolve family name via whoami
+      const whoamiRes = await fetch(`${API.replace("/family", "")}/family/access/whoami`, {
+        headers: { Authorization: `Bearer ${k}` },
+      });
+      if (whoamiRes.ok) {
+        const whoami = await whoamiRes.json();
+        setFamilyName(whoami?.familyId ?? "Family");
+      } else {
+        setFamilyName("Family");
+      }
       localStorage.setItem("familyAccessKey", k);
       setStatus("paired");
     } catch (e) {
