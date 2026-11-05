@@ -6,7 +6,7 @@ const API = "https://digitalguardianwellness.org/api/family";
 const SYNC_INTERVAL_MS = 30 * 60 * 1000; // 30 minutes
 
 function isTauri(): boolean {
-  return typeof window !== "undefined" && "__TAURI__" in window;
+  return typeof window !== "undefined" && ("__TAURI__" in window || "__TAURI_INTERNALS__" in window);
 }
 
 export function getAccessKey(): string | null {
