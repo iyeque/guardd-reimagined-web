@@ -10,6 +10,8 @@ import { ProfileProvider } from "@/context/ProfileContext";
 import { WellnessProvider } from "@/context/WellnessContext";
 import { COOKIE_CONSENT_KEY } from "@/lib/profiles";
 import { startDesktopEnforcement } from "@/lib/desktop-enforcement";
+import { DesktopApp } from "@/components/DesktopApp";
+import { isDesktop } from "@/components/DesktopPairing";
 
 function GlobalScrollHandler() {
   const { pathname, hash } = useLocation();
@@ -112,6 +114,23 @@ const App = () => {
     const cleanup = startDesktopEnforcement();
     return cleanup;
   }, []);
+
+  // Desktop app: focused native UI instead of full website
+  if (isDesktop()) {
+    return (
+      <WellnessProvider>
+        <QueryClientProvider client={queryClient}>
+          <ProfileProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <DesktopApp />
+            </TooltipProvider>
+          </ProfileProvider>
+        </QueryClientProvider>
+      </WellnessProvider>
+    );
+  }
 
   return (
   <ProfileProvider>
