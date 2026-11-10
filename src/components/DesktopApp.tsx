@@ -3,6 +3,7 @@ import { DesktopLayout } from "@/components/DesktopLayout";
 import { DesktopPairing } from "@/components/DesktopPairing";
 import { GamificationPanel } from "@/components/GamificationPanel";
 import { Shield, Trophy, Users, Settings } from "lucide-react";
+import { useAutostart, sendDesktopNotification } from "@/lib/desktop-settings";
 
 function isTauri(): boolean {
   return typeof window !== "undefined" && ("__TAURI__" in window || "__TAURI_INTERNALS__" in window);
@@ -63,6 +64,7 @@ function EnforcementView() {
 
 function SettingsView() {
   const [mode, setMode] = useState<"family" | "corporate">("family");
+  const { enabled: autostartEnabled, loading: autostartLoading, toggle: toggleAutostart } = useAutostart();
 
   return (
     <div className="p-6 space-y-4">
@@ -103,13 +105,28 @@ function SettingsView() {
       </div>
 
       {/* Autostart toggle */}
-      <div className="rounded-xl border-2 border-border bg-card p-4 space-y-2">
+      <div className="rounded-xl border-2 border-border bg-card p-4 space-y-3">
         <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
           Startup
         </h3>
-        <p className="text-[11px] text-muted-foreground">
-          Digital Guardian starts automatically when you log in.
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Launch Digital Guardian when you log in
+          </p>
+          <button
+            onClick={toggleAutostart}
+            disabled={autostartLoading}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              autostartEnabled ? "bg-teal-500" : "bg-muted"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                autostartEnabled ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       {/* About */}
