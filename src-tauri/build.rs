@@ -1,3 +1,26 @@
 fn main() {
-    tauri_build::build()
+    // Hosts-file enforcement writes to C:\Windows\System32\drivers\etc\hosts,
+    // which is protected. Without elevation every block_domains/unblock_all
+    // call fails with "Access is denied (os error 5)". Embed a Windows manifest
+    // requesting administrator privileges so the app always runs elevated.
+    //
+    // Tradeoff: Windows shows a UAC prompt on launch (including autostart).
+    // For a parental-control app where the child must not be able to disable
+    // enforcement, that prompt is the intended gate.
+    let mut windows = tauri_build::WindowsAttributes::new();
+    windows = windows.app_manifest(
+        r#"
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+</assembly>
+"#,
+    );
+    let attrs = tauri_build::Attributes::new().windows_attributes(windows);
+    tauri_build::try_build(attrs).expect("failed to run build script");
 }
