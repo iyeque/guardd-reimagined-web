@@ -117,18 +117,22 @@ const App = () => {
 
   // Desktop app: focused native UI instead of full website
   if (isDesktop()) {
+    // ProfileProvider must be the OUTERMOST provider here: WellnessProvider
+    // calls useProfileId() -> useProfile(), which throws if no ProfileProvider
+    // is above it. Rendering WellnessProvider outside it crashed every launch
+    // and surfaced the ErrorBoundary "Something went wrong" dialog.
     return (
-      <WellnessProvider>
-        <QueryClientProvider client={queryClient}>
-          <ProfileProvider>
+      <ProfileProvider>
+        <WellnessProvider>
+          <QueryClientProvider client={queryClient}>
             <TooltipProvider>
               <Toaster />
               <Sonner />
               <DesktopApp />
             </TooltipProvider>
-          </ProfileProvider>
-        </QueryClientProvider>
-      </WellnessProvider>
+          </QueryClientProvider>
+        </WellnessProvider>
+      </ProfileProvider>
     );
   }
 

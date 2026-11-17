@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { apiFetch } from "@/lib/api-client";
 import type { CommitmentLike } from "@shared/commitment-rules";
 import { evaluateCommitmentRules } from "@shared/commitment-rules";
 import type { PointsLedger } from "@shared/gamification";
@@ -48,7 +49,7 @@ function saveSeenCompleted(ids: Set<string>) {
 
 /** Fetch commitments from the API. */
 async function fetchCommitments(key: string): Promise<CommitmentLike[]> {
-  const res = await fetch(`${API}/commitments`, {
+  const res = await apiFetch(`${API}/commitments`, {
     headers: { Authorization: `Bearer ${key}` },
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -142,7 +143,11 @@ export async function syncAndEnforce(): Promise<void> {
 
   const key = getAccessKey();
   if (!key) {
-    await invoke("unblock_all");
+    try {
+      await invoke("unblock_all");
+    } catch {
+      // ignore
+    }
     return;
   }
 

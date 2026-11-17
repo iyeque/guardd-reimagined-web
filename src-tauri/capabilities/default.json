@@ -10,6 +10,13 @@
     "autostart:allow-enable",
     "autostart:allow-disable",
     "autostart:allow-is-enabled",
-    "window-state:default"
+    "window-state:default",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        { "url": "https://digitalguardianwellness.org/api/*" }
+      ]
+    }
   ]
 }

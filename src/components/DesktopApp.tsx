@@ -62,6 +62,35 @@ function EnforcementView() {
   );
 }
 
+function ToggleSwitch({ checked, onChange, loading, label }: {
+  checked: boolean;
+  onChange: () => void;
+  loading: boolean;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={onChange}
+      disabled={loading}
+      className={`relative inline-flex h-7 w-13 shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${
+        checked
+          ? "bg-teal-500"
+          : "bg-muted"
+      }`}
+    >
+      <span
+        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+          checked ? "translate-x-6" : "translate-x-1"
+        }`}
+      />
+    </button>
+  );
+}
+
 function SettingsView() {
   const [mode, setMode] = useState<"family" | "corporate">("family");
   const { enabled: autostartEnabled, loading: autostartLoading, toggle: toggleAutostart } = useAutostart();
@@ -106,30 +135,19 @@ function SettingsView() {
 
       {/* Autostart toggle */}
       <div className="rounded-xl border-2 border-border bg-card p-4 space-y-3">
-        <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
-          Startup
-        </h3>
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Launch Digital Guardian when you log in
-          </p>
-          <button
-            onClick={toggleAutostart}
-            disabled={autostartLoading}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              autostartEnabled ? "bg-teal-500" : "bg-muted"
-            }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                autostartEnabled ? "translate-x-6" : "translate-x-1"
-              }`}
-            />
-          </button>
+          <div>
+            <p className="text-sm font-medium text-foreground">Launch on login</p>
+            <p className="text-[11px] text-muted-foreground">Start Digital Guardian automatically when you sign in to your computer.</p>
+          </div>
+          <ToggleSwitch
+            checked={autostartEnabled}
+            onChange={toggleAutostart}
+            loading={autostartLoading}
+            label="Toggle autostart"
+          />
         </div>
       </div>
-
-      {/* About */}
       <div className="rounded-xl border-2 border-border bg-card p-4 space-y-2">
         <h3 className="text-sm font-black uppercase tracking-widest text-foreground">
           About

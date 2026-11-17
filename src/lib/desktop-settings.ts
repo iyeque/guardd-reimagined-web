@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 function isTauri(): boolean {
@@ -10,13 +9,23 @@ export function useAutostart() {
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!isTauri()) return;
-    invoke<boolean>("plugin:autostart|is_enabled").then((v) => {
-      setEnabled(v);
+  const load = useCallback(async () => {
+    if (!isTauri()) {
       setLoading(false);
-    }).catch(() => setLoading(false));
+      return;
+    }
+    try {
+      const v = await invoke<boolean>("plugin:autostart|is_enabled");
+      setEnabled(v);
+    } catch (e) {
+      console.error("autostart load failed:", e);
+    }
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const toggle = async () => {
     if (!isTauri()) return;
@@ -35,7 +44,7 @@ export function useAutostart() {
     setLoading(false);
   };
 
-  return { enabled, loading, toggle };
+  return { enabled, loading, toggle, refresh: load };
 }
 
 export function sendDesktopNotification(title: string, body: string) {

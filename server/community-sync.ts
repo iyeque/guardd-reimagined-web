@@ -400,7 +400,7 @@ async function fetchLiveEventsFromSerp() {
     const results = await Promise.all(queries.map(q =>
       axios.get('https://serpapi.com/search.json', {
         params: {
-          engine: "google_search",
+          engine: "google",
           q: q,
           api_key: apiKey,
           hl: "en",

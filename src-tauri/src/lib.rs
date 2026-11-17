@@ -89,6 +89,7 @@ pub fn run() {
             Some(vec![]),
         ))
         .plugin(tauri_plugin_window_state::Builder::default().build())
+        .plugin(tauri_plugin_http::init())
         .invoke_handler(tauri::generate_handler![block_domains, unblock_all, send_notification])
         .setup(|app| {
             // System tray

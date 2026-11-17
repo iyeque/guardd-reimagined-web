@@ -31,6 +31,11 @@ export class ErrorBoundary extends Component<Props, State> {
           <p className="text-gray-300 mb-8 max-w-md text-center">
             We apologize for the inconvenience. The application has encountered an unexpected error.
           </p>
+          {this.state.error?.message && (
+            <pre className="mb-6 max-w-lg whitespace-pre-wrap break-words rounded bg-black/40 p-3 text-left text-sm text-red-300">
+              {this.state.error.message}
+            </pre>
+          )}
           <Button 
             onClick={() => window.location.reload()}
             className="bg-green-500 hover:bg-green-600"
