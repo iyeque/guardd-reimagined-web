@@ -51,3 +51,6 @@ tmp/
 # Tauri — generated build artifacts and capability schemas
 src-tauri/target/
 src-tauri/gen/
+
+# Office lock files (created while a .pptx/.docx/.xlsx is open)
+~$*
