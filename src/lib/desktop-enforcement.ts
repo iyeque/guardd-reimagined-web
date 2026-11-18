@@ -5,6 +5,17 @@ import { evaluateCommitmentRules } from "@shared/commitment-rules";
 import type { PointsLedger } from "@shared/gamification";
 import { earnPoints, TASK_POINTS } from "@shared/gamification";
 
+// The API also returns a status field, which CommitmentLike does not model.
+type CommitmentWithStatus = CommitmentLike & { status?: string };
+interface CommitmentApiRow {
+  id: number;
+  title: string;
+  terms: string;
+  members: string;
+  rules?: CommitmentLike["rules"];
+  status?: string;
+}
+
 const API = "https://digitalguardianwellness.org/api/family";
 const SYNC_INTERVAL_MS = 30 * 60 * 1000;
 const COMPLETED_KEY = "dg_completed_commitments";
@@ -37,24 +48,29 @@ function getSeenCompleted(): Set<string> {
   try {
     const raw = localStorage.getItem(COMPLETED_KEY);
     if (raw) return new Set(JSON.parse(raw));
-  } catch {}
+  } catch {
+    // Storage unavailable — treat as no seen commitments.
+  }
   return new Set();
 }
 
 function saveSeenCompleted(ids: Set<string>) {
   try {
     localStorage.setItem(COMPLETED_KEY, JSON.stringify(Array.from(ids)));
-  } catch {}
+  } catch {
+    // Storage unavailable — points still awarded in-session.
+  }
 }
 
 /** Fetch commitments from the API. */
-async function fetchCommitments(key: string): Promise<CommitmentLike[]> {
+async function fetchCommitments(key: string): Promise<CommitmentWithStatus[]> {
   const res = await apiFetch(`${API}/commitments`, {
     headers: { Authorization: `Bearer ${key}` },
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  return (data ?? []).map((c: any) => ({
+  const data: unknown = await res.json();
+  const rows = (Array.isArray(data) ? data : []) as CommitmentApiRow[];
+  return rows.map((c) => ({
     id: c.id,
     title: c.title,
     terms: c.terms,
@@ -97,13 +113,13 @@ function computeBlockedDomains(commitments: CommitmentLike[], member: string | n
   return Array.from(domains);
 }
 
-function awardCommitmentPoints(commitments: CommitmentLike[]) {
+function awardCommitmentPoints(commitments: CommitmentWithStatus[]) {
   const seen = getSeenCompleted();
   const newlyCompleted: string[] = [];
 
   for (const c of commitments) {
     const id = String(c.id);
-    if ((c as any).status === "completed" && !seen.has(id)) {
+    if (c.status === "completed" && !seen.has(id)) {
       newlyCompleted.push(id);
     }
   }
@@ -130,7 +146,7 @@ function awardCommitmentPoints(commitments: CommitmentLike[]) {
   }
 
   for (const c of commitments) {
-    if ((c as any).status === "completed") {
+    if (c.status === "completed") {
       seen.add(String(c.id));
     }
   }

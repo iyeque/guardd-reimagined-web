@@ -5,7 +5,10 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  // ESLint flat config does not read .gitignore. src-tauri/target contains
+  // thousands of generated codegen JS assets that would otherwise produce
+  // hundreds of bogus errors after every desktop build.
+  { ignores: ["dist", "src-tauri/target", "src-tauri/gen"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

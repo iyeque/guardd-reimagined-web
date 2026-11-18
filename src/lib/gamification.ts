@@ -18,7 +18,9 @@ function loadLedger(): PointsLedger {
   try {
     const raw = localStorage.getItem(LEDGER_KEY);
     if (raw) return JSON.parse(raw);
-  } catch {}
+  } catch {
+    // Corrupt or unavailable storage — fall back to a fresh ledger.
+  }
   return createLedger();
 }
 
@@ -26,7 +28,9 @@ function loadTasks(): Task[] {
   try {
     const raw = localStorage.getItem(TASKS_KEY);
     if (raw) return JSON.parse(raw);
-  } catch {}
+  } catch {
+    // Corrupt or unavailable storage — start with no tasks.
+  }
   return [];
 }
 
@@ -34,7 +38,9 @@ function loadRedemptions(): Redemption[] {
   try {
     const raw = localStorage.getItem(REDEMPTIONS_KEY);
     if (raw) return JSON.parse(raw);
-  } catch {}
+  } catch {
+    // Corrupt or unavailable storage — start with no redemptions.
+  }
   return [];
 }
 
