@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The 9pm Agreement — DigitalGuard</title>
+<meta name="description" content="One screen rule your child helps write — and actually keeps. Free Chrome extension from Digital Guardian Wellness." />
+<meta name="theme-color" content="#E6FFFA" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="./dg-logo.png" type="image/png" />
+<link rel="canonical" href="https://digitalguardianwellness.org/agreement.html" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="The 9pm Agreement — DigitalGuard" />
+<meta property="og:description" content="One screen rule your child helps write — and actually keeps. Free Chrome extension." />
+<meta property="og:image" content="https://digitalguardianwellness.org/og-preview.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The 9pm Agreement — DigitalGuard" />
+<meta name="twitter:description" content="One screen rule your child helps write — and actually keeps. Free Chrome extension." />
+<style>
+  :root {
+    --teal: #4FD1C5;
+    --teal-deep: #2C7A7B;
+    --coral: #FF9A8B;
+    --lavender: #B794F4;
+    --ink: #0F172A;
+    --muted: #475569;
+    --glass: rgba(255, 255, 255, 0.62);
+    --line: rgba(15, 23, 42, 0.08);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font);
+    color: var(--ink);
+    background: linear-gradient(135deg, #FFF5F5 0%, #F0FFF4 50%, #E6FFFA 100%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  .ambient { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(60px); }
+  .blob.coral { width: 34vw; height: 34vw; min-width: 280px; min-height: 280px; background: var(--coral); opacity: .30; top: -8vw; left: -6vw; animation: drift1 20s ease-in-out infinite alternate; }
+  .blob.mint { width: 30vw; height: 30vw; min-width: 260px; min-height: 260px; background: var(--teal); opacity: .25; top: 4vw; right: -6vw; animation: drift2 18s ease-in-out infinite alternate; }
+  .blob.lavender { width: 32vw; height: 32vw; min-width: 280px; min-height: 280px; background: var(--lavender); opacity: .25; bottom: -10vw; left: 20vw; animation: drift3 22s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(6vw, 5vw) scale(1.08); } }
+  @keyframes drift2 { to { transform: translate(-5vw, 7vw) scale(1.06); } }
+  @keyframes drift3 { to { transform: translate(4vw, -4vw) scale(1.1); } }
+  .noise {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap { width: min(100% - 40px, 1080px); margin-inline: auto; }
+  header { padding: 22px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+  .brand img { width: 38px; height: 38px; border-radius: 9px; object-fit: contain; }
+  .wordmark { font-weight: 900; letter-spacing: -.05em; text-transform: uppercase; font-size: 22px; }
+  .badge {
+    font-size: 10px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--teal-deep); background: rgba(79, 209, 197, .12); border: 1px solid rgba(79, 209, 197, .3);
+    padding: 7px 12px; border-radius: 999px; white-space: nowrap;
+  }
+  main { padding-bottom: 60px; }
+  .hero { text-align: center; padding: 70px 0 46px; }
+  .eyebrow { font-size: 11px; font-weight: 900; letter-spacing: .22em; text-transform: uppercase; color: var(--teal-deep); margin: 0 0 18px; }
+  h1 { font-size: clamp(2.7rem, 8vw, 4.8rem); font-weight: 900; letter-spacing: -.05em; line-height: 1.03; margin: 0 0 20px; }
+  .gradient-text {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--coral) 50%, var(--lavender) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+  }
+  .lede { font-size: clamp(1.15rem, 2.6vw, 1.5rem); font-weight: 700; margin: 0 auto 14px; max-width: 640px; }
+  .sub { font-size: 1rem; color: var(--muted); max-width: 620px; margin: 0 auto 30px; }
+  .cta {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(90deg, #16A34A, #059669); color: #fff; text-decoration: none;
+    font-weight: 900; font-size: 1.05rem; padding: 17px 32px; border-radius: 12px;
+    box-shadow: 0 18px 35px -8px rgba(22, 163, 74, .45);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 24px 42px -8px rgba(22, 163, 74, .5); }
+  .cta:active { transform: scale(.98); }
+  .cta:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+  .cta svg { width: 18px; height: 18px; }
+  .cta-note { font-size: .82rem; color: var(--muted); margin: 14px 0 0; }
+  h2 { font-size: clamp(1.6rem, 4vw, 2.3rem); font-weight: 800; letter-spacing: -.03em; margin: 0 0 8px; }
+  .section-head { text-align: center; margin-bottom: 30px; }
+  .section-head p { color: var(--muted); margin: 4px 0 0; }
+  .steps { padding: 30px 0 46px; }
+  .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .step, .panel {
+    background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--line); border-radius: 24px; padding: 26px;
+  }
+  .step .num {
+    display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 999px;
+    background: rgba(79, 209, 197, .16); color: var(--teal-deep); font-weight: 900; margin-bottom: 12px;
+  }
+  .step h3 { font-size: 1.1rem; font-weight: 800; margin: 0 0 6px; }
+  .step p, .panel p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .contrast { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; padding: 10px 0 46px; }
+  .panel .label { font-size: 10px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 8px; }
+  .panel.before { border-color: rgba(255, 154, 139, .45); }
+  .panel.before .label { color: #B45309; }
+  .panel.after { border-color: rgba(79, 209, 197, .45); background: rgba(79, 209, 197, .10); }
+  .panel.after .label { color: var(--teal-deep); }
+  .panel p:last-child { font-weight: 600; color: var(--ink); }
+  .proof { text-align: center; padding: 0 0 40px; }
+  .proof p { color: var(--muted); max-width: 620px; margin: 0 auto; }
+  .proof strong { color: var(--ink); }
+  .final { text-align: center; padding: 10px 0 20px; }
+  .final h2 { margin-bottom: 20px; }
+  footer { border-top: 1px solid var(--line); padding: 22px 0 30px; color: var(--muted); font-size: .85rem; }
+  .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: center; }
+  footer a { color: var(--teal-deep); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  @media (max-width: 760px) {
+    .step-grid, .contrast { grid-template-columns: 1fr; }
+    .hero { padding: 44px 0 36px; }
+    .badge { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <div class="blob coral"></div><div class="blob mint"></div><div class="blob lavender"></div>
+  </div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <a class="brand" href="https://digitalguardianwellness.org/" aria-label="DigitalGuard home">
+        <img src="./dg-logo.png" alt="DigitalGuard" />
+        <span class="wordmark">DigitalGuard</span>
+      </a>
+      <span class="badge">UAE Family Pilot</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="eyebrow">A Calmer Bedtime, By Agreement</p>
+        <h1>The <span class="gradient-text">9pm Agreement</span></h1>
+        <p class="lede">It&rsquo;s 9pm. The iPad is still on. Homework and sleep lose.</p>
+        <p class="sub">One screen rule your child helps write &mdash; and actually keeps. The free DigitalGuard extension reminds, then holds the limit, and points earn extra time back.</p>
+        <a class="cta" href="https://chromewebstore.google.com/detail/caebokejnkeoehkmmhbjcnbfiobngnai" target="_blank" rel="noopener noreferrer">
+          Get the free extension
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <p class="cta-note">Free on the Chrome Web Store &middot; Installs in under a minute</p>
+      </section>
+
+      <section class="steps" aria-labelledby="how-title">
+        <div class="section-head">
+          <h2 id="how-title">One deal. Three steps.</h2>
+          <p>No spying. No sudden blackouts. Just the rule you both chose.</p>
+        </div>
+        <div class="step-grid">
+          <article class="step">
+            <span class="num">1</span>
+            <h3>Agree together</h3>
+            <p>You and your child set the bedtime limit in a shared family commitment. It&rsquo;s their rule too, not a secret block.</p>
+          </article>
+          <article class="step">
+            <span class="num">2</span>
+            <h3>It holds</h3>
+            <p>The extension gives a reminder first, then keeps the agreed limit even when you&rsquo;re not in the room.</p>
+          </article>
+          <article class="step">
+            <span class="num">3</span>
+            <h3>Earn it back</h3>
+            <p>Points for keeping the deal turn into extra screen time &mdash; a reason to stick with it, not fight it.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="contrast" aria-label="Before and after">
+        <div class="panel before">
+          <p class="label">Tonight</p>
+          <p>&ldquo;Turn it off.&rdquo; &rarr; &ldquo;Five more minutes.&rdquo; &rarr; another fight, and a tired morning.</p>
+        </div>
+        <div class="panel after">
+          <p class="label">With the 9pm Agreement</p>
+          <p>They chose the limit. The extension keeps it. Points make it worth keeping. Everyone sleeps.</p>
+        </div>
+      </section>
+
+      <section class="proof">
+        <p>Built by Digital Guardian Wellness. The extension is <strong>live on the Chrome Web Store (v0.3.0)</strong> &mdash; install it free, no card needed.</p>
+      </section>
+
+      <section class="final">
+        <h2>Start tonight.</h2>
+        <a class="cta" href="https://chromewebstore.google.com/detail/caebokejnkeoehkmmhbjcnbfiobngnai" target="_blank" rel="noopener noreferrer">
+          Get the free extension
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </section>
+    </main>
+
+    <footer>
+      <div class="foot">
+        <span>&copy; Digital Guardian Wellness &middot; hello@digitalguardianwellness.org</span>
+        <span><a href="https://digitalguardianwellness.org/privacy-policy">Privacy Policy</a> &middot; <a href="https://digitalguardianwellness.org/family-commitments">Learn more</a></span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
