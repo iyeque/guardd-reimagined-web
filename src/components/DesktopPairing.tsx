@@ -7,6 +7,19 @@ import type { CommitmentRules, RuleEntry } from "@shared/schema";
 
 const API = "https://digitalguardianwellness.org/api/family";
 const MEMBER_KEY = "dg-member";
+const COMMITMENTS_CACHE_KEY = "dg_cached_commitments";
+const FAMILY_CACHE_KEY = "dg_cached_family_name";
+
+function readCachedCommitments(): FamilyCommitment[] {
+  try {
+    const raw = localStorage.getItem(COMMITMENTS_CACHE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 function isTauri(): boolean {
   return typeof window !== "undefined" && ("__TAURI__" in window || "__TAURI_INTERNALS__" in window);
@@ -104,37 +117,52 @@ export function DesktopPairing() {
   const [status, setStatus] = useState<"idle" | "validating" | "paired" | "error">(
     getAccessKey() ? "paired" : "idle"
   );
-  const [familyName, setFamilyName] = useState<string | null>(null);
+  const [familyName, setFamilyName] = useState<string | null>(() => {
+    try { return localStorage.getItem(FAMILY_CACHE_KEY); } catch { return null; }
+  });
   const [error, setError] = useState<string | null>(null);
-  const [commitments, setCommitments] = useState<FamilyCommitment[]>([]);
+  const [commitments, setCommitments] = useState<FamilyCommitment[]>(readCachedCommitments);
   const [member, setMember] = useState<string>(() => {
     try { return localStorage.getItem(MEMBER_KEY) ?? ""; } catch { return ""; }
   });
 
-  const validate = useCallback(async (k: string) => {
-    setStatus("validating");
-    setError(null);
+  // `silent` = background refresh on mount: refresh data but never flip the UI
+  // back to "validating"/"error" (which made paired users see "Checking…" and
+  // think they were unpaired on every tab switch / launch).
+  const validate = useCallback(async (k: string, silent = false) => {
+    if (!silent) {
+      setStatus("validating");
+      setError(null);
+    }
     try {
-      const res = await apiFetch(`${API}/commitments`, {
-        headers: { Authorization: `Bearer ${k}` },
-      });
+      // Fire both requests in parallel — sequential calls doubled sync time.
+      const headers = { Authorization: `Bearer ${k}` };
+      const [res, whoamiRes] = await Promise.all([
+        apiFetch(`${API}/commitments`, { headers }),
+        apiFetch(`${API.replace("/family", "")}/family/access/whoami`, { headers }),
+      ]);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const list: FamilyCommitment[] = Array.isArray(data) ? data : [];
       setCommitments(list);
+      try { localStorage.setItem(COMMITMENTS_CACHE_KEY, JSON.stringify(list)); } catch (e) {
+        console.error("[desktop-pairing] failed to cache commitments", e);
+      }
 
-      const whoamiRes = await apiFetch(`${API.replace("/family", "")}/family/access/whoami`, {
-        headers: { Authorization: `Bearer ${k}` },
-      });
       if (whoamiRes.ok) {
         const whoami = await whoamiRes.json();
-        setFamilyName(whoami?.familyId ?? "Family");
-      } else {
+        const name = whoami?.familyId ?? "Family";
+        setFamilyName(name);
+        try { localStorage.setItem(FAMILY_CACHE_KEY, name); } catch (e) {
+          console.error("[desktop-pairing] failed to cache family name", e);
+        }
+      } else if (!silent) {
         setFamilyName("Family");
       }
       localStorage.setItem("familyAccessKey", k);
       setStatus("paired");
     } catch (e) {
+      if (silent) return; // keep cached paired UI; a manual Refresh will surface errors
       const msg = e instanceof Error ? e.message : String(e);
       if (/HTTP 401|HTTP 403/.test(msg)) {
         setError("Invalid or expired access key");
@@ -147,7 +175,7 @@ export function DesktopPairing() {
 
   useEffect(() => {
     const existing = getAccessKey();
-    if (existing) validate(existing);
+    if (existing) validate(existing, true);
   }, [validate]);
 
   const members = Array.from(

@@ -14,30 +14,27 @@ export function DesktopApp() {
 
   return (
     <DesktopLayout>
-      {(view) => {
-        switch (view) {
-          case "enforcement":
-            return <EnforcementView />;
-          case "gamification":
-            return (
-              <div className="p-6">
-                <h2 className="text-2xl font-black mb-4">Rewards & Tasks</h2>
-                <GamificationPanel />
-              </div>
-            );
-          case "family":
-            return (
-              <div className="p-6 space-y-4">
-                <h2 className="text-2xl font-black mb-4">Family Pairing</h2>
-                <DesktopPairing />
-              </div>
-            );
-          case "settings":
-            return <SettingsView />;
-          default:
-            return null;
-        }
-      }}
+      {(view) => (
+        // Keep ALL views mounted and only toggle visibility. Returning a
+        // different component per view unmounts <DesktopPairing/> on every tab
+        // switch, which re-runs its slow validate() and loses paired state.
+        <>
+          <div hidden={view !== "enforcement"}>
+            <EnforcementView />
+          </div>
+          <div hidden={view !== "gamification"} className="p-6">
+            <h2 className="text-2xl font-black mb-4">Rewards & Tasks</h2>
+            <GamificationPanel />
+          </div>
+          <div hidden={view !== "family"} className="p-6 space-y-4">
+            <h2 className="text-2xl font-black mb-4">Family Pairing</h2>
+            <DesktopPairing />
+          </div>
+          <div hidden={view !== "settings"}>
+            <SettingsView />
+          </div>
+        </>
+      )}
     </DesktopLayout>
   );
 }
