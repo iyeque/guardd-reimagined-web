@@ -92,6 +92,8 @@ Do **not** pitch the whole platform. Build one landing page for the single beach
 
 The MVP landing page is built at `public/agreement.html` — a standalone one-page site using the brand kit (teal→coral→lavender gradient, ambient blobs, logo, glass cards) with one repeated CTA: **Get the free extension** → Chrome Web Store. Deployed URL will be `https://digitalguardianwellness.org/agreement.html`; locally `http://localhost:5000/agreement.html`. It carries `noindex` (a pitch demo page, not a canonical site page).
 
+The 7-slide deck is built in two submittable formats: `outputs/Digital-Guardian-Pitch.pptx` (editable) and `outputs/Digital-Guardian-Pitch.pdf` (print-ready, generated from `outputs/pitch-deck.html`). Regenerate both with the Hermes documents Python environment via `scripts/generate-pitch-deck.py`. Slide previews are `outputs/slide-1.png` … `slide-7.png`. Placeholders that must be filled before submission: **[SCHOOL NAME]** (slide 2) and **[FOUNDER NAME]/[PHOTO]** (slide 6).
+
 - [ ] Name the ONE school and write down 10 real parents.
 - [ ] Ask the child-acceptance question to as many of the 10 as possible; log raw answers.
 - [ ] Fill the beachhead sentence with the real school name and problem wording from those interviews.
