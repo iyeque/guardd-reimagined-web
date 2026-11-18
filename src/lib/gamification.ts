@@ -9,6 +9,7 @@ import {
   getTotalExtraMinutes,
   TASK_POINTS,
 } from "@shared/gamification";
+import { syncAndEnforce } from "@/lib/desktop-enforcement";
 
 const LEDGER_KEY = "dg_gamification_ledger";
 const TASKS_KEY = "dg_gamification_tasks";
@@ -59,6 +60,10 @@ export function useGamification() {
 
   useEffect(() => {
     localStorage.setItem(REDEMPTIONS_KEY, JSON.stringify(redemptions));
+    // Re-evaluate enforcement AFTER the redemption is persisted, so a fresh
+    // redemption immediately lifts the hosts block (and an expired one lets the
+    // next sync re-apply it). No-op outside the desktop app.
+    void syncAndEnforce();
   }, [redemptions]);
 
   const addTask = useCallback((task: Omit<Task, "id" | "status">) => {
