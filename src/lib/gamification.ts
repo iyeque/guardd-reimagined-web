@@ -103,14 +103,27 @@ export function useGamification() {
   }, []);
 
   const redeem = useCallback((points: number, memberId: string, pin?: string) => {
-    const result = redeemPoints(ledger, points, memberId);
+    // memberId may name several people ("Elise, Ben"). Spend the points once and
+    // grant the same extra time to each — one redemption row per member, which is
+    // exactly what the member-scoped extension lift consumes.
+    const members = memberId.split(",").map((m) => m.trim()).filter(Boolean);
+    if (members.length === 0) return null;
+    const result = redeemPoints(ledger, points, members[0]);
     if (!result) return null;
+    const grants = [result.redemption];
+    for (let i = 1; i < members.length; i++) {
+      grants.push({
+        ...result.redemption,
+        id: `red-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 8)}`,
+        memberId: members[i],
+        pointsSpent: 0, // the single spend is recorded on the first grant
+      });
+    }
     setLedger(result.ledger);
-    setRedemptions((prev) => [result.redemption, ...prev]);
-    // Record it server-side so the browser extension lifts this member's block
-    // too, not just the desktop hosts block. No-op without an access key. The
-    // optional PIN satisfies the opt-in parent gate on the redeem endpoint.
-    void publishRedemption(result.redemption, pin);
+    setRedemptions((prev) => [...grants, ...prev]);
+    // Record server-side so the browser extension lifts each member's block too,
+    // not just the desktop hosts block. The optional PIN satisfies the parent gate.
+    for (const g of grants) void publishRedemption(g, pin);
     return result.redemption;
   }, [ledger]);
 

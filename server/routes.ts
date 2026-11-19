@@ -976,6 +976,34 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Complete a SINGLE milestone (not the whole commitment). Previously the UI's
+  // "Done" button called the commitment-complete endpoint, so ticking one
+  // milestone finished the entire agreement and stopped enforcement. Scoped to
+  // the commitment id so a milestone id from another family cannot be touched.
+  app.post("/api/family/commitments/:id/milestones/:milestoneId/complete", requireFamilyAccess, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const milestoneId = Number(req.params.milestoneId);
+      const familyId = await resolveFamilyId(req);
+      if (familyId && !(await requireParentPinIfSet(req, res, familyId))) return;
+      const [ms] = await db
+        .update(familyCommitmentMilestones)
+        .set({ completedAt: new Date() })
+        .where(
+          and(
+            eq(familyCommitmentMilestones.id, milestoneId),
+            eq(familyCommitmentMilestones.commitmentId, id),
+          ),
+        )
+        .returning();
+      if (!ms) return res.status(404).json({ error: "Milestone not found" });
+      res.json(ms);
+    } catch (err) {
+      console.error("/api/family/commitments/:id/milestones/:milestoneId/complete failed:", err);
+      res.status(500).json({ error: "Failed to complete milestone" });
+    }
+  });
+
   /** Share the family's content packs with the extension (and the parent's apps). */
   app.get("/api/family/chapters", requireFamilyAccess, async (req, res) => {
     try {

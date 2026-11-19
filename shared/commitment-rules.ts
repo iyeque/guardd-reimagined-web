@@ -243,3 +243,38 @@ export function blockEndsAt(
   if (maxRemaining === null) return null;
   return new Date(input.now.getTime() + maxRemaining * 60_000);
 }
+
+/**
+ * Overview variant for the commitments page: when does this commitment's current
+ * block spell end, regardless of which site or member? Unlike blockEndsAt it does
+ * not filter by hostname/member, so it answers "is this agreement enforcing right
+ * now, and until when" for a list view. Returns null when nothing is in force.
+ * Completed commitments are the caller's responsibility to exclude.
+ */
+export function commitmentBlockEndsAt(
+  commitment: CommitmentLike,
+  now: Date,
+): Date | null {
+  const rules = commitment.rules;
+  if (!rules?.entries?.length || !rules.timezone) return null;
+  const { day, minutes } = zonedParts(now, rules.timezone);
+  if (day < 0) return null;
+
+  let maxRemaining: number | null = null;
+  for (const entry of rules.entries) {
+    if (entry.action !== "block") continue;
+    for (const w of entry.windows) {
+      if (!windowCovers(w, day, minutes)) continue;
+      const start = parseClock(w.start);
+      const end = parseClock(w.end);
+      if (start === null || end === null) continue;
+      const remaining =
+        start > end && minutes >= start ? 1440 - minutes + end : end - minutes;
+      if (remaining > 0 && (maxRemaining === null || remaining > maxRemaining)) {
+        maxRemaining = remaining;
+      }
+    }
+  }
+  if (maxRemaining === null) return null;
+  return new Date(now.getTime() + maxRemaining * 60_000);
+}

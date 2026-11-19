@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useGamification } from "@/lib/gamification";
 import { useParentPin } from "@/context/ParentPinContext";
+import { parseMemberOptions } from "@/lib/commitment-members";
 
 function isTauri(): boolean {
   return typeof window !== "undefined" && ("__TAURI__" in window || "__TAURI_INTERNALS__" in window);
 }
 
-export function GamificationPanel() {
+export function GamificationPanel({ memberOptions = [] }: { memberOptions?: string[] }) {
   const {
     ledger,
     tasks,
@@ -25,6 +26,10 @@ export function GamificationPanel() {
   const [taskKind, setTaskKind] = useState<"online" | "offline">("offline");
   const [redeemPoints, setRedeemPoints] = useState(10);
   const [memberName, setMemberName] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  // Chips when the family's member names are known; free text otherwise.
+  const chipsMode = memberOptions.length > 0;
+  const effectiveMembers = chipsMode ? selectedMembers : parseMemberOptions(memberName);
 
   const pendingTasks = tasks.filter((t) => t.status === "pending");
   const completedTasks = tasks.filter((t) => t.status === "completed");
@@ -43,16 +48,16 @@ export function GamificationPanel() {
   };
 
   const handleRedeem = async () => {
-    if (!memberName.trim()) return;
+    if (effectiveMembers.length === 0) return;
     let pin: string | undefined;
     if (parentPin.enabled) {
       const entered = await parentPin.requirePin("Redeem extra screen time");
       if (!entered) return; // parent cancelled
       pin = entered;
     }
-    const result = redeem(redeemPoints, memberName.trim(), pin);
+    const result = redeem(redeemPoints, effectiveMembers.join(","), pin);
     if (result) {
-      alert(`Redeemed ${result.minutesGranted} minutes of extra screen time!`);
+      alert(`Redeemed ${result.minutesGranted} minutes of extra screen time for ${effectiveMembers.join(", ")}!`);
     } else {
       alert("Not enough points or invalid amount.");
     }
@@ -88,14 +93,42 @@ export function GamificationPanel() {
         </p>
         <div className="flex gap-2 items-end">
           <div className="flex-1">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Member</label>
-            <input
-              type="text"
-              value={memberName}
-              onChange={(e) => setMemberName(e.target.value)}
-              placeholder="Child's name"
-              className="w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm"
-            />
+            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              {chipsMode ? "Members (pick one or more)" : "Member(s), comma-separated"}
+            </label>
+            {chipsMode ? (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {memberOptions.map((name) => {
+                  const active = selectedMembers.includes(name);
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      onClick={() =>
+                        setSelectedMembers((prev) =>
+                          active ? prev.filter((m) => m !== name) : [...prev, name],
+                        )
+                      }
+                      className={
+                        active
+                          ? "px-3 py-1.5 rounded-full border-2 bg-foreground border-foreground text-background text-xs font-bold"
+                          : "px-3 py-1.5 rounded-full border-2 border-border text-muted-foreground text-xs font-bold hover:border-foreground"
+                      }
+                    >
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <input
+                type="text"
+                value={memberName}
+                onChange={(e) => setMemberName(e.target.value)}
+                placeholder="e.g. Elise, Ben"
+                className="w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm"
+              />
+            )}
           </div>
           <div className="w-24">
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Points</label>
@@ -111,7 +144,7 @@ export function GamificationPanel() {
           <Button
             type="button"
             onClick={() => void handleRedeem()}
-            disabled={!memberName.trim() || redeemPoints < 10 || redeemPoints > ledger.balance}
+            disabled={effectiveMembers.length === 0 || redeemPoints < 10 || redeemPoints > ledger.balance}
             className="shrink-0 rounded-xl text-xs font-black uppercase tracking-widest"
           >
             Redeem
@@ -169,7 +202,7 @@ export function GamificationPanel() {
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => completeTask(task.id, memberName || "Child")}
+                onClick={() => completeTask(task.id, effectiveMembers[0] || memberName || "Child")}
                 className="rounded-xl text-xs font-black uppercase tracking-widest"
               >
                 Done

@@ -33,6 +33,7 @@ import { ParentPinPanel } from "@/components/ParentPinPanel";
 import { useParentPin } from "@/context/ParentPinContext";
 import { installPath, ENFORCEMENT_LIMIT_NOTE, CHROME_STORE_URL } from "@/lib/extension-install";
 import type { CommitmentRules } from "@shared/schema";
+import { commitmentBlockEndsAt } from "@shared/commitment-rules";
 import { RuleEditor } from "@/components/commitments/RuleEditor";
 import { parseMemberOptions } from "@/lib/commitment-members";
 
@@ -59,6 +60,46 @@ type Milestone = {
 };
 
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
+/** Live "Opens in HH:MM:SS" for a commitment currently in force. Ticks itself. */
+function LiveCountdown({ endsAt }: { endsAt: Date }) {
+  const endMs = endsAt.getTime();
+  const [remaining, setRemaining] = useState(() => endMs - Date.now());
+  useEffect(() => {
+    setRemaining(endMs - Date.now());
+    const t = setInterval(() => setRemaining(endMs - Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [endMs]);
+  if (remaining <= 0) {
+    return <span className="text-xs font-black text-teal-600">Opening…</span>;
+  }
+  const total = Math.floor(remaining / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const txt = h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+  return (
+    <span className="text-xs font-black tabular-nums text-teal-700 dark:text-teal-300">
+      Opens in {txt}
+    </span>
+  );
+}
+
+/** One-line enforcement summary for a commitment card, e.g. "Blocks youtube.com · 21:00–07:00". */
+function enforcementSummary(it: Commitment): string | null {
+  const entries = it.rules?.entries ?? [];
+  if (!entries.length) return null;
+  const blocks = entries.filter((e) => e.action === "block");
+  if (blocks.length === 0) return "Reminder only — never blocks";
+  const domains = Array.from(new Set(blocks.flatMap((e) => e.domains)));
+  const blanket = blocks.some((e) => e.domains.length === 0);
+  const scope = blanket
+    ? "all sites"
+    : domains.slice(0, 3).join(", ") + (domains.length > 3 ? ` +${domains.length - 3}` : "");
+  const win = blocks[0].windows[0];
+  return `Blocks ${scope}${win ? ` · ${win.start}–${win.end}` : ""}`;
+}
 
 const authHeaders = (token?: string): Record<string, string> =>
   token ? { Authorization: `Bearer ${token}` } : {};
@@ -248,6 +289,14 @@ const api = {
       body: JSON.stringify({ label, targetDate }),
     });
     if (!res.ok) throw new Error("Failed to add milestone");
+    return res.json() as Promise<Milestone>;
+  },
+  completeMilestone: async (commitmentId: number, milestoneId: number, token?: string, pin?: string) => {
+    const res = await fetch(`/api/family/commitments/${commitmentId}/milestones/${milestoneId}/complete`, {
+      method: "POST",
+      headers: { ...authHeaders(token), ...(pin ? { "x-parent-pin": pin } : {}) },
+    });
+    if (!res.ok) throw new Error("Failed to complete milestone");
     return res.json() as Promise<Milestone>;
   },
   get: async (id: number, token?: string) => {
@@ -440,6 +489,28 @@ const FamilyCommitments: React.FC = () => {
     completed: items.filter((i) => i.status === "completed").length,
   };
   const FILTERS = ["all", "pending", "active", "completed"] as const;
+  // Union of every commitment's members, offered as redeem chips.
+  const memberOptions = Array.from(new Set(items.flatMap((it) => parseMemberOptions(it.members))));
+
+  // Priority hierarchy: in-force now first, then scheduled enforcement, then
+  // written-only agreements, then completed history. Re-check grouping every 30s;
+  // each in-force card's countdown ticks itself every second.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(t);
+  }, []);
+  const priority = (it: Commitment): number => {
+    if (it.status === "completed") return 3;
+    if (commitmentBlockEndsAt(it, now)) return 0;
+    if (hasBlockRule(it)) return 1;
+    return 2;
+  };
+  const sortedItems = [...visibleItems].sort(
+    (a, b) =>
+      priority(a) - priority(b) ||
+      new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+  );
 
   const pairDevice = async () => {
     if (!accessToken) return;
@@ -481,6 +552,24 @@ const FamilyCommitments: React.FC = () => {
       toast.success("Milestone added.");
     } catch {
       toast.error("Could not add milestone.");
+    }
+  };
+
+  const completeMilestone = async (commitmentId: number, milestoneId: number) => {
+    try {
+      let pin: string | undefined;
+      if (parentPin.enabled) {
+        const entered = await parentPin.requirePin("Complete this milestone");
+        if (!entered) return; // parent cancelled
+        pin = entered;
+      }
+      const ms = await api.completeMilestone(commitmentId, milestoneId, accessToken || undefined, pin);
+      setSelected((s) =>
+        s ? { ...s, milestones: s.milestones.map((x) => (x.id === milestoneId ? ms : x)) } : s,
+      );
+      toast.success("Milestone completed.");
+    } catch {
+      toast.error("Could not complete milestone.");
     }
   };
 
@@ -639,7 +728,7 @@ const FamilyCommitments: React.FC = () => {
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => void complete(selected.item.id)}
+                            onClick={() => void completeMilestone(selected.item.id, m.id)}
                             className="text-emerald-600"
                           >
                             Done
@@ -671,7 +760,7 @@ const FamilyCommitments: React.FC = () => {
   return (
     <div className="min-h-screen bg-transparent">
       <div className="container mx-auto px-6 py-24">
-        <div className="max-w-5xl mx-auto space-y-12">
+        <div className="max-w-5xl mx-auto space-y-10">
           <motion.header
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -685,47 +774,9 @@ const FamilyCommitments: React.FC = () => {
               Family <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 via-rose-400 to-purple-500">Commitments</span>
             </h1>
             <p className="text-muted-foreground font-medium max-w-2xl mx-auto">
-              Create, track, and complete family agreements. Every commitment is recorded on an auditable ledger with optional IPFS metadata pinning.
+              Your family's agreements, most urgent first. In-force commitments show a live countdown; create, track, and complete them below.
             </p>
           </motion.header>
-
-          <DesktopPairing />
-
-          <GamificationPanel />
-
-          <ParentPinPanel />
-
-          {/* How the extension works. The tour anchors to real elements here, so
-              this copy and the tour cannot drift apart. */}
-          {!accessToken && (
-            <div className="max-w-2xl mx-auto rounded-2xl border-2 border-teal-500/40 bg-teal-500/5 p-6 space-y-3">
-              <div className="text-[10px] font-black uppercase tracking-widest text-teal-700 dark:text-teal-300">
-                Connect this device
-              </div>
-              <form onSubmit={saveToken} className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="text"
-                  value={tokenDraft}
-                  onChange={(e) => setTokenDraft(e.target.value)}
-                  placeholder="Paste the family access key you were given"
-                  className="flex-1 h-12 rounded-xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 px-4 text-sm font-bold text-foreground"
-                />
-                <button
-                  type="submit"
-                  disabled={adopting || !tokenDraft.trim()}
-                  className="h-12 px-6 rounded-xl bg-foreground text-background font-black uppercase tracking-widest text-xs disabled:opacity-50"
-                >
-                  {adopting ? "Checking…" : "Connect"}
-                </button>
-              </form>
-              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                Your commitments are private to your family. Paste the key an
-                administrator gave you to unlock them on this device. The key
-                decides which family you see, so a key from one family will never
-                show another's.
-              </p>
-            </div>
-          )}
 
           {/* The honesty banner. Shown when a commitment names a site to block
               but this browser is not paired: without the extension the rule
@@ -765,7 +816,184 @@ const FamilyCommitments: React.FC = () => {
             </div>
           )}
 
-          {/* The extension explainer */}
+          {/* Connect this device — needed before commitments can load. */}
+          {!accessToken && (
+            <div className="max-w-2xl mx-auto rounded-2xl border-2 border-teal-500/40 bg-teal-500/5 p-6 space-y-3">
+              <div className="text-[10px] font-black uppercase tracking-widest text-teal-700 dark:text-teal-300">
+                Connect this device
+              </div>
+              <form onSubmit={saveToken} className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={tokenDraft}
+                  onChange={(e) => setTokenDraft(e.target.value)}
+                  placeholder="Paste the family access key you were given"
+                  className="flex-1 h-12 rounded-xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 px-4 text-sm font-bold text-foreground"
+                />
+                <button
+                  type="submit"
+                  disabled={adopting || !tokenDraft.trim()}
+                  className="h-12 px-6 rounded-xl bg-foreground text-background font-black uppercase tracking-widest text-xs disabled:opacity-50"
+                >
+                  {adopting ? "Checking…" : "Connect"}
+                </button>
+              </form>
+              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                Your commitments are private to your family. Paste the key an
+                administrator gave you to unlock them on this device. The key
+                decides which family you see, so a key from one family will never
+                show another's.
+              </p>
+            </div>
+          )}
+
+          {/* CURRENT COMMITMENTS — the family's data, first and priority-sorted:
+              in force now → scheduled enforcement → written only → completed. */}
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-2xl font-black text-foreground tracking-tighter">Current Commitments</h2>
+              <Button onClick={load} variant="ghost" className="text-xs font-black uppercase tracking-widest">
+                Refresh
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {FILTERS.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setStatusFilter(f)}
+                  aria-pressed={statusFilter === f}
+                  className={
+                    statusFilter === f
+                      ? "px-3.5 h-9 rounded-full bg-foreground text-background text-[10px] font-black uppercase tracking-widest"
+                      : "px-3.5 h-9 rounded-full border-2 border-border bg-white/60 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-teal-500/50"
+                  }
+                >
+                  {f} <span className="opacity-60">{statusCounts[f]}</span>
+                </button>
+              ))}
+            </div>
+
+            {loading && <div className="text-sm text-muted-foreground font-medium">Loading...</div>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {sortedItems.map((it) => {
+                const endsAt = it.status !== "completed" ? commitmentBlockEndsAt(it, now) : null;
+                const inForce = !!endsAt;
+                const summary = enforcementSummary(it);
+                return (
+                  <Card
+                    key={it.id}
+                    className={
+                      inForce
+                        ? "bg-teal-500/5 dark:bg-teal-500/10 backdrop-blur-xl border-2 border-teal-500/50 rounded-[2rem] p-6 hover:border-teal-500 transition-colors cursor-pointer group"
+                        : "bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-[2rem] p-6 hover:border-teal-500/40 transition-colors cursor-pointer group"
+                    }
+                    onClick={() => openCommitment(it.id)}
+                  >
+                    <CardContent className="p-0 space-y-3">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-2xl bg-teal-500/10 flex items-center justify-center">
+                            <FileText className="w-5 h-5 text-teal-600" />
+                          </div>
+                          <h3 className="font-black text-foreground tracking-tight leading-tight">{it.title}</h3>
+                        </div>
+                        <span className={statusBadge(it.status)}>{it.status}</span>
+                      </div>
+                      {inForce && endsAt && (
+                        <div className="flex flex-wrap items-center gap-2 rounded-xl border-2 border-teal-500/40 bg-white/60 dark:bg-white/5 px-3 py-2">
+                          <Clock className="w-4 h-4 text-teal-600" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-teal-700 dark:text-teal-300">
+                            In force now
+                          </span>
+                          <LiveCountdown endsAt={endsAt} />
+                        </div>
+                      )}
+                      <p className="text-sm text-muted-foreground font-medium line-clamp-2">{it.terms}</p>
+                      {summary && (
+                        <p className="text-[11px] font-bold text-foreground/70">{summary}</p>
+                      )}
+                      <div className="flex items-center justify-between pt-2">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          <Users className="w-3.5 h-3.5" /> {it.members}
+                        </span>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              {sortedItems.length === 0 && !loading && (
+                <div className="text-sm text-muted-foreground font-medium">
+                  {statusFilter === "all"
+                    ? "No commitments yet. Create your first below."
+                    : `No ${statusFilter} commitments.`}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Create a new commitment — secondary to the list above. */}
+          <Card className="bg-white/70 dark:bg-black/50 backdrop-blur-xl border-border rounded-[2rem] shadow-2xl">
+            <CardContent className="p-8 md:p-10">
+              <div className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-6">
+                Create a new commitment
+              </div>
+              <form onSubmit={submit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Commitment Title</label>
+                    <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g., Weekend Screen-Time Agreement" className="h-14 rounded-2xl border-2 focus:border-teal-500 font-bold" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Members (comma-separated)</label>
+                    <Input value={members} onChange={(e) => setMembers(e.target.value)} placeholder="Mom, Dad, Alex, Jordan" className="h-14 rounded-2xl border-2 focus:border-teal-500 font-bold" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Terms</label>
+                  <textarea
+                    value={terms}
+                    onChange={(e) => setTerms(e.target.value)}
+                    placeholder="State the clear agreement rules and expectations..."
+                    className="w-full min-h-[120px] rounded-2xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 p-4 font-bold text-foreground placeholder:font-normal"
+                  />
+                </div>
+                <div className="space-y-3 pt-2 border-t-2 border-border/60" data-tour="extension-rules">
+                  <RuleEditor
+                    value={rules}
+                    onChange={setRules}
+                    memberOptions={parseMemberOptions(members)}
+                    disabled={creating}
+                  />
+                </div>
+                <FamilyAccessPanel
+                  accessToken={accessToken}
+                  needsToken={needsToken}
+                  tokenDraft={tokenDraft}
+                  onTokenDraftChange={setTokenDraft}
+                  onSaveToken={saveToken}
+                  onPair={pairDevice}
+                  pairing={pairing}
+                  pairedToken={pairedToken}
+                />
+                <div className="flex justify-end">
+                  <Button type="submit" disabled={creating} className="h-14 px-10 bg-foreground text-background font-black rounded-2xl">
+                    {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-4 h-4 mr-2" /> Create Commitment</>}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Family tools: pairing, the points economy, and the optional parent gate. */}
+          <DesktopPairing />
+          <GamificationPanel memberOptions={memberOptions} />
+          <ParentPinPanel />
+
+          {/* The extension explainer — kept visible so the install CTA and the
+              guided tour anchors stay reachable from every state. */}
           <div className="max-w-4xl mx-auto" data-tour="extension-connect">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
               <div>
@@ -862,199 +1090,90 @@ const FamilyCommitments: React.FC = () => {
             </p>
           </div>
 
-          {/* How It Works */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
-              <CardContent className="p-0 space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
-                  <Hash className="w-5 h-5 text-teal-600" />
-                </div>
-                <h3 className="font-black text-foreground text-sm">1. Database Record</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Every commitment is stored in Neon Postgres with a unique ID, family reference, and immutable timestamp. This is the authoritative source of truth.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
-              <CardContent className="p-0 space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-purple-600" />
-                </div>
-                <h3 className="font-black text-foreground text-sm">2. Ledger Hash</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  A SHA-256 hash is computed from the commitment data (family ID, title, terms, timestamp). This creates a tamper-evident fingerprint that can be independently verified.
-                </p>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
-              <CardContent className="p-0 space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
-                  <Globe className="w-5 h-5 text-rose-600" />
-                </div>
-                <h3 className="font-black text-foreground text-sm">3. IPFS Metadata</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  When Pinata is configured, commitment metadata is pinned to IPFS as a JSON document. The CID (content identifier) is stored on the commitment for decentralized retrieval.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Roadmap */}
-          <Card className="bg-gradient-to-br from-teal-500/5 to-purple-500/5 backdrop-blur-xl border border-border rounded-2xl p-6 md:p-8">
-            <CardContent className="p-0 space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-purple-500 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-black text-foreground text-lg">The Roadmap: Beyond the Platform</h3>
-                  <p className="text-xs text-muted-foreground">How commitments gain real-world teeth</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-teal-600">School Oversight</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Teachers and administrators get a read-only dashboard showing student/family commitments relevant to digital citizenship classes. Schools can verify completion without seeing private terms.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-purple-600">Parent Oversight</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    A companion mobile app sends push notifications when milestones approach deadlines. Parents can co-sign commitments and receive weekly progress digests.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-rose-600">Compliance Verification</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Regulators receive anonymized, aggregated proof that the platform is being used effectively (e.g., "1,247 families in District X have active commitments"). Zero-knowledge proofs verify compliance without exposing individual family data. Full records accessible only with legal authorization.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-amber-600">Cross-Platform Enforcement</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Browser extensions enforce commitments at the network level (e.g., block sites during agreed hours). Smart home integrations (HomeKit, Google Home) can pause devices when screen-time limits are reached.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/70 dark:bg-black/50 backdrop-blur-xl border-border rounded-[2rem] shadow-2xl">
-            <CardContent className="p-8 md:p-10">
-              <form onSubmit={submit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Commitment Title</label>
-                    <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g., Weekend Screen-Time Agreement" className="h-14 rounded-2xl border-2 focus:border-teal-500 font-bold" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Members (comma-separated)</label>
-                    <Input value={members} onChange={(e) => setMembers(e.target.value)} placeholder="Mom, Dad, Alex, Jordan" className="h-14 rounded-2xl border-2 focus:border-teal-500 font-bold" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Terms</label>
-                  <textarea
-                    value={terms}
-                    onChange={(e) => setTerms(e.target.value)}
-                    placeholder="State the clear agreement rules and expectations..."
-                    className="w-full min-h-[120px] rounded-2xl border-2 focus:border-teal-500 bg-white/70 dark:bg-white/5 p-4 font-bold text-foreground placeholder:font-normal"
-                  />
-                </div>
-                <div className="space-y-3 pt-2 border-t-2 border-border/60" data-tour="extension-rules">
-                  <RuleEditor
-                    value={rules}
-                    onChange={setRules}
-                    memberOptions={parseMemberOptions(members)}
-                    disabled={creating}
-                  />
-                </div>
-                <FamilyAccessPanel
-                  accessToken={accessToken}
-                  needsToken={needsToken}
-                  tokenDraft={tokenDraft}
-                  onTokenDraftChange={setTokenDraft}
-                  onSaveToken={saveToken}
-                  onPair={pairDevice}
-                  pairing={pairing}
-                  pairedToken={pairedToken}
-                />
-                <div className="flex justify-end">
-                  <Button type="submit" disabled={creating} className="h-14 px-10 bg-foreground text-background font-black rounded-2xl">
-                    {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Plus className="w-4 h-4 mr-2" /> Create Commitment</>}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-2xl font-black text-foreground tracking-tighter">Current Commitments</h2>
-              <Button onClick={load} variant="ghost" className="text-xs font-black uppercase tracking-widest">
-                Refresh
-              </Button>
-            </div>
-
-            {/* Status filter. The badge existed before but nothing let you
-                narrow by it, so a family could not see only pending or only
-                completed commitments. */}
-            <div className="flex flex-wrap gap-2">
-              {FILTERS.map((f) => (
-                <button
-                  key={f}
-                  type="button"
-                  onClick={() => setStatusFilter(f)}
-                  aria-pressed={statusFilter === f}
-                  className={
-                    statusFilter === f
-                      ? "px-3.5 h-9 rounded-full bg-foreground text-background text-[10px] font-black uppercase tracking-widest"
-                      : "px-3.5 h-9 rounded-full border-2 border-border bg-white/60 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:border-teal-500/50"
-                  }
-                >
-                  {f} <span className="opacity-60">{statusCounts[f]}</span>
-                </button>
-              ))}
-            </div>
-
-            {loading && <div className="text-sm text-muted-foreground font-medium">Loading...</div>}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {visibleItems.map((it) => (
-                <Card
-                  key={it.id}
-                  className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-[2rem] p-6 hover:border-teal-500/40 transition-colors cursor-pointer group"
-                  onClick={() => openCommitment(it.id)}
-                >
-                  <CardContent className="p-0 space-y-3">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-teal-500/10 flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-teal-600" />
-                        </div>
-                        <h3 className="font-black text-foreground tracking-tight leading-tight">{it.title}</h3>
-                      </div>
-                      <span className={statusBadge(it.status)}>{it.status}</span>
+          {/* Technical detail + roadmap — marketing, collapsed by default so the
+              family's own commitments stay the focus. */}
+          <details className="rounded-2xl border-2 border-border bg-white/50 dark:bg-white/5">
+            <summary className="cursor-pointer list-none px-5 py-4 text-xs font-black uppercase tracking-widest text-muted-foreground">
+              Learn more: the auditable ledger & the roadmap
+            </summary>
+            <div className="space-y-8 border-t-2 border-border/60 p-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
+                  <CardContent className="p-0 space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                      <Hash className="w-5 h-5 text-teal-600" />
                     </div>
-                    <p className="text-sm text-muted-foreground font-medium line-clamp-2">{it.terms}</p>
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        <Users className="w-3.5 h-3.5" /> {it.members}
-                      </span>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    </div>
+                    <h3 className="font-black text-foreground text-sm">1. Database Record</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Every commitment is stored in Neon Postgres with a unique ID, family reference, and immutable timestamp. This is the authoritative source of truth.
+                    </p>
                   </CardContent>
                 </Card>
-              ))}
-              {visibleItems.length === 0 && !loading && (
-                <div className="text-sm text-muted-foreground font-medium">
-                  {statusFilter === "all"
-                    ? "No commitments yet. Create your first above."
-                    : `No ${statusFilter} commitments.`}
-                </div>
-              )}
+                <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
+                  <CardContent className="p-0 space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <h3 className="font-black text-foreground text-sm">2. Ledger Hash</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      A SHA-256 hash is computed from the commitment data (family ID, title, terms, timestamp). This creates a tamper-evident fingerprint that can be independently verified.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-border rounded-2xl p-5">
+                  <CardContent className="p-0 space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
+                      <Globe className="w-5 h-5 text-rose-600" />
+                    </div>
+                    <h3 className="font-black text-foreground text-sm">3. IPFS Metadata</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      When Pinata is configured, commitment metadata is pinned to IPFS as a JSON document. The CID (content identifier) is stored on the commitment for decentralized retrieval.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="bg-gradient-to-br from-teal-500/5 to-purple-500/5 backdrop-blur-xl border border-border rounded-2xl p-6 md:p-8">
+                <CardContent className="p-0 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-purple-500 flex items-center justify-center">
+                      <Target className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-foreground text-lg">The Roadmap: Beyond the Platform</h3>
+                      <p className="text-xs text-muted-foreground">How commitments gain real-world teeth</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-teal-600">School Oversight</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Teachers and administrators get a read-only dashboard showing student/family commitments relevant to digital citizenship classes. Schools can verify completion without seeing private terms.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-purple-600">Parent Oversight</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        A companion mobile app sends push notifications when milestones approach deadlines. Parents can co-sign commitments and receive weekly progress digests.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-rose-600">Compliance Verification</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Regulators receive anonymized, aggregated proof that the platform is being used effectively (e.g., "1,247 families in District X have active commitments"). Zero-knowledge proofs verify compliance without exposing individual family data. Full records accessible only with legal authorization.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-amber-600">Cross-Platform Enforcement</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Browser extensions enforce commitments at the network level (e.g., block sites during agreed hours). Smart home integrations (HomeKit, Google Home) can pause devices when screen-time limits are reached.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
+          </details>
         </div>
       </div>
     </div>

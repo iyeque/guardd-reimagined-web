@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { evaluateCommitmentRules, blockEndsAt, type CommitmentLike } from "./commitment-rules";
+import { evaluateCommitmentRules, blockEndsAt, commitmentBlockEndsAt, type CommitmentLike } from "./commitment-rules";
 
 const base = {
   id: 1,
@@ -391,5 +391,58 @@ describe("blockEndsAt", () => {
 
   it("returns null for null rules", () => {
     expect(blockEndsAt(makeCommitment({ rules: null }), input(sunday22))).toBeNull();
+  });
+});
+
+describe("commitmentBlockEndsAt (page overview)", () => {
+  it("reports the end of the current block spell regardless of site/member", () => {
+    // Sunday 22:00 inside the default 21:00→07:00 window → Monday 07:00.
+    expect(commitmentBlockEndsAt(makeCommitment(), sunday22)?.toISOString()).toBe(
+      "2026-10-12T07:00:00.000Z",
+    );
+  });
+
+  it("detects a blanket block that names no sites (which blockEndsAt cannot)", () => {
+    const blanket = makeCommitment({
+      rules: {
+        timezone: "UTC",
+        entries: [
+          {
+            domains: [],
+            windows: [{ days: [0, 1, 2, 3, 4], start: "21:00", end: "07:00" }],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
+    });
+    expect(commitmentBlockEndsAt(blanket, sunday22)?.toISOString()).toBe(
+      "2026-10-12T07:00:00.000Z",
+    );
+  });
+
+  it("returns null outside the window", () => {
+    expect(commitmentBlockEndsAt(makeCommitment(), monday20)).toBeNull();
+  });
+
+  it("returns null for a remind-only commitment", () => {
+    const remind = makeCommitment({
+      rules: {
+        timezone: "UTC",
+        entries: [
+          {
+            domains: ["instagram.com"],
+            windows: [{ days: [0, 1, 2, 3, 4], start: "21:00", end: "07:00" }],
+            appliesTo: [],
+            action: "remind",
+          },
+        ],
+      },
+    });
+    expect(commitmentBlockEndsAt(remind, sunday22)).toBeNull();
+  });
+
+  it("returns null for null rules", () => {
+    expect(commitmentBlockEndsAt(makeCommitment({ rules: null }), sunday22)).toBeNull();
   });
 });
