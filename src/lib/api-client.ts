@@ -20,7 +20,7 @@ function isTauri(): boolean {
  */
 export function apiFetch(
   url: string,
-  init?: { headers?: Record<string, string>; method?: string }
+  init?: { headers?: Record<string, string>; method?: string; body?: string }
 ): Promise<Response> {
   if (isTauri()) {
     return tauriFetch(url, init);

@@ -11,7 +11,12 @@
 const API = "https://digitalguardianwellness.org/api/family";
 const SYNC_ALARM = "dg-sync-commitments";
 const BOUNDARY_ALARM = "dg-rule-boundary";
+const REDEMPTION_ALARM = "dg-redemption-poll";
 const SYNC_PERIOD_MINUTES = 30;
+// A redemption should lift the block promptly, not wait for the 30-min sync.
+// Poll just the (cheap) redemptions endpoint every minute and re-apply the rules
+// when the active set changes — including when a redemption expires.
+const REDEMPTION_POLL_MINUTES = 1;
 
 // Load the bundled rule engine and chapter packs. These are classic IIFE
 // scripts, so they declare their globals on the shared global scope that the
@@ -20,6 +25,7 @@ importScripts(chrome.runtime.getURL("rules.js"), chrome.runtime.getURL("chapters
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.alarms.create(SYNC_ALARM, { periodInMinutes: SYNC_PERIOD_MINUTES });
+  chrome.alarms.create(REDEMPTION_ALARM, { periodInMinutes: REDEMPTION_POLL_MINUTES });
 });
 
 // Registered once, here. Registering this inside applyRules() would add a fresh
@@ -28,10 +34,13 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === SYNC_ALARM || alarm.name === BOUNDARY_ALARM) {
     sync().catch(() => {});
+  } else if (alarm.name === REDEMPTION_ALARM) {
+    pollRedemptions().catch(() => {});
   }
 });
 
 chrome.runtime.onStartup.addListener(() => {
+  chrome.alarms.create(REDEMPTION_ALARM, { periodInMinutes: REDEMPTION_POLL_MINUTES });
   sync().catch(() => {});
 });
 
@@ -116,9 +125,18 @@ async function sync() {
       headers: { Authorization: `Bearer ${familyAccessKey}` },
     }).catch(() => null);
 
+    // Active redemptions bridge the desktop's points economy to this layer. A
+    // failure here must not break commitment sync, so fall back to none.
+    const redemptionsRes = await fetch(`${API}/redemptions`, {
+      headers: { Authorization: `Bearer ${familyAccessKey}` },
+    }).catch(() => null);
+    const redemptions =
+      redemptionsRes && redemptionsRes.ok ? await redemptionsRes.json() : [];
+
     await chrome.storage.local.set({
       commitments,
       chapters,
+      redemptions,
       syncedAt: Date.now(),
       syncError: null,
       ...(who?.ok ? { familyId: who.familyId, deviceLabel: who.deviceLabel } : {}),
@@ -154,9 +172,31 @@ function enforceable(commitments) {
   );
 }
 
+/**
+ * The active redemption that lifts THIS member's block, or null.
+ *
+ * Member-scoped: a sibling's redemption never lifts this member's enforcement.
+ * A redemption for "everyone" (or an empty memberId) is a family-wide lift.
+ * Takes the caller's `now` so it stays deterministic under the test clock.
+ */
+function redemptionFor(redemptions, member, now) {
+  const me = (member || "").trim().toLowerCase();
+  const t = now.getTime();
+  for (const r of redemptions ?? []) {
+    if (Number(r?.expiresAt) <= t) continue;
+    const rid = String(r?.memberId ?? "").trim().toLowerCase();
+    if (rid === "everyone" || rid === "") return r;
+    if (me && rid === me) return r;
+  }
+  return null;
+}
+
 async function evaluateHost(hostname) {
-  const { commitments, chapters, member } = await chrome.storage.local.get(["commitments", "chapters", "member"]);
+  const { commitments, chapters, member, redemptions } = await chrome.storage.local.get(["commitments", "chapters", "member", "redemptions"]);
   if (!commitments && !chapters) return { blocked: false, reminded: false };
+  // An active redemption grants extra screen time: suppress both blocks and
+  // reminders for this member until it expires.
+  if (redemptionFor(redemptions, member, new Date())) return { blocked: false, reminded: false };
   const inForce = enforceable(commitments);
   const domain = String(hostname ?? "").toLowerCase();
   const base = {
@@ -249,8 +289,10 @@ async function evaluateHost(hostname) {
  * blocks exactly what the web app says it will.
  */
 async function applyRules(commitments, chapters) {
-  const { member } = await chrome.storage.local.get("member");
+  const { member, redemptions } = await chrome.storage.local.get(["member", "redemptions"]);
   const now = new Date();
+  // An active redemption for this member lifts every block until it expires.
+  const redemption = redemptionFor(redemptions, member, now);
 
   // Completed commitments are history — see enforceable().
   const inForce = enforceable(commitments);
@@ -270,8 +312,9 @@ async function applyRules(commitments, chapters) {
   const addRules = [];
   let id = 1;
 
-  // Specific domains (commitments + content packs) currently blocked.
-  for (const domain of [...domains].sort()) {
+  // Specific domains (commitments + content packs) currently blocked. Skipped
+  // entirely while a redemption is active for this member.
+  for (const domain of redemption ? [] : [...domains].sort()) {
     const blocked = DGRules.evaluateCommitmentRules(inForce, {
       hostname: domain,
       member: member || null,
@@ -297,7 +340,7 @@ async function applyRules(commitments, chapters) {
   // origin so the family's agreed screen-free period is enforced at the browser
   // level. Fire-and-forget only makes sense if host_permissions covers all
   // origins — so this is why manifest.json declares "<all_urls>".
-  const blanket = blanketVerdict(inForce, member, now);
+  const blanket = redemption ? null : blanketVerdict(inForce, member, now);
   if (blanket?.action === "block") {
     addRules.push({
       id: id++,
@@ -331,11 +374,12 @@ async function applyRules(commitments, chapters) {
       at: now.toISOString(),
       domainsTested: domains.size,
       blocked: addRules.map((r) => r.condition.requestDomains?.[0] ?? "all"),
-      blanket: blanketVerdict(commitments, member, now)?.action ?? null,
+      blanket: redemption ? null : (blanketVerdict(commitments, member, now)?.action ?? null),
+      redemptionUntil: redemption ? Number(redemption.expiresAt) : null,
     },
   });
 
-  armNextBoundary(commitments);
+  armNextBoundary(commitments, redemption ? Number(redemption.expiresAt) : null);
 }
 
 /** Does `w` cover the given weekday and minute-of-day? Handles windows that
@@ -397,8 +441,13 @@ function parseClock(value) {
 }
 
 /** Arm an alarm for the next window edge so the rule set is re-applied then. */
-function armNextBoundary(commitments) {
-  const next = nextWindowBoundary(commitments);
+function armNextBoundary(commitments, redemptionExpiry) {
+  let next = nextWindowBoundary(commitments);
+  // A redemption expiry is also a boundary: when the extra time runs out the
+  // block must re-apply, even if no commitment window edge falls sooner.
+  if (redemptionExpiry && redemptionExpiry > Date.now() && (next === null || redemptionExpiry < next)) {
+    next = redemptionExpiry;
+  }
   if (!next) return;
   // Alarms fire no sooner than a minute out. A boundary closer than that would
   // never fire, leaving a stale rule set in place — so clamp it and let the next
@@ -445,6 +494,26 @@ function nextWindowBoundary(commitments) {
   return soonest;
 }
 
+/**
+ * Cheap, frequent check of just the redemptions endpoint so a redemption lifts
+ * the block within ~a minute instead of waiting for the 30-minute full sync.
+ * Re-applies the cached rules only when the active redemption set changes
+ * (a new redemption, or one expiring).
+ */
+async function pollRedemptions() {
+  const { familyAccessKey } = await chrome.storage.sync.get("familyAccessKey");
+  if (!familyAccessKey) return;
+  const res = await fetch(`${API}/redemptions`, {
+      headers: { Authorization: `Bearer ${familyAccessKey}` },
+  }).catch(() => null);
+  if (!res || !res.ok) return;
+  const redemptions = await res.json();
+  const { redemptions: prev, commitments, chapters } = await chrome.storage.local.get(["redemptions", "commitments", "chapters"]);
+  const changed = JSON.stringify(redemptions ?? []) !== JSON.stringify(prev ?? []);
+  await chrome.storage.local.set({ redemptions: redemptions ?? [] });
+  if (changed) await applyRules(commitments ?? [], chapters ?? []);
+}
+
 // Reached through a global because a service worker has no module system. Lets
 // the rule builders be tested without loading the extension into a browser.
-globalThis.__dgTestHooks = { applyRules, nextWindowBoundary, evaluateHost };
+globalThis.__dgTestHooks = { applyRules, nextWindowBoundary, evaluateHost, redemptionFor };

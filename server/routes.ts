@@ -9,7 +9,7 @@ import { z } from "zod";
 import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { timingSafeEqual, randomBytes } from "node:crypto";
-import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess } from "../shared/schema.js";
+import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess, familyRedemptions } from "../shared/schema.js";
 import { eq, and, gte } from "drizzle-orm";
 import { encryptField, decryptField } from "./crypto.js";
 
@@ -928,6 +928,89 @@ export function registerRoutes(app: Express) {
     } catch (err) {
       console.error("/api/family/chapters failed:", err);
       res.status(500).json({ error: "Failed to load content packs" });
+    }
+  });
+
+  // Family redemptions: the bridge that lets a points redemption lift BOTH the
+  // desktop hosts block and the extension's DNR block. The desktop POSTs one
+  // when a member redeems; the extension GETs the active ones during sync/poll.
+  // Member-scoped and family-private under the same bearer auth as commitments.
+
+  /** Record a redemption. memberId is encrypted at rest like commitment members. */
+  app.post("/api/family/redemptions", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const body = z
+        .object({
+          memberId: z.string().min(1).max(120),
+          pointsSpent: z.number().int().min(0),
+          minutesGranted: z.number().int().min(1).max(60),
+          expiresAt: z.string(),
+        })
+        .safeParse(req.body ?? {});
+      if (!body.success) return res.status(400).json({ error: body.error.message });
+
+      const expires = new Date(body.data.expiresAt);
+      if (Number.isNaN(expires.getTime())) {
+        return res.status(400).json({ error: "expiresAt must be a valid date" });
+      }
+      if (expires.getTime() <= Date.now()) {
+        return res.status(400).json({ error: "expiresAt must be in the future" });
+      }
+
+      const [row] = await db
+        .insert(familyRedemptions)
+        .values({
+          familyId,
+          memberId: await encryptField(body.data.memberId),
+          pointsSpent: body.data.pointsSpent,
+          minutesGranted: body.data.minutesGranted,
+          expiresAt: expires,
+        })
+        .returning();
+      res.status(201).json({
+        id: row.id,
+        memberId: body.data.memberId,
+        pointsSpent: row.pointsSpent,
+        minutesGranted: row.minutesGranted,
+        expiresAt: row.expiresAt.getTime(),
+        createdAt: row.createdAt ? row.createdAt.getTime() : Date.now(),
+      });
+    } catch (err) {
+      console.error("/api/family/redemptions POST failed:", err);
+      res.status(500).json({ error: "Failed to record redemption" });
+    }
+  });
+
+  /** Active redemptions for this family (expiresAt in the future), decrypted. */
+  app.get("/api/family/redemptions", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const rows = await db
+        .select()
+        .from(familyRedemptions)
+        .where(
+          and(
+            eq(familyRedemptions.familyId, familyId),
+            gte(familyRedemptions.expiresAt, new Date()),
+          ),
+        );
+      const out = await Promise.all(
+        rows.map(async (r) => ({
+          id: r.id,
+          memberId: await decryptField(r.memberId),
+          pointsSpent: r.pointsSpent,
+          minutesGranted: r.minutesGranted,
+          expiresAt: r.expiresAt.getTime(),
+          createdAt: r.createdAt ? r.createdAt.getTime() : 0,
+        })),
+      );
+      res.json(out);
+    } catch (err) {
+      console.error("/api/family/redemptions GET failed:", err);
+      res.status(500).json({ error: "Failed to load redemptions" });
     }
   });
 

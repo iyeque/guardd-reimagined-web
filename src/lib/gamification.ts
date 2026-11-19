@@ -9,7 +9,7 @@ import {
   getTotalExtraMinutes,
   TASK_POINTS,
 } from "@shared/gamification";
-import { syncAndEnforce } from "@/lib/desktop-enforcement";
+import { syncAndEnforce, publishRedemption } from "@/lib/desktop-enforcement";
 
 const LEDGER_KEY = "dg_gamification_ledger";
 const TASKS_KEY = "dg_gamification_tasks";
@@ -107,6 +107,9 @@ export function useGamification() {
     if (!result) return null;
     setLedger(result.ledger);
     setRedemptions((prev) => [result.redemption, ...prev]);
+    // Record it server-side so the browser extension lifts this member's block
+    // too, not just the desktop hosts block. No-op without an access key.
+    void publishRedemption(result.redemption);
     return result.redemption;
   }, [ledger]);
 

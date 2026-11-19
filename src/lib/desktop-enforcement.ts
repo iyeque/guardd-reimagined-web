@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { apiFetch } from "@/lib/api-client";
 import type { CommitmentLike } from "@shared/commitment-rules";
 import { evaluateCommitmentRules } from "@shared/commitment-rules";
-import type { PointsLedger } from "@shared/gamification";
+import type { PointsLedger, Redemption } from "@shared/gamification";
 import { earnPoints, TASK_POINTS } from "@shared/gamification";
 
 // The API also returns a status field, which CommitmentLike does not model.
@@ -30,6 +30,39 @@ export function getAccessKey(): string | null {
     return localStorage.getItem("familyAccessKey");
   } catch {
     return null;
+  }
+}
+
+/**
+ * Publish a redemption to the server so the browser extension honors it too.
+ *
+ * The desktop lifts the hosts block locally (syncAndEnforce); this makes the
+ * lift cross-layer by recording the redemption where the extension can read it
+ * during its sync/poll. Member-scoped: the extension suppresses only this
+ * member's block. No-op without an access key (e.g. an unpaired device).
+ */
+export async function publishRedemption(redemption: Redemption): Promise<void> {
+  const key = getAccessKey();
+  if (!key) return;
+  try {
+    const res = await apiFetch(`${API}/redemptions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberId: redemption.memberId,
+        pointsSpent: redemption.pointsSpent,
+        minutesGranted: redemption.minutesGranted,
+        expiresAt: new Date(redemption.expiresAt).toISOString(),
+      }),
+    });
+    if (!res.ok) {
+      console.error(`[desktop-enforcement] redemption publish rejected: HTTP ${res.status}`);
+    }
+  } catch (err) {
+    console.error("[desktop-enforcement] failed to publish redemption:", err);
   }
 }
 

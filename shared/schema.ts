@@ -166,6 +166,26 @@ export const familyCommitmentMilestones = pgTable("family_commitment_milestones"
   completedAt: timestamp("completed_at"),
 });
 
+/**
+ * Extra screen time a member has redeemed with points.
+ *
+ * This is the bridge between the two enforcement layers: the desktop app writes
+ * a row here when a member redeems, and the browser extension reads the active
+ * rows so a redemption lifts BOTH the hosts block and the extension's DNR block
+ * — not just one. `memberId` is encrypted at rest like commitment members, and
+ * the lift is member-scoped: only the redeeming member's block is suppressed.
+ */
+export const familyRedemptions = pgTable("family_redemptions", {
+  id: serial("id").primaryKey(),
+  familyId: text("family_id").notNull(),
+  memberId: text("member_id").notNull(),
+  pointsSpent: integer("points_spent").notNull(),
+  minutesGranted: integer("minutes_granted").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+export type FamilyRedemption = typeof familyRedemptions.$inferSelect;
+
 export const assessmentAnalytics = pgTable("assessment_analytics", {
   id: serial("id").primaryKey(),
   assessmentId: text("assessment_id").notNull(),

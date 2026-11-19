@@ -146,6 +146,7 @@ function loadExtension(stored: Record<string, unknown> = {}) {
   const hooks = vm.runInContext("globalThis.__dgTestHooks", context) as {
     evaluateHost: (hostname: string) => Promise<{ blocked: boolean; reminded: boolean }>;
     applyRules: (commitments: unknown, chapters: unknown) => Promise<void>;
+    redemptionFor: (redemptions: unknown, member: string | null, now: Date) => unknown;
   };
 
   expect(hooks, "background.js must expose __dgTestHooks").toBeTruthy();
@@ -255,9 +256,79 @@ describe("extension enforcement path", () => {
   it("ignores a completed commitment while still enforcing content packs", async () => {
     const { hooks, rules } = loadExtension();
     await hooks.applyRules([completedCommitment], [bedtimePack]);
-
     // The completed commitment contributes no rule; the content pack still does.
     expect(rules()).toHaveLength(1);
     expect(rules()[0].condition?.requestDomains).toEqual(["roblox.com"]);
+  });
+});
+
+// A points redemption must lift the extension's block too, not just the desktop
+// hosts block. The lift is member-scoped and lasts only until expiresAt.
+describe("redemption lifts the extension block", () => {
+  const activeFor = (memberId: string) => ({
+    id: 1,
+    memberId,
+    pointsSpent: 10,
+    minutesGranted: 5,
+    expiresAt: FIXED_NOW_MS + 5 * 60 * 1000,
+    createdAt: FIXED_NOW_MS,
+  });
+
+  it("installs no block while a redemption is active for the selected member", async () => {
+    const { hooks, rules } = loadExtension({
+      commitments: [blockingCommitment],
+      chapters: [],
+      member: "Elise",
+      redemptions: [activeFor("Elise")],
+    });
+    await hooks.applyRules([blockingCommitment], []);
+    expect(rules()).toEqual([]);
+    expect((await hooks.evaluateHost("facebook.com")).blocked).toBe(false);
+  });
+
+  it("does not lift a different member's block", async () => {
+    const { hooks, rules } = loadExtension({
+      commitments: [blockingCommitment],
+      chapters: [],
+      member: "Elise",
+      redemptions: [activeFor("Ben")],
+    });
+    await hooks.applyRules([blockingCommitment], []);
+    expect(rules()).toHaveLength(1);
+    expect((await hooks.evaluateHost("facebook.com")).blocked).toBe(true);
+  });
+
+  it("re-blocks once the redemption has expired", async () => {
+    const { hooks, rules } = loadExtension({
+      commitments: [blockingCommitment],
+      chapters: [],
+      member: "Elise",
+      redemptions: [{ ...activeFor("Elise"), expiresAt: FIXED_NOW_MS - 1000 }],
+    });
+    await hooks.applyRules([blockingCommitment], []);
+    expect(rules()).toHaveLength(1);
+    expect((await hooks.evaluateHost("facebook.com")).blocked).toBe(true);
+  });
+
+  it("a family-wide redemption lifts the block even with no member selected", async () => {
+    const { hooks, rules } = loadExtension({
+      commitments: [blockingCommitment],
+      chapters: [],
+      member: null,
+      redemptions: [activeFor("everyone")],
+    });
+    await hooks.applyRules([blockingCommitment], []);
+    expect(rules()).toEqual([]);
+    expect((await hooks.evaluateHost("facebook.com")).blocked).toBe(false);
+  });
+
+  it("redemptionFor matches case-insensitively and ignores expired rows", () => {
+    const { hooks } = loadExtension();
+    const now = new Date(FIXED_NOW_MS);
+    const r = activeFor("Elise");
+    expect(hooks.redemptionFor([r], "elise", now)).toBeTruthy();
+    expect(hooks.redemptionFor([r], "Ben", now)).toBeNull();
+    expect(hooks.redemptionFor([{ ...r, expiresAt: FIXED_NOW_MS - 1 }], "Elise", now)).toBeNull();
+    expect(hooks.redemptionFor([], "Elise", now)).toBeNull();
   });
 });
