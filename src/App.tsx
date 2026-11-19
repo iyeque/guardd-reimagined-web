@@ -8,6 +8,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { Shield } from "lucide-react";
 import { ProfileProvider } from "@/context/ProfileContext";
 import { WellnessProvider } from "@/context/WellnessContext";
+import { ParentPinProvider } from "@/context/ParentPinContext";
 import { COOKIE_CONSENT_KEY } from "@/lib/profiles";
 import { startDesktopEnforcement } from "@/lib/desktop-enforcement";
 import { DesktopApp } from "@/components/DesktopApp";
@@ -123,21 +124,24 @@ const App = () => {
     // and surfaced the ErrorBoundary "Something went wrong" dialog.
     return (
       <ProfileProvider>
-        <WellnessProvider>
-          <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <DesktopApp />
-            </TooltipProvider>
-          </QueryClientProvider>
-        </WellnessProvider>
+        <ParentPinProvider>
+          <WellnessProvider>
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <DesktopApp />
+              </TooltipProvider>
+            </QueryClientProvider>
+          </WellnessProvider>
+        </ParentPinProvider>
       </ProfileProvider>
     );
   }
 
   return (
   <ProfileProvider>
+    <ParentPinProvider>
     <WellnessProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -182,6 +186,7 @@ const App = () => {
         </TooltipProvider>
       </QueryClientProvider>
     </WellnessProvider>
+    </ParentPinProvider>
     </ProfileProvider>
   );
 };

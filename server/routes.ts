@@ -9,9 +9,10 @@ import { z } from "zod";
 import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { timingSafeEqual, randomBytes } from "node:crypto";
-import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess, familyRedemptions } from "../shared/schema.js";
+import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess, familyRedemptions, familyParentGate } from "../shared/schema.js";
 import { eq, and, gte } from "drizzle-orm";
 import { encryptField, decryptField } from "./crypto.js";
+import { hashSecret, verifySecret, generateRecoveryCode, isLocked, nextFailure, PIN_REGEX } from "./pin-crypto.js";
 
 /** Constant-time compare so the admin key cannot be recovered by timing. */
 function secretsMatch(a: string, b: string): boolean {
@@ -148,6 +149,63 @@ const requireFamilyAccess = async (req: Request, res: Response, next: NextFuncti
     res.status(500).json({ error: "Authorization check failed" });
   }
 };
+
+/**
+ * Optional parent gate for sensitive writes. Returns true when the action may
+ * proceed; otherwise it has already sent the error response.
+ *
+ * Opt-in: a family with no PIN row stays on the honor system (always allowed).
+ * Once a PIN is set, the caller must supply it (x-parent-pin header or body.pin).
+ * A missing PIN is a prompt signal (403 parentPinRequired) and does NOT count as
+ * a failed guess; only a wrong PIN increments the rate-limit counter.
+ */
+async function requireParentPinIfSet(req: Request, res: Response, familyId: string): Promise<boolean> {
+  const [gate] = await db
+    .select()
+    .from(familyParentGate)
+    .where(eq(familyParentGate.familyId, familyId))
+    .limit(1);
+  if (!gate) return true; // honor system — no PIN set
+
+  if (isLocked(gate.lockedUntil)) {
+    res.status(429).json({ error: "Too many attempts. Try again later.", lockedUntil: gate.lockedUntil });
+    return false;
+  }
+
+  const headerPin = req.headers["x-parent-pin"];
+  const bodyPin = (req.body ?? {}) as { pin?: unknown };
+  const pin =
+    typeof headerPin === "string" && headerPin
+      ? headerPin
+      : typeof bodyPin.pin === "string"
+        ? bodyPin.pin
+        : "";
+
+  if (!pin) {
+    res.status(403).json({ error: "Parent PIN required.", parentPinRequired: true });
+    return false;
+  }
+
+  if (verifySecret(pin, gate.pinHash, gate.pinSalt)) {
+    await db
+      .update(familyParentGate)
+      .set({ failedAttempts: 0, lockedUntil: null, updatedAt: new Date() })
+      .where(eq(familyParentGate.familyId, familyId));
+    return true;
+  }
+
+  const { failedAttempts, lockedUntil } = nextFailure(gate.failedAttempts);
+  await db
+    .update(familyParentGate)
+    .set({ failedAttempts, lockedUntil, updatedAt: new Date() })
+    .where(eq(familyParentGate.familyId, familyId));
+  if (lockedUntil) {
+    res.status(429).json({ error: "Too many attempts. Locked for 15 minutes.", lockedUntil });
+  } else {
+    res.status(403).json({ error: "Parent PIN is incorrect.", parentPinRequired: true });
+  }
+  return false;
+}
 
 // Helper function to verify reCAPTCHA
 async function verifyRecaptcha(token: string) {
@@ -894,6 +952,9 @@ export function registerRoutes(app: Express) {
   app.post("/api/family/commitments/:id/complete", requireFamilyAccess, async (req, res) => {
     try {
       const id = Number(req.params.id);
+      // Opt-in parent gate: only enforced when the family has set a PIN.
+      const familyId = await resolveFamilyId(req);
+      if (familyId && !(await requireParentPinIfSet(req, res, familyId))) return;
       const updated = await storage.updateFamilyCommitment(id, { status: "completed", completedAt: new Date() });
       if (!updated) return res.status(404).json({ error: "Not found" });
       res.json(updated);
@@ -941,6 +1002,9 @@ export function registerRoutes(app: Express) {
     try {
       const familyId = await resolveFamilyId(req);
       if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      // Opt-in parent gate: redeeming extra screen time is a parent action when
+      // a PIN is set; otherwise the honor system applies.
+      if (!(await requireParentPinIfSet(req, res, familyId))) return;
       const body = z
         .object({
           memberId: z.string().min(1).max(120),
@@ -1011,6 +1075,199 @@ export function registerRoutes(app: Express) {
     } catch (err) {
       console.error("/api/family/redemptions GET failed:", err);
       res.status(500).json({ error: "Failed to load redemptions" });
+    }
+  });
+
+  // Optional parent PIN (opt-in). No row = honor system. These routes let a
+  // family turn the gate on/off and recover a forgotten PIN. The PIN and recovery
+  // code are stored only as scrypt hashes; the recovery code is shown once.
+
+  /** Is a parent PIN set for this family? Drives whether the UI prompts. */
+  app.get("/api/family/parent-pin", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const [gate] = await db
+        .select({ familyId: familyParentGate.familyId })
+        .from(familyParentGate)
+        .where(eq(familyParentGate.familyId, familyId))
+        .limit(1);
+      res.json({ enabled: !!gate });
+    } catch (err) {
+      console.error("/api/family/parent-pin GET failed:", err);
+      res.status(500).json({ error: "Failed to read parent PIN status" });
+    }
+  });
+
+  /** Set a PIN for the first time. Returns the one-time recovery code. */
+  app.post("/api/family/parent-pin/setup", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const body = z.object({ pin: z.string().regex(PIN_REGEX) }).safeParse(req.body ?? {});
+      if (!body.success) return res.status(400).json({ error: "PIN must be 4–6 digits." });
+      const [existing] = await db
+        .select({ familyId: familyParentGate.familyId })
+        .from(familyParentGate)
+        .where(eq(familyParentGate.familyId, familyId))
+        .limit(1);
+      if (existing) {
+        return res.status(409).json({ error: "A parent PIN is already set. Reset or disable it first." });
+      }
+      const pin = hashSecret(body.data.pin);
+      const recoveryCode = generateRecoveryCode();
+      const rec = hashSecret(recoveryCode);
+      await db.insert(familyParentGate).values({
+        familyId,
+        pinHash: pin.hash,
+        pinSalt: pin.salt,
+        recoveryHash: rec.hash,
+        recoverySalt: rec.salt,
+      });
+      res.status(201).json({ enabled: true, recoveryCode });
+    } catch (err) {
+      console.error("/api/family/parent-pin/setup failed:", err);
+      res.status(500).json({ error: "Failed to set parent PIN" });
+    }
+  });
+
+  /** Verify a PIN (used by the UI before a gated action). Rate-limited. */
+  app.post("/api/family/parent-pin/verify", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const [gate] = await db
+        .select()
+        .from(familyParentGate)
+        .where(eq(familyParentGate.familyId, familyId))
+        .limit(1);
+      if (!gate) return res.json({ ok: true, enabled: false });
+      if (isLocked(gate.lockedUntil)) {
+        return res.status(429).json({ ok: false, lockedUntil: gate.lockedUntil });
+      }
+      const body = z.object({ pin: z.string() }).safeParse(req.body ?? {});
+      const pin = body.success ? body.data.pin : "";
+      if (!pin) return res.status(400).json({ ok: false, error: "PIN required" });
+      if (verifySecret(pin, gate.pinHash, gate.pinSalt)) {
+        await db
+          .update(familyParentGate)
+          .set({ failedAttempts: 0, lockedUntil: null, updatedAt: new Date() })
+          .where(eq(familyParentGate.familyId, familyId));
+        return res.json({ ok: true, enabled: true });
+      }
+      const { failedAttempts, lockedUntil } = nextFailure(gate.failedAttempts);
+      await db
+        .update(familyParentGate)
+        .set({ failedAttempts, lockedUntil, updatedAt: new Date() })
+        .where(eq(familyParentGate.familyId, familyId));
+      return res.status(403).json({ ok: false, enabled: true, lockedUntil });
+    } catch (err) {
+      console.error("/api/family/parent-pin/verify failed:", err);
+      res.status(500).json({ error: "Failed to verify parent PIN" });
+    }
+  });
+
+  /** Reset a forgotten PIN with the one-time recovery code. Issues a new code. */
+  app.post("/api/family/parent-pin/reset", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const body = z
+        .object({ recoveryCode: z.string().min(1), pin: z.string().regex(PIN_REGEX) })
+        .safeParse(req.body ?? {});
+      if (!body.success) {
+        return res.status(400).json({ error: "Recovery code and a new 4–6 digit PIN are required." });
+      }
+      const [gate] = await db
+        .select()
+        .from(familyParentGate)
+        .where(eq(familyParentGate.familyId, familyId))
+        .limit(1);
+      if (!gate) return res.status(404).json({ error: "No parent PIN is set." });
+      if (isLocked(gate.lockedUntil)) {
+        return res.status(429).json({ error: "Too many attempts. Try again later.", lockedUntil: gate.lockedUntil });
+      }
+      if (!verifySecret(body.data.recoveryCode, gate.recoveryHash, gate.recoverySalt)) {
+        const { failedAttempts, lockedUntil } = nextFailure(gate.failedAttempts);
+        await db
+          .update(familyParentGate)
+          .set({ failedAttempts, lockedUntil, updatedAt: new Date() })
+          .where(eq(familyParentGate.familyId, familyId));
+        return res.status(403).json({ error: "Recovery code is incorrect.", lockedUntil });
+      }
+      const pin = hashSecret(body.data.pin);
+      const recoveryCode = generateRecoveryCode();
+      const rec = hashSecret(recoveryCode);
+      await db
+        .update(familyParentGate)
+        .set({
+          pinHash: pin.hash,
+          pinSalt: pin.salt,
+          recoveryHash: rec.hash,
+          recoverySalt: rec.salt,
+          failedAttempts: 0,
+          lockedUntil: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(familyParentGate.familyId, familyId));
+      res.json({ enabled: true, recoveryCode });
+    } catch (err) {
+      console.error("/api/family/parent-pin/reset failed:", err);
+      res.status(500).json({ error: "Failed to reset parent PIN" });
+    }
+  });
+
+  /** Turn the gate off (back to honor system). Requires the PIN or recovery code. */
+  app.post("/api/family/parent-pin/disable", requireFamilyAccess, async (req, res) => {
+    try {
+      const familyId = await resolveFamilyId(req);
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const [gate] = await db
+        .select()
+        .from(familyParentGate)
+        .where(eq(familyParentGate.familyId, familyId))
+        .limit(1);
+      if (!gate) return res.json({ enabled: false });
+      if (isLocked(gate.lockedUntil)) {
+        return res.status(429).json({ error: "Too many attempts. Try again later.", lockedUntil: gate.lockedUntil });
+      }
+      const body = z
+        .object({ pin: z.string().optional(), recoveryCode: z.string().optional() })
+        .safeParse(req.body ?? {});
+      const pin = body.success ? body.data.pin : undefined;
+      const rc = body.success ? body.data.recoveryCode : undefined;
+      const ok =
+        (!!pin && verifySecret(pin, gate.pinHash, gate.pinSalt)) ||
+        (!!rc && verifySecret(rc, gate.recoveryHash, gate.recoverySalt));
+      if (!ok) {
+        const { failedAttempts, lockedUntil } = nextFailure(gate.failedAttempts);
+        await db
+          .update(familyParentGate)
+          .set({ failedAttempts, lockedUntil, updatedAt: new Date() })
+          .where(eq(familyParentGate.familyId, familyId));
+        return res.status(403).json({ error: "PIN or recovery code required to disable.", lockedUntil });
+      }
+      await db.delete(familyParentGate).where(eq(familyParentGate.familyId, familyId));
+      res.json({ enabled: false });
+    } catch (err) {
+      console.error("/api/family/parent-pin/disable failed:", err);
+      res.status(500).json({ error: "Failed to disable parent PIN" });
+    }
+  });
+
+  /** Admin recovery: clear a family's PIN when they have lost every credential. */
+  app.post("/api/admin/parent-pin/reset", validateAdmin, async (req, res) => {
+    try {
+      const familyId = String((req.body ?? {}).familyId || "");
+      if (!familyId) return res.status(400).json({ error: "familyId is required" });
+      const del = await db
+        .delete(familyParentGate)
+        .where(eq(familyParentGate.familyId, familyId))
+        .returning({ familyId: familyParentGate.familyId });
+      res.json({ reset: del.length });
+    } catch (err) {
+      console.error("/api/admin/parent-pin/reset failed:", err);
+      res.status(500).json({ error: "Failed to reset parent PIN" });
     }
   });
 

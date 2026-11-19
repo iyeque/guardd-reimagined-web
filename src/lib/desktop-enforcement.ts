@@ -41,7 +41,7 @@ export function getAccessKey(): string | null {
  * during its sync/poll. Member-scoped: the extension suppresses only this
  * member's block. No-op without an access key (e.g. an unpaired device).
  */
-export async function publishRedemption(redemption: Redemption): Promise<void> {
+export async function publishRedemption(redemption: Redemption, pin?: string): Promise<void> {
   const key = getAccessKey();
   if (!key) return;
   try {
@@ -50,6 +50,7 @@ export async function publishRedemption(redemption: Redemption): Promise<void> {
       headers: {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
+        ...(pin ? { "x-parent-pin": pin } : {}),
       },
       body: JSON.stringify({
         memberId: redemption.memberId,

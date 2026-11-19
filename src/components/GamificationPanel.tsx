@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useGamification } from "@/lib/gamification";
+import { useParentPin } from "@/context/ParentPinContext";
 
 function isTauri(): boolean {
   return typeof window !== "undefined" && ("__TAURI__" in window || "__TAURI_INTERNALS__" in window);
@@ -18,6 +19,7 @@ export function GamificationPanel() {
     redeem,
     TASK_POINTS,
   } = useGamification();
+  const parentPin = useParentPin();
 
   const [taskTitle, setTaskTitle] = useState("");
   const [taskKind, setTaskKind] = useState<"online" | "offline">("offline");
@@ -40,9 +42,15 @@ export function GamificationPanel() {
     setTaskTitle("");
   };
 
-  const handleRedeem = () => {
+  const handleRedeem = async () => {
     if (!memberName.trim()) return;
-    const result = redeem(redeemPoints, memberName.trim());
+    let pin: string | undefined;
+    if (parentPin.enabled) {
+      const entered = await parentPin.requirePin("Redeem extra screen time");
+      if (!entered) return; // parent cancelled
+      pin = entered;
+    }
+    const result = redeem(redeemPoints, memberName.trim(), pin);
     if (result) {
       alert(`Redeemed ${result.minutesGranted} minutes of extra screen time!`);
     } else {
@@ -102,7 +110,7 @@ export function GamificationPanel() {
           </div>
           <Button
             type="button"
-            onClick={handleRedeem}
+            onClick={() => void handleRedeem()}
             disabled={!memberName.trim() || redeemPoints < 10 || redeemPoints > ledger.balance}
             className="shrink-0 rounded-xl text-xs font-black uppercase tracking-widest"
           >
@@ -188,7 +196,13 @@ export function GamificationPanel() {
               <div className="flex gap-1">
                 <Button
                   size="sm"
-                  onClick={() => confirmTask(task.id, "Parent")}
+                  onClick={async () => {
+                    if (parentPin.enabled) {
+                      const entered = await parentPin.requirePin("Approve this task");
+                      if (!entered) return; // parent cancelled
+                    }
+                    confirmTask(task.id, "Parent");
+                  }}
                   className="rounded-xl text-xs font-black uppercase tracking-widest bg-teal-600 text-white"
                 >
                   Approve

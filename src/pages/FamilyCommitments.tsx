@@ -29,6 +29,8 @@ import { updateProfile } from "@/lib/profiles";
 import { startExtensionTour } from "@/lib/extension-tour";
 import { DesktopPairing } from "@/components/DesktopPairing";
 import { GamificationPanel } from "@/components/GamificationPanel";
+import { ParentPinPanel } from "@/components/ParentPinPanel";
+import { useParentPin } from "@/context/ParentPinContext";
 import { installPath, ENFORCEMENT_LIMIT_NOTE, CHROME_STORE_URL } from "@/lib/extension-install";
 import type { CommitmentRules } from "@shared/schema";
 import { RuleEditor } from "@/components/commitments/RuleEditor";
@@ -231,10 +233,10 @@ const api = {
     const json = (await res.json()) as Commitment & { familyAccessToken?: string };
     return json;
   },
-  complete: async (id: number, token?: string) => {
+  complete: async (id: number, token?: string, pin?: string) => {
     const res = await fetch(`/api/family/commitments/${id}/complete`, {
       method: "POST",
-      headers: authHeaders(token),
+      headers: { ...authHeaders(token), ...(pin ? { "x-parent-pin": pin } : {}) },
     });
     if (!res.ok) throw new Error("Failed to complete commitment");
     return res.json() as Promise<Commitment>;
@@ -275,6 +277,7 @@ const api = {
 const FamilyCommitments: React.FC = () => {
   const { currentProfile } = useProfile();
   const profileId = useProfileId();
+  const parentPin = useParentPin();
   const accessToken = currentProfile?.familyAccessToken ?? "";
   const profileFamilyId = currentProfile?.familyId ?? "default-family";
   /**
@@ -454,7 +457,13 @@ const FamilyCommitments: React.FC = () => {
 
   const complete = async (id: number) => {
     try {
-      const updated = await api.complete(id, accessToken || undefined);
+      let pin: string | undefined;
+      if (parentPin.enabled) {
+        const entered = await parentPin.requirePin("Mark this commitment complete");
+        if (!entered) return; // parent cancelled
+        pin = entered;
+      }
+      const updated = await api.complete(id, accessToken || undefined, pin);
       setItems((p) => p.map((x) => (x.id === id ? updated : x)));
       if (selected?.item.id === id) setSelected({ ...selected, item: updated });
       toast.success("Commitment completed.");
@@ -630,11 +639,7 @@ const FamilyCommitments: React.FC = () => {
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={async () => {
-                              const updated = await api.complete(selected.item.id);
-                              setSelected((s) => s ? { ...s, item: updated } : s);
-                              toast.success("Milestone completed.");
-                            }}
+                            onClick={() => void complete(selected.item.id)}
                             className="text-emerald-600"
                           >
                             Done
@@ -687,6 +692,8 @@ const FamilyCommitments: React.FC = () => {
           <DesktopPairing />
 
           <GamificationPanel />
+
+          <ParentPinPanel />
 
           {/* How the extension works. The tour anchors to real elements here, so
               this copy and the tour cannot drift apart. */}

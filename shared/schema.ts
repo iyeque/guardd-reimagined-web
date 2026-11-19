@@ -186,6 +186,26 @@ export const familyRedemptions = pgTable("family_redemptions", {
 });
 export type FamilyRedemption = typeof familyRedemptions.$inferSelect;
 
+/**
+ * Optional, opt-in parent gate. A family with NO row here stays on the honor
+ * system (nothing is gated). Once a parent sets a PIN, sensitive server writes
+ * (mark complete, redeem) require it. The PIN and the one-time recovery code are
+ * stored only as scrypt hashes with per-secret salts; failedAttempts/lockedUntil
+ * rate-limit guessing. Reset is via the recovery code or an admin.
+ */
+export const familyParentGate = pgTable("family_parent_gate", {
+  familyId: text("family_id").primaryKey(),
+  pinHash: text("pin_hash").notNull(),
+  pinSalt: text("pin_salt").notNull(),
+  recoveryHash: text("recovery_hash").notNull(),
+  recoverySalt: text("recovery_salt").notNull(),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+  lockedUntil: timestamp("locked_until"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+export type FamilyParentGate = typeof familyParentGate.$inferSelect;
+
 export const assessmentAnalytics = pgTable("assessment_analytics", {
   id: serial("id").primaryKey(),
   assessmentId: text("assessment_id").notNull(),

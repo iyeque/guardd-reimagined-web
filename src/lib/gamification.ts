@@ -102,14 +102,15 @@ export function useGamification() {
     );
   }, []);
 
-  const redeem = useCallback((points: number, memberId: string) => {
+  const redeem = useCallback((points: number, memberId: string, pin?: string) => {
     const result = redeemPoints(ledger, points, memberId);
     if (!result) return null;
     setLedger(result.ledger);
     setRedemptions((prev) => [result.redemption, ...prev]);
     // Record it server-side so the browser extension lifts this member's block
-    // too, not just the desktop hosts block. No-op without an access key.
-    void publishRedemption(result.redemption);
+    // too, not just the desktop hosts block. No-op without an access key. The
+    // optional PIN satisfies the opt-in parent gate on the redeem endpoint.
+    void publishRedemption(result.redemption, pin);
     return result.redemption;
   }, [ledger]);
 
