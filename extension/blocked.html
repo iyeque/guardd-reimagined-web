@@ -46,6 +46,28 @@
       .agreement h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 8px; color: #f8fafc; }
       .agreement p { font-size: 0.92rem; line-height: 1.65; color: #cbd5e1; margin: 0 0 10px; white-space: pre-wrap; }
       .agreement .who { font-size: 0.78rem; color: var(--muted); margin: 0; }
+      .countdown {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .countdown .cd-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .countdown .cd-time {
+        font-size: 1.15rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--teal);
+      }
+      .countdown .cd-at { font-size: 0.78rem; color: var(--muted); }
       .blocked {
         font-size: 0.8rem;
         color: var(--muted);
@@ -98,6 +120,7 @@
         >
       </div>
     </div>
+    <script src="rules.js"></script>
     <script src="blocked.js"></script>
   </body>
 </html>

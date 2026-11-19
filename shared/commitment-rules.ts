@@ -190,3 +190,56 @@ export function evaluateCommitmentRules(
   }
   return { blocked: false, reminded: false };
 }
+
+/**
+ * When the current block spell for `commitment` ends, as an absolute instant.
+ * Returns null when the commitment is not blocking `hostname`/`member` right now.
+ *
+ * Reuses the same window logic as evaluateCommitmentRules so the countdown shown
+ * on the block page can never disagree with the block itself. When several
+ * windows overlap, the block lifts when the LAST of them ends, so we take the
+ * furthest end. The remaining time is measured on the rule's own clock and added
+ * to `now`; this is exact unless a DST transition falls inside the window (the
+ * one case it approximates, by up to an hour).
+ */
+export function blockEndsAt(
+  commitment: CommitmentLike,
+  input: { hostname: string; member: string | null; now: Date },
+): Date | null {
+  const rules = commitment.rules;
+  if (!rules?.entries?.length || !rules.timezone) return null;
+
+  const { day, minutes } = zonedParts(input.now, rules.timezone);
+  if (day < 0) return null;
+
+  let maxRemaining: number | null = null;
+  for (const entry of rules.entries) {
+    if (entry.action !== "block") continue;
+    if (!entry.domains.some((d) => hostMatches(d, input.hostname))) continue;
+
+    if (entry.appliesTo.length > 0) {
+      if (!input.member) continue;
+      const names = entry.appliesTo.map((n) => n.trim().toLowerCase());
+      if (!names.includes(input.member.trim().toLowerCase())) continue;
+    }
+
+    for (const w of entry.windows) {
+      if (!windowCovers(w, day, minutes)) continue;
+      const start = parseClock(w.start);
+      const end = parseClock(w.end);
+      if (start === null || end === null) continue;
+
+      // Minutes until this window ends, on the rule's own clock. An overnight
+      // window in its opening half (minutes >= start) ends the NEXT day; a
+      // same-day window or the carry-over half ends today.
+      const remaining =
+        start > end && minutes >= start ? 1440 - minutes + end : end - minutes;
+      if (remaining > 0 && (maxRemaining === null || remaining > maxRemaining)) {
+        maxRemaining = remaining;
+      }
+    }
+  }
+
+  if (maxRemaining === null) return null;
+  return new Date(input.now.getTime() + maxRemaining * 60_000);
+}

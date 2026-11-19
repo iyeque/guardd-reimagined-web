@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { evaluateCommitmentRules, type CommitmentLike } from "./commitment-rules";
+import { evaluateCommitmentRules, blockEndsAt, type CommitmentLike } from "./commitment-rules";
 
 const base = {
   id: 1,
@@ -265,5 +265,131 @@ describe("evaluateCommitmentRules", () => {
       expect(v.agreedBy).toBe("Amina, Dad");
       expect(v.commitmentId).toBe(1);
     }
+  });
+});
+
+describe("blockEndsAt", () => {
+  const input = (now: Date, over: Partial<{ hostname: string; member: string | null }> = {}) => ({
+    hostname: "instagram.com",
+    member: null as string | null,
+    now,
+    ...over,
+  });
+
+  it("ends an overnight window at its end time the next morning (opening half)", () => {
+    // Sunday 22:00 inside 21:00→07:00 → opens Monday 07:00 (9h later).
+    const ends = blockEndsAt(makeCommitment(), input(sunday22));
+    expect(ends?.toISOString()).toBe("2026-10-12T07:00:00.000Z");
+  });
+
+  it("ends an overnight window the same morning in the carry-over half", () => {
+    const c = makeCommitment({
+      rules: {
+        timezone: "UTC",
+        entries: [
+          {
+            domains: ["instagram.com"],
+            windows: [{ days: [1], start: "21:00", end: "07:00" }],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
+    });
+    // Tuesday 02:00, carried over from Monday's window → opens Tuesday 07:00 (5h).
+    const ends = blockEndsAt(c, input(new Date("2026-10-13T02:00:00Z")));
+    expect(ends?.toISOString()).toBe("2026-10-13T07:00:00.000Z");
+  });
+
+  it("ends a same-day window at its end time today", () => {
+    const c = makeCommitment({
+      rules: {
+        timezone: "UTC",
+        entries: [
+          {
+            domains: ["instagram.com"],
+            windows: [{ days: [0], start: "09:00", end: "17:00" }],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
+    });
+    // Sunday 12:00 inside 09:00→17:00 → opens 17:00 (5h).
+    const ends = blockEndsAt(c, input(new Date("2026-10-11T12:00:00Z")));
+    expect(ends?.toISOString()).toBe("2026-10-11T17:00:00.000Z");
+  });
+
+  it("measures remaining time on the rule's timezone, not the browser's", () => {
+    const c = makeCommitment({
+      rules: {
+        timezone: "Asia/Dubai",
+        entries: [
+          {
+            domains: ["instagram.com"],
+            windows: [{ days: [0], start: "21:00", end: "23:59" }],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
+    });
+    // 19:00 UTC = 23:00 Dubai; window ends 23:59 Dubai = 19:59 UTC (59 min).
+    const ends = blockEndsAt(c, input(new Date("2026-10-11T19:00:00Z")));
+    expect(ends?.toISOString()).toBe("2026-10-11T19:59:00.000Z");
+  });
+
+  it("takes the furthest end when windows overlap", () => {
+    const c = makeCommitment({
+      rules: {
+        timezone: "UTC",
+        entries: [
+          {
+            domains: ["instagram.com"],
+            windows: [
+              { days: [0], start: "21:00", end: "23:00" },
+              { days: [0], start: "22:00", end: "07:00" },
+            ],
+            appliesTo: [],
+            action: "block",
+          },
+        ],
+      },
+    });
+    // Sunday 22:30: first window ends in 30 min, second carries to 07:00 → 07:00.
+    const ends = blockEndsAt(c, input(new Date("2026-10-11T22:30:00Z")));
+    expect(ends?.toISOString()).toBe("2026-10-12T07:00:00.000Z");
+  });
+
+  it("returns null when the commitment is not blocking right now", () => {
+    expect(blockEndsAt(makeCommitment(), input(monday20))).toBeNull();
+  });
+
+  it("returns null for an unlisted domain", () => {
+    expect(blockEndsAt(makeCommitment(), input(sunday22, { hostname: "wikipedia.org" }))).toBeNull();
+  });
+
+  it("returns null when a member-scoped rule does not apply to this member", () => {
+    const c = makeCommitment({
+      rules: {
+        timezone: "UTC",
+        entries: [
+          {
+            domains: ["instagram.com"],
+            windows: [{ days: [0, 1, 2, 3, 4], start: "21:00", end: "07:00" }],
+            appliesTo: ["Amina"],
+            action: "block",
+          },
+        ],
+      },
+    });
+    expect(blockEndsAt(c, input(sunday22, { member: "Dad" }))).toBeNull();
+    expect(blockEndsAt(c, input(sunday22, { member: "Amina" }))?.toISOString()).toBe(
+      "2026-10-12T07:00:00.000Z",
+    );
+  });
+
+  it("returns null for null rules", () => {
+    expect(blockEndsAt(makeCommitment({ rules: null }), input(sunday22))).toBeNull();
   });
 });

@@ -71,4 +71,16 @@ describe("extension global namespaces", () => {
     expect(rules.has("chapter")).toBe(false);
     expect(rules.has("evaluateCommitmentRules")).toBe(true);
   });
+
+  // Regression: blocked.html once loaded only blocked.js, so DGRules was
+  // undefined, render() threw, and the page stuck on "Loading your family's
+  // agreement…" forever. Every bundle a page's scripts call must be loaded
+  // BEFORE the consumer script.
+  it("loads rules.js before blocked.js on the block page", () => {
+    const html = readFileSync(join(here, "blocked.html"), "utf8");
+    const order = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m) => m[1]);
+    expect(order).toContain("rules.js");
+    expect(order).toContain("blocked.js");
+    expect(order.indexOf("rules.js")).toBeLessThan(order.indexOf("blocked.js"));
+  });
 });
