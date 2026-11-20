@@ -79,6 +79,7 @@ const ROUTE_META: Record<string, { title: string; description: string }> = {
   "/videos": { title: "Video Resources | Digital Guardian", description: "Curated YouTube videos on internet safety, screen time, and digital citizenship for families and kids." },
   "/community": { title: "Community Hub | Digital Guardian", description: "Connect with mentors, regional chapters (UAE, Kenya), and curated digital wellness discussions." },
   "/family-commitments": { title: "Family Commitments | Digital Guardian", description: "Create and track shared family commitments for healthy technology use." },
+  "/desktop": { title: "Desktop App — Early Access | Digital Guardian", description: "The privacy-first way to enforce family commitments at the OS level. Join the desktop app early-access waitlist (Windows alpha, macOS coming)." },
   "/family-agreements": { title: "Family Digital Agreements | Digital Guardian", description: "Shared rules families set together for healthy technology use." },
   "/screen-time": { title: "Screen Time Management | Digital Guardian", description: "Tools and guides to manage screen time for your family." },
   "/games": { title: "Educational Games | Digital Guardian", description: "Interactive games teaching digital wellness and online safety to kids." },
@@ -107,6 +108,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const ProfileTransfer = lazy(() => import("./pages/ProfileTransfer"));
+const DesktopEarlyAccess = lazy(() => import("./pages/DesktopEarlyAccess"));
 
 const queryClient = new QueryClient();
 
@@ -163,6 +165,7 @@ const App = () => {
                 <Route path="/family-agreements" element={<FamilyDigitalAgreements />} />
                 <Route path="/family-digital-agreements" element={<Navigate to="/family-agreements" replace />} />
                 <Route path="/family-commitments" element={<FamilyCommitments />} />
+                <Route path="/desktop" element={<DesktopEarlyAccess />} />
                 <Route path="/games" element={<EducationalGames />} />
                 <Route path="/blog" element={<EducationalBlog />} />
                 <Route path="/videos" element={<VideoResources />} />

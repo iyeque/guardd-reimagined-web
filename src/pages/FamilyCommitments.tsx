@@ -16,6 +16,7 @@ import {
   Loader2,
   User,
   MonitorSmartphone,
+  Monitor,
   KeyRound,
   ShieldCheck,
 } from "lucide-react";
@@ -1089,6 +1090,28 @@ const FamilyCommitments: React.FC = () => {
               {ENFORCEMENT_LIMIT_NOTE}
             </p>
           </div>
+
+          {/* Desktop app — the privacy-first alternative, early-access waitlist. */}
+          <Link
+            to="/desktop"
+            className="block max-w-4xl mx-auto rounded-2xl border-2 border-teal-500/40 bg-teal-500/5 p-5 hover:border-teal-500 transition-colors"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-teal-500/15 flex items-center justify-center shrink-0">
+                <Monitor className="w-4.5 h-4.5 text-teal-600" />
+              </div>
+              <div className="space-y-1">
+                <div className="text-sm font-black text-foreground">
+                  Prefer privacy-first, OS-level blocking?
+                </div>
+                <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                  The desktop app enforces commitments via the hosts file — no browser-wide
+                  permission, no per-page reading. Windows alpha in early access; macOS coming.{" "}
+                  <span className="font-black text-teal-600 underline">Join the waitlist →</span>
+                </p>
+              </div>
+            </div>
+          </Link>
 
           {/* Technical detail + roadmap — marketing, collapsed by default so the
               family's own commitments stay the focus. */}

@@ -56,6 +56,7 @@ export const Navigation = () => {
     { label: "Support", href: "#support" },
     { label: "Blog", href: "/blog" },
     { label: "Commitments", href: "/family-commitments" },
+    { label: "Desktop", href: "/desktop" },
     { label: "Contact", href: "#contact" },
   ];
 

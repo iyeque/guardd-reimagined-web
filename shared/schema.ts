@@ -292,3 +292,22 @@ export type InsertFamilyCommitmentMilestone = z.infer<typeof insertFamilyMilesto
 export const insertFamilyContentPackSchema = createInsertSchema(familyContentPacks);
 export type FamilyContentPack = typeof familyContentPacks.$inferSelect;
 export type InsertFamilyContentPack = typeof familyContentPacks.$inferInsert;
+
+// Desktop app early-access waitlist. Email is unique so a repeat signup is a
+// no-op rather than a duplicate row; `platform` segments the macOS waitlist
+// (genuinely not built yet) from the Windows alpha interest.
+export const desktopWaitlist = pgTable("desktop_waitlist", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  platform: text("platform").notNull().default("both"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertDesktopWaitlistSchema = createInsertSchema(desktopWaitlist)
+  .omit({ id: true, createdAt: true })
+  .extend({
+    email: z.string().trim().toLowerCase().email().max(254),
+    platform: z.enum(["windows", "macos", "both"]).default("both"),
+  });
+export type DesktopWaitlist = typeof desktopWaitlist.$inferSelect;
+export type InsertDesktopWaitlist = z.infer<typeof insertDesktopWaitlistSchema>;

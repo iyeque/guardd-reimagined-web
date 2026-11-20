@@ -1,6 +1,6 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage.js";
-import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema, insertCuratedContentSchema, insertStorySchema, type CuratedContent } from "../shared/schema.js";
+import { insertMessageSchema, insertMentorApplicationSchema, insertSiteClaimSchema, insertAssessmentAnalyticsSchema, insertCuratedContentSchema, insertStorySchema, insertDesktopWaitlistSchema, type CuratedContent } from "../shared/schema.js";
 import { commitmentRulesSchema } from "../shared/commitment-rules-schema.js";
 import { syncCommunityData, CURATED_EVENTS, FALLBACK_DISCUSSIONS, generateLocalEvents } from "./community-sync.js";
 import { isEventExpired } from "../shared/event-expiry.js";
@@ -9,8 +9,8 @@ import { z } from "zod";
 import { searchFaqChunks, generateOpenRouterAnswer } from "./faq.js";
 import { db } from "./db.js";
 import { timingSafeEqual, randomBytes } from "node:crypto";
-import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess, familyRedemptions, familyParentGate } from "../shared/schema.js";
-import { eq, and, gte } from "drizzle-orm";
+import { faqChunks, familyCommitments, familyCommitmentMilestones, familyAccess, familyRedemptions, familyParentGate, desktopWaitlist } from "../shared/schema.js";
+import { eq, and, gte, desc } from "drizzle-orm";
 import { encryptField, decryptField } from "./crypto.js";
 import { hashSecret, verifySecret, generateRecoveryCode, isLocked, nextFailure, PIN_REGEX } from "./pin-crypto.js";
 
@@ -463,6 +463,32 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Desktop app early-access waitlist. Email is unique, so a repeat signup is a
+  // no-op (onConflictDoNothing) rather than an error or a duplicate row.
+  app.post("/api/desktop-waitlist", async (req, res) => {
+    try {
+      const { "g-recaptcha-response": recaptchaToken, ...rest } = req.body;
+      if (process.env.RECAPTCHA_SECRET_KEY) {
+        const result = await verifyRecaptcha(recaptchaToken);
+        if (!result.success) {
+          return res.status(400).json({ error: "reCAPTCHA verification failed" });
+        }
+      }
+      const parsed = insertDesktopWaitlistSchema.parse(rest);
+      await db
+        .insert(desktopWaitlist)
+        .values(parsed)
+        .onConflictDoNothing({ target: desktopWaitlist.email });
+      res.json({ ok: true });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Please enter a valid email address." });
+      }
+      console.error("Desktop waitlist error:", error);
+      res.status(500).json({ error: "Could not join the waitlist right now. Please try again." });
+    }
+  });
+
   // Mentor Applications
   app.post("/api/mentors/apply", async (req, res) => {
     try {
@@ -506,6 +532,16 @@ export function registerRoutes(app: Express) {
       res.json(apps);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch applications" });
+    }
+  });
+
+  // Desktop waitlist export (admin) — used to invite early-access members.
+  app.get("/api/admin/desktop-waitlist", validateAdmin, async (_req, res) => {
+    try {
+      const rows = await db.select().from(desktopWaitlist).orderBy(desc(desktopWaitlist.createdAt));
+      res.json(rows);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch waitlist" });
     }
   });
 

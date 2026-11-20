@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Shield, ArrowLeft, RefreshCw, Globe, Clock, FileText, MonitorSmartphone } from "lucide-react";
+import { Shield, ArrowLeft, RefreshCw, Globe, Clock, FileText, MonitorSmartphone, Monitor } from "lucide-react";
 
 const PrivacyPolicy = () => {
   return (
@@ -288,6 +288,58 @@ const PrivacyPolicy = () => {
           <p className="dark:text-amber-200/80 text-amber-800/80 mt-4 text-sm bg-amber-200/10 dark:bg-amber-200/10 rounded-xl p-4 dark:border-amber-200/20 border-amber-200/20">
             Because the access key is stored in the browser, anyone using that browser can read your family's
             commitments. Pair the extension only on devices your family controls.
+          </p>
+        </section>
+
+        <section className="mb-10 border-l-2 border-[#4FD1C5]/40 pl-6">
+          <h2 className="text-2xl font-semibold dark:text-white text-slate-900 mb-4 flex items-center gap-3">
+            <Monitor className="w-6 h-6 text-[#4FD1C5]" />
+            The Desktop App (early access)
+          </h2>
+          <p className="dark:text-white/70 text-slate-700 leading-relaxed">
+            The desktop app is the most private way to enforce your family's commitments. It blocks at the
+            operating-system level rather than inside the browser, so it needs no browser extension and no
+            browser-wide permission. If you would rather not grant an extension access to every site, the
+            desktop app is the option we recommend.
+          </p>
+          <div className="mt-6 space-y-4">
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">How it enforces</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                During the hours you agreed, it writes a small, clearly marked block section to your
+                computer's hosts file (the operating system's own address book), pointing the agreed sites
+                back to your machine. When the window ends — or a member redeems extra screen time — it
+                removes that section. It never reads the pages you visit and needs no permission over your
+                browser.
+              </p>
+            </div>
+
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">What it stores and sends</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                On your device it keeps your family access key, a cached copy of your commitments, and the
+                selected member. It sends only your family access key to digitalguardianwellness.org to fetch
+                those commitments and to record redemptions. Like the extension, it records no browsing
+                history, no page content, no analytics or telemetry, and contacts no other origin.
+              </p>
+            </div>
+
+            <div className="dark:bg-white/5 bg-slate-50 rounded-2xl p-5 dark:border-white/10 border-slate-200">
+              <h3 className="dark:text-white text-slate-900 font-semibold mb-2">Early-access status</h3>
+              <p className="dark:text-white/70 text-slate-700 leading-relaxed text-sm">
+                A Windows alpha is available to early-access members; macOS is in development. The alpha is
+                not yet code-signed, so your operating system may show a security prompt the first time you
+                run it. Join the waitlist to be invited and guided through setup.{" "}
+                <Link to="/desktop" className="font-semibold text-[#4FD1C5] underline">
+                  Desktop app early access
+                </Link>
+                .
+              </p>
+            </div>
+          </div>
+          <p className="dark:text-amber-200/80 text-amber-800/80 mt-4 text-sm bg-amber-200/10 dark:bg-amber-200/10 rounded-xl p-4 dark:border-amber-200/20 border-amber-200/20">
+            As with the extension, the access key on a device identifies your family. Install and pair the
+            desktop app only on computers your family controls.
           </p>
         </section>
 
